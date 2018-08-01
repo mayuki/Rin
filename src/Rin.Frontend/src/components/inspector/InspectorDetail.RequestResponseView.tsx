@@ -203,6 +203,9 @@ class EditorPreview extends React.Component<{ contentType: string; body: string 
 
     window.addEventListener('resize', listener);
     this.unsubscribe = () => window.removeEventListener('resize', listener);
+
+    // force re-layout
+    this.editor.layout({ width: 0, height: 0 });
   }
 
   componentWillUnmount() {
