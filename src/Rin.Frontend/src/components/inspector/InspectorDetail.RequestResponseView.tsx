@@ -198,7 +198,6 @@ class EditorPreview extends React.Component<{ contentType: string; body: string 
 
   componentDidMount() {
     const listener = () => {
-      console.log('resizing');
       this.editor.layout({ width: 0, height: 0 });
     };
 
@@ -212,7 +211,6 @@ class EditorPreview extends React.Component<{ contentType: string; body: string 
 
   editorDidMount = (editor: monacoEditor.editor.IStandaloneCodeEditor, monaco: typeof monacoEditor) => {
     this.editor = editor;
-    (window as any).__monacoEditor = editor;
   };
 
   render() {
