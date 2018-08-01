@@ -10,10 +10,12 @@ interface InvokeWaitingOperation {
   opId: string;
 }
 
+export type HubClientEventType = 'connected' | 'disconnected' | 'reconnecting' | string;
+
 export interface IHubClient {
   invoke: (method: string, ...args: any[]) => Promise<any>;
-  on: (event: string, listener: ((...args: any[]) => void)) => void;
-  off: (event: string, listener: ((...args: any[]) => void)) => void;
+  on: (event: HubClientEventType, listener: ((...args: any[]) => void)) => void;
+  off: (event: HubClientEventType, listener: ((...args: any[]) => void)) => void;
   dispose(): void;
 }
 
@@ -59,7 +61,6 @@ function prepare(holder: SocketHolder) {
   });
 
   holder.socket.addEventListener('close', () => {
-    console.log('closed');
     if (holder.connected) {
       holder.eventEmitter.emit('disconnected');
     }
@@ -67,10 +68,9 @@ function prepare(holder: SocketHolder) {
 
     setTimeout(() => {
       holder.eventEmitter.emit('reconnecting');
-      console.log('reconnecting...');
       holder.socket = holder.socketFactory();
       prepare(holder);
-    }, 1000);
+    }, 5000);
   });
 }
 
@@ -125,10 +125,10 @@ export function createHubClient<THub>(url: string): IHubClient & THub {
       }
       return invoke(socketHolder, method, ...args);
     },
-    off: (event: string, listener: ((...args: any[]) => void)) => {
+    off: (event: HubClientEventType, listener: ((...args: any[]) => void)) => {
       eventEmitter.off(event, listener);
     },
-    on: (event: string, listener: ((...args: any[]) => void)) => {
+    on: (event: HubClientEventType, listener: ((...args: any[]) => void)) => {
       eventEmitter.on(event, listener);
     },
     dispose: () => {
