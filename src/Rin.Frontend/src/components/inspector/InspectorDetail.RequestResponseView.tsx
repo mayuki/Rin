@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react';
+import * as monacoEditor from 'monaco-editor';
 import {
   CheckboxVisibility,
   DetailsList,
@@ -165,15 +166,7 @@ export class InspectorDetailRequestResponseView extends React.Component<
                 )}
                 {this.state.bodyView === 'Source' && (
                   <>
-                    {isText(contentType) && (
-                      <MonacoEditor
-                        width="100%"
-                        height="100%"
-                        options={{ readOnly: true, automaticLayout: true }}
-                        language={getMonacoLanguage(contentType)}
-                        value={body}
-                      />
-                    )}
+                    {isText(contentType) && <EditorPreview contentType={contentType} body={body} />}
                     {isImage(contentType) && (
                       <ImagePreview contentType={contentType} bodyAsBase64={this.props.bodyRaw!} />
                     )}
@@ -197,6 +190,43 @@ export class InspectorDetailRequestResponseView extends React.Component<
       copyTextToClipboard(item.item.Value);
     }
   };
+}
+
+class EditorPreview extends React.Component<{ contentType: string; body: string }, {}> {
+  private unsubscribe: () => void;
+  private editor: monacoEditor.editor.IStandaloneCodeEditor;
+
+  componentDidMount() {
+    const listener = () => {
+      console.log('resizing');
+      this.editor.layout({ width: 0, height: 0 });
+    };
+
+    window.addEventListener('resize', listener);
+    this.unsubscribe = () => window.removeEventListener('resize', listener);
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  editorDidMount = (editor: monacoEditor.editor.IStandaloneCodeEditor, monaco: typeof monacoEditor) => {
+    this.editor = editor;
+    (window as any).__monacoEditor = editor;
+  };
+
+  render() {
+    return (
+      <MonacoEditor
+        width="100%"
+        height="100%"
+        options={{ readOnly: true, automaticLayout: true }}
+        language={getMonacoLanguage(this.props.contentType)}
+        value={this.props.body}
+        editorDidMount={this.editorDidMount}
+      />
+    );
+  }
 }
 
 class ImagePreview extends React.Component<
