@@ -1,0 +1,72 @@
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #4e5584;
+  height: 48px;
+  color: white;
+}
+
+.App-title {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  line-height: 48px;
+  margin-left: 8px;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: normal;
+  font-size: 1.25rem;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 301px 1fr;
+}
+
+.container .leftPane {
+  grid-column: 1;
+  border-right: 1px solid #ccc;
+}
+.container .rightPane {
+  grid-column: 2;
+}
+
+.applicationFrame {
+  display: grid;
+  height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
+  grid-template-columns: 1fr;
+  grid-template-rows: 48px 1fr;
+}
+
+.applicationFrame header {
+  background-color: #4e5584;
+  background-image: linear-gradient(to bottom, #79a7c9 0%,#79a7c9 25%,#9ec7be 26%,#9ec7be 50%,#f3e2cd 51%,#f3e2cd 75%,#c55056 76%);
+  background-size: 8px 100%;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  
+  height: 48px;
+  color: #fff;
+}
+.applicationFrame header h1 {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  line-height: 48px;
+  margin-left: 24px;
+}
+
+.connectingOverlay .ms-Spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

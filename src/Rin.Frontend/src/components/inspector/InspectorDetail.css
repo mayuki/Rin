@@ -1,0 +1,112 @@
+.inspectorDetail {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    height: 100%;
+}
+
+.inspectorDetail_Pivot {
+    padding: 0 12px;
+}
+.inspectorDetail_DetailView {
+    overflow: hidden;
+}
+
+.inspectorDetail_RequestResponseView {
+    overflow: auto;
+}
+.inspectorDetail_ExceptionView {
+    overflow: auto;
+    padding: 0 12px;
+    height: 100%;
+}
+.inspectorDetail_TraceView {
+    overflow: auto;
+}
+
+.inspectorRequestResponseView {
+    display: grid;
+    grid-template-rows: auto 400px 1fr;
+    height: 100%;
+    padding: 0;
+}
+.inspectorRequestResponseView_General {
+}
+.inspectorRequestResponseView_General > :first-child {
+    margin-bottom: 12px;
+}
+
+.inspectorRequestResponseView_Headers {
+    position: relative;
+}
+.inspectorRequestResponseView_Body {
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-gap: 12px;
+}
+.inspectorRequestResponseView_Body .ms-Pivot {
+    margin: 0 12px;
+}
+
+.inspectorRequestResponseViewObjectInspector {
+    overflow: auto;
+    padding: 0 12px 12px;
+}
+
+.inspectorRequestResponseViewImagePreview figure {
+    margin: 0;
+    padding: 0;
+}
+.inspectorRequestResponseViewImagePreview figure img {
+    margin: auto;
+    display: block;
+    max-height: 300px;
+}
+.inspectorRequestResponseViewImagePreview figure figcaption {
+    margin: 1rem 0 0 0;
+    padding: 0;
+    text-align: center;
+    color: #a0a0a0;
+    font-size: 0.9rem;
+}
+
+
+.inspectorRequestResponseHeadersListCell_Command {
+    display: inline-flex;
+    height: 100%;
+    opacity: 0;
+}
+.inspectorRequestResponseHeadersListCell_Command > .ms-Button {
+    margin-top: -6px;
+    margin-bottom: -6px;
+}
+.inspectorRequestResponseHeadersListCell_Command > .ms-Button .ms-Button-menuIcon {
+    display: none;
+}
+.ms-DetailsRow:hover .inspectorRequestResponseHeadersListCell_Command {
+    opacity: 1;
+}
+
+.inspectorDetail_ExceptionView h2 {
+    margin: 12px 0 0 0;
+}
+.inspectorDetail_ExceptionView pre {
+    overflow: auto;
+    font-family: 'Consolas', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin: 12px 0 0 0;
+}
+
+.inspectorDetailTraceView_Row.inspectorDetailTraceView_Row-Information .ms-DetailsRow-cell {
+    color: #000;
+}
+.inspectorDetailTraceView_Row.inspectorDetailTraceView_Row-Error .ms-DetailsRow-cell {
+    color: #a80000;
+}
+.inspectorDetailTraceView_Row.inspectorDetailTraceView_Row-Critical .ms-DetailsRow-cell {
+    color: #a80000;
+}
+.inspectorDetailTraceView_Row.inspectorDetailTraceView_Row-Warning .ms-DetailsRow-cell {
+    color: #e0ad06;
+}

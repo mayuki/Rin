@@ -1,0 +1,27 @@
+.inspectorFrame {
+    height: 100vh;
+    border: 1px solid transparent;
+    overflow: hidden;
+    box-sizing: border-box;
+  
+    grid-column: 1;
+    grid-row: 2;
+  
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    grid-template-rows: 1fr;
+  }
+  .inspectorFrame .leftPane {
+    grid-column: 1;
+    height: calc(100vh - 48px);
+    overflow: hidden scroll;
+    border-right: 1px solid #ccc;
+
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+  .inspectorFrame .rightPane {
+    grid-column: 2;
+    height: calc(100vh - 48px);
+    overflow: auto;
+  }
