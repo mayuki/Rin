@@ -8,8 +8,6 @@ using Microsoft.Extensions.Logging;
 
 namespace HelloRin.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class MyApiController : ControllerBase
     {
         private readonly ILogger<MyApiController> _logger;
