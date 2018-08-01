@@ -231,12 +231,20 @@ class ImagePreview extends React.Component<
     return (
       <div className="inspectorRequestResponseViewImagePreview">
         <figure>
-          <img ref={this.imagePreview} src={'data:' + this.props.contentType + ';base64,' + this.props.bodyAsBase64} />
-          {this.state.loaded && (
-            <figcaption>
-              {this.state.width} x {this.state.height} | {this.props.contentType}
-            </figcaption>
-          )}
+          <div className="inspectorRequestResponseViewImagePreview_Image">
+            <img
+              ref={this.imagePreview}
+              src={'data:' + this.props.contentType + ';base64,' + this.props.bodyAsBase64}
+            />
+          </div>
+          <figcaption>
+            {this.state.loaded && (
+              <>
+                {this.state.width} x {this.state.height} |
+              </>
+            )}{' '}
+            {this.props.contentType}
+          </figcaption>
         </figure>
       </div>
     );

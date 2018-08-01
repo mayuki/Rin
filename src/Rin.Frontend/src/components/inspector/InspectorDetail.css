@@ -25,7 +25,7 @@
 
 .inspectorRequestResponseView {
     display: grid;
-    grid-template-rows: auto 400px 1fr;
+    grid-template-rows: auto 1fr 1fr;
     height: 100%;
     padding: 0;
 }
@@ -56,15 +56,18 @@
 .inspectorRequestResponseViewImagePreview figure {
     margin: 0;
     padding: 0;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 100%;
 }
-.inspectorRequestResponseViewImagePreview figure img {
+.inspectorRequestResponseViewImagePreview figure .inspectorRequestResponseViewImagePreview_Image img {
     margin: auto;
     display: block;
-    max-height: 300px;
+    max-height: 100%;
 }
 .inspectorRequestResponseViewImagePreview figure figcaption {
-    margin: 1rem 0 0 0;
-    padding: 0;
+    margin: 0;
+    padding: 1rem;
     text-align: center;
     color: #a0a0a0;
     font-size: 0.9rem;
