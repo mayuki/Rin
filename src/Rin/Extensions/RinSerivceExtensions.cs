@@ -1,5 +1,7 @@
 ﻿using Rin.Channel;
 using Rin.Core;
+using Rin.Core.Event;
+using Rin.Core.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +18,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddHttpContextAccessor();
 
-            services.AddSingleton<RequestRecordStorage>(new RequestRecordStorage());
+            var channel = new RinChannel();
+            var storage = new InMemoryMessageStorage<HttpRequestRecord>(options.RequestRecorder.RetentionMaxRequests);
+            var eventBus = new MessageEventBus<HttpRequestRecord>(new[] { storage });
+
+            services.AddSingleton<IMessageStorage<HttpRequestRecord>>(storage);
+            services.AddSingleton<IMessageEventBus<HttpRequestRecord>>(eventBus);
             services.AddSingleton<RinOptions>(options);
-            services.AddSingleton<RinChannel>(new RinChannel());
+            services.AddSingleton<RinChannel>(channel);
         }
     }
 }

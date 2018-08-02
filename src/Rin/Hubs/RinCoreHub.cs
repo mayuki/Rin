@@ -1,5 +1,6 @@
 ﻿using Rin.Channel;
 using Rin.Core;
+using Rin.Core.Storage;
 using Rin.Hubs.Payloads;
 using System;
 using System.Collections.Generic;
@@ -11,42 +12,39 @@ namespace Rin.Hubs
 {
     public class RinCoreHub : IHub
     {
-        private RequestRecordStorage _requestEventStorage;
+        private IMessageStorage<HttpRequestRecord> _storage;
         private RinChannel _rinChannel;
 
-        public RinCoreHub(RequestRecordStorage requestEventStorage, RinChannel rinChannel)
+        public RinCoreHub(IMessageStorage<HttpRequestRecord> storage, RinChannel rinChannel)
         {
-            _requestEventStorage = requestEventStorage;
+            _storage = storage;
             _rinChannel = rinChannel;
         }
 
         public RequestEventPayload[] GetRecordingList()
         {
-            return _requestEventStorage.Records.Select(x => new RequestEventPayload(x)).Reverse().ToArray();
+            return _storage.GetAll().Select(x => new RequestEventPayload(x)).Reverse().ToArray();
         }
 
         public RequestRecordDetailPayload GetDetailById(string id)
         {
-            return _requestEventStorage.Records
-                .Where(x => x.Id == id)
-                .Select(x => new RequestRecordDetailPayload(x))
-                .FirstOrDefault();
+            return (_storage.TryGetById(id, out var value))
+                ? new RequestRecordDetailPayload(value)
+                : null;
         }
 
         public byte[] GetRequestBody(string id)
         {
-            return _requestEventStorage.Records
-                .Where(x => x.Id == id)
-                .Select(x => x.RequestBody)
-                .FirstOrDefault();
+            return (_storage.TryGetById(id, out var value))
+                ? value.RequestBody
+                : null;
         }
 
         public byte[] GetResponseBody(string id)
         {
-            return _requestEventStorage.Records
-                .Where(x => x.Id == id)
-                .Select(x => x.ResponseBody)
-                .FirstOrDefault();
+            return (_storage.TryGetById(id, out var value))
+                ? value.ResponseBody
+                : null;
         }
 
         public bool Ping()

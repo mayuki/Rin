@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Rin.Channel;
 using Rin.Core;
+using Rin.Core.Event;
 using Rin.Extensions;
 using Rin.Features;
 using Rin.Hubs;
@@ -17,13 +18,13 @@ namespace Rin.Middlewares
     public class RequestRecorderMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly RequestRecordStorage _requestEventStorage;
+        private readonly IMessageEventBus<HttpRequestRecord> _eventBus;
         private readonly IRinCoreHubClient _hubClient;
 
-        public RequestRecorderMiddleware(RequestDelegate next, RequestRecordStorage requestEventStorage, RinChannel rinChannel)
+        public RequestRecorderMiddleware(RequestDelegate next, IMessageEventBus<HttpRequestRecord> eventBus, RinChannel rinChannel)
         {
             _next = next;
-            _requestEventStorage = requestEventStorage;
+            _eventBus = eventBus;
             _hubClient = rinChannel.GetClient<RinCoreHub, IRinCoreHubClient>();
         }
 
@@ -48,8 +49,8 @@ namespace Rin.Middlewares
                 RemoteIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress,
                 Traces = new System.Collections.Concurrent.ConcurrentQueue<TraceLogRecord>()
             };
-            
-            _requestEventStorage.Add(record);
+
+            await _eventBus.PostAsync(record);
 
             _hubClient.RequestBegin(new RequestEventPayload(record)).Forget();
 

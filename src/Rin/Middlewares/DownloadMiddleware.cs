@@ -2,6 +2,7 @@
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
 using Rin.Core;
+using Rin.Core.Storage;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,18 +15,17 @@ namespace Rin.Middlewares
     public class DownloadRequestBodyMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly RequestRecordStorage _requestEventStorage;
+        private readonly IMessageStorage<HttpRequestRecord> _storage;
 
-        public DownloadRequestBodyMiddleware(RequestDelegate next, RequestRecordStorage requestEventStorage)
+        public DownloadRequestBodyMiddleware(RequestDelegate next, IMessageStorage<HttpRequestRecord> storage)
         {
             _next = next;
-            _requestEventStorage = requestEventStorage;
+            _storage = storage;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var entry = _requestEventStorage.Records.FirstOrDefault(x => x.Id == context.Request.Query["id"]);
-            if (entry == null)
+            if (!_storage.TryGetById(context.Request.Query["id"], out var entry))
             {
                 context.Response.StatusCode = 404;
                 return;
@@ -44,18 +44,17 @@ namespace Rin.Middlewares
     public class DownloadResponseBodyMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly RequestRecordStorage _requestEventStorage;
+        private readonly IMessageStorage<HttpRequestRecord> _storage;
 
-        public DownloadResponseBodyMiddleware(RequestDelegate next, RequestRecordStorage requestEventStorage)
+        public DownloadResponseBodyMiddleware(RequestDelegate next, IMessageStorage<HttpRequestRecord> storage)
         {
             _next = next;
-            _requestEventStorage = requestEventStorage;
+            _storage = storage;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var entry = _requestEventStorage.Records.FirstOrDefault(x => x.Id == context.Request.Query["id"]);
-            if (entry == null)
+            if (!_storage.TryGetById(context.Request.Query["id"], out var entry))
             {
                 context.Response.StatusCode = 404;
                 return;

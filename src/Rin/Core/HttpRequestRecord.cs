@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Rin.Core.Storage;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace Rin.Core
 {
-    public class HttpRequestRecord
+    public class HttpRequestRecord : IMessage
     {
         public string Id { get; internal set; }
         public bool IsHttps { get; internal set; }

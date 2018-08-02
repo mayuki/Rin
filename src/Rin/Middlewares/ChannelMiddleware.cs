@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Rin.Channel;
 using Rin.Core;
+using Rin.Core.Event;
+using Rin.Core.Storage;
 using Rin.Hubs;
 using System;
 using System.Collections.Generic;
@@ -14,14 +16,17 @@ namespace Rin.Middlewares
 {
     internal class ChannelMiddleware
     {
-        private readonly RequestRecordStorage _requestEventStorage;
+        private readonly IMessageStorage<HttpRequestRecord> _storage;
+        private readonly IMessageEventBus<HttpRequestRecord> _eventBus;
         private readonly RinChannel _rinChannel;
         private readonly RequestDelegate _next;
 
-        public ChannelMiddleware(RequestDelegate next, RequestRecordStorage requestEventStorage, RinChannel rinChannel, IApplicationLifetime applicationLifetime)
+        public ChannelMiddleware(RequestDelegate next, IMessageEventBus<HttpRequestRecord> eventBus, IMessageStorage<HttpRequestRecord> storage, RinChannel rinChannel, IApplicationLifetime applicationLifetime)
         {
             _next = next;
-            _requestEventStorage = requestEventStorage;
+
+            _storage = storage;
+            _eventBus = eventBus;
             _rinChannel = rinChannel;
 
             applicationLifetime.ApplicationStopping.Register(() => _rinChannel.Dispose());
@@ -32,7 +37,9 @@ namespace Rin.Middlewares
             if (context.WebSockets.IsWebSocketRequest)
             {
                 var conn = await context.WebSockets.AcceptWebSocketAsync();
-                await _rinChannel.ManageAsync(conn, new RinCoreHub(_requestEventStorage, _rinChannel));
+
+                var hub = new RinCoreHub(_storage, _rinChannel);
+                await _rinChannel.ManageAsync(conn, hub);
             }
             else
             {
