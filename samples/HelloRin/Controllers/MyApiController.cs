@@ -69,9 +69,16 @@ namespace HelloRin.Controllers
 
         [HttpPost]
         [Produces("application/json")]
-        public string PostMethodTest([FromBody]string bodyValueA)
+        public object PostWithFormBody([FromForm]string bodyValueA, [FromForm]int bodyValueB)
         {
-            return bodyValueA;
+            return new { ValueA = bodyValueA, ValueB = bodyValueB };
+        }
+
+        [HttpPost]
+        [Produces("application/json")]
+        public object PostWithFormData([FromBody]string bodyValueA, [FromBody]int bodyValueB)
+        {
+            return new { ValueA = bodyValueA, ValueB = bodyValueB };
         }
 
         public class MyClass
