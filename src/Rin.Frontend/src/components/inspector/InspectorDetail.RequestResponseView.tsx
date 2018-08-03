@@ -181,7 +181,7 @@ export class InspectorDetailRequestResponseView extends React.Component<
   }
 
   private canPreview(contentType: string) {
-    return isText(contentType) || isImage(contentType);
+    return isJson(contentType) || isText(contentType) || isImage(contentType);
   }
 
   private onBodyPivotItemClicked = (item: PivotItem) => {
