@@ -52,6 +52,11 @@
 .inspectorRequestResponseViewObjectInspector {
     overflow: auto;
     padding: 0 12px 12px;
+    font-family: 'Consolas', 'Menlo', monospace;
+}
+.inspectorRequestResponseViewObjectInspector li[role="treeitem"] > div > span:first-child {
+    /* HACK: Edge renders '▶ U+25B6' as Emoji variant. But the toggle of node expected rendering as Text variant. */
+    font-family: 'Segoe UI Symbol', 'Menlo', monospace;
 }
 
 .inspectorRequestResponseViewImagePreview figure {
