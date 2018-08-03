@@ -153,7 +153,8 @@ export class InspectorDetailRequestResponseView extends React.Component<
         </div>
         <div className="inspectorRequestResponseView_Body">
           {hasBody &&
-            contentType && (
+            contentType &&
+            this.canPreview(contentType) && (
               <>
                 <Pivot selectedKey={this.state.bodyView} onLinkClick={this.onBodyPivotItemClicked}>
                   {isJson(contentType) ? <PivotItem itemKey="Tree" headerText="Tree" itemIcon="RowsChild" /> : <></>}
@@ -177,6 +178,10 @@ export class InspectorDetailRequestResponseView extends React.Component<
         </div>
       </div>
     );
+  }
+
+  private canPreview(contentType: string) {
+    return isText(contentType) || isImage(contentType);
   }
 
   private onBodyPivotItemClicked = (item: PivotItem) => {

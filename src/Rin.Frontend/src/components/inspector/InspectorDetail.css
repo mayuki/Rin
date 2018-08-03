@@ -37,6 +37,7 @@
 
 .inspectorRequestResponseView_Headers {
     position: relative;
+    overflow: auto;
 }
 .inspectorRequestResponseView_Body {
     overflow: hidden;
