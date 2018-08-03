@@ -85,6 +85,7 @@ namespace Rin.Middlewares
                 if (options.RequestRecorder.EnableBodyCapturing)
                 {
                     var memoryStreamRequestBody = new MemoryStream();
+                    context.Request.Body.Position = 0; // rewind the stream to head
                     await context.Request.Body.CopyToAsync(memoryStreamRequestBody);
                     record.RequestBody = memoryStreamRequestBody.ToArray();
                     record.ResponseBody = feature.ResponseDataStream.GetCapturedData();
