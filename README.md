@@ -3,7 +3,7 @@
 
 Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured data. It's useful tool to debug your Web application.
 
-![](docs/images/Screenshot-01.png)
+![](docs/images/Demo-01.gif)
 
 # Features
 - 📼 Recording requests and responses
