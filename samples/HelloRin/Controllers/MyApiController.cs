@@ -81,7 +81,7 @@ namespace HelloRin.Controllers
             return new { ValueA = bodyValueA, ValueB = bodyValueB };
         }
 
-        // Custom Content-Type response body is transformed/viewable on Inspector
+        // Custom Content-Type response body is transformed and viewable on Inspector
         // See RinCustomContentTypeTransformer class in this project.
         public IActionResult CustomContentType()
         {
@@ -106,7 +106,7 @@ namespace HelloRin.Controllers
                 }).ToArray()
             }, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
 
-            return File(data, "application/x-rin-custom");
+            return File(data, "application/x-msgpack");
         }
 
         public class MyClass

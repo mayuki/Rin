@@ -13,7 +13,7 @@ namespace HelloRin.Models
     {
         public override bool CanTransform(StringValues contentTypeHeaderValues)
         {
-            return contentTypeHeaderValues.Any(x => x == "application/x-rin-custom");
+            return contentTypeHeaderValues.Any(x => x == "application/x-msgpack");
         }
 
         public override BodyDataTransformResult Transform(byte[] body, StringValues contentTypeHeaderValues)
