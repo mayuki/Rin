@@ -11,8 +11,10 @@ export class AppStore {
   hubClient: IHubClient & IRinCoreHub;
   inspector = new InspectorStore();
 
-  @observable viewMode: ViewMode = ViewMode.Inspector;
-  @observable connected: boolean = false;
+  @observable
+  viewMode: ViewMode = ViewMode.Inspector;
+  @observable
+  connected: boolean = false;
 
   endpointUrlBase: string;
 
@@ -24,7 +26,7 @@ export class AppStore {
     const pathBase = document.querySelector('html')!.dataset.rinConfigPathBase || '/rin';
     const channelEndPoint = pathBase + '/chan';
 
-    this.endpointUrlBase = pathBase;
+    this.endpointUrlBase = `${location.protocol}//${host}${pathBase}`;
     this.hubClient = createHubClient<IRinCoreHub>(`${protocol}//${host}${channelEndPoint}`);
     this.inspector.ready(this.hubClient);
 
