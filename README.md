@@ -1,16 +1,20 @@
 # Rin
 **R**equest/response **In**spector for ASP.NET Core. like Fiddler on the web server.
 
+Rin captures HTTP request to ASP.NET Core app and provide viewer for captured data. It's useful tool to debug your Web application.
+
+![](docs/images/Screenshot-01.png)
+
 # Features
 - 📼 Recording requests and responses
     - Including...
-        - Traces (ILog)
+        - Traces (`Microsoft.Extensions.Logging.ILogger`)
         - Unhandled Exception
 - 🌎 Inspection from Web browser
     - ⚡ Realtime (powered by WebSocket)
-    - 🔍 Preview body data
+    - 🔍 Preview a request/response body
         - JSON as tree view
-        - Image view (png, jpg, ...)
+        - Image view (PNG, JPEG, SVG, ...)
         - Syntax highligting (powered by Monaco Editor)
 
 # Requirements
@@ -88,9 +92,9 @@ public class Startup
 Launch the app, then open `http://[Host:Port]/rin/` in the browser, you can see Rin Inspector now.
 
 # Develop and build Rin Inspector (frontend)
-Frontend codes is separated from Rin core C# project.
+The front-end codes for Rin is separated from Rin core C# project. If you want to develop Rin or launch a sample project, you need to build and pack the codes.
 
-## Development server
+## Setup and start the development server
 - `npm install`
 - `npm run start`
 
