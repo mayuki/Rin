@@ -126,6 +126,7 @@ export class InspectorDetailRequestResponseView extends React.Component<
         ? this.props.body.PresentationContentType
         : getContentType(this.props.headers)
       : null;
+    const isTransformed = this.props.body != null && this.props.body.PresentationContentType !== '';
     const body =
       this.props.body != null
         ? this.props.body.IsBase64Encoded
@@ -167,7 +168,11 @@ export class InspectorDetailRequestResponseView extends React.Component<
               <>
                 <Pivot selectedKey={this.state.bodyView} onLinkClick={this.onBodyPivotItemClicked}>
                   {isJson(contentType) ? <PivotItem itemKey="Tree" headerText="Tree" itemIcon="RowsChild" /> : <></>}
-                  <PivotItem itemKey="Source" headerText="Source" itemIcon="Code" />
+                  <PivotItem
+                    itemKey="Source"
+                    headerText={isTransformed ? `View as ${contentType}` : 'Source'}
+                    itemIcon="Code"
+                  />
                 </Pivot>
                 {this.state.bodyView === 'Tree' && (
                   <div className="inspectorRequestResponseViewObjectInspector">
