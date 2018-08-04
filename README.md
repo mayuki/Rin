@@ -101,3 +101,6 @@ The front-end codes for Rin is separated from Rin core C# project. If you want t
 ## Build Rin/Resources.zip
 - `npm run build`
 - `npm run pack`
+
+# License
+[MIT License](LICENSE)
