@@ -5,9 +5,7 @@ VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rin", "src\Rin\Rin.csproj", "{B9CDC00F-4AED-49D5-B4DC-6520FAF371CB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rin.FrontendResources", "src\Rin.FrontendResources\Rin.FrontendResources.csproj", "{AB8EAA4A-D802-4442-86D9-7BCF07596DF6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloRin", "samples\HelloRin\HelloRin.csproj", "{921C0263-C56A-4332-897C-2107D0E0DDF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloRin", "samples\HelloRin\HelloRin.csproj", "{921C0263-C56A-4332-897C-2107D0E0DDF2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{B82C9F89-AD8F-473B-AA41-3061CD0FE9DF}"
 EndProject
@@ -21,10 +19,6 @@ Global
 		{B9CDC00F-4AED-49D5-B4DC-6520FAF371CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9CDC00F-4AED-49D5-B4DC-6520FAF371CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9CDC00F-4AED-49D5-B4DC-6520FAF371CB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB8EAA4A-D802-4442-86D9-7BCF07596DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB8EAA4A-D802-4442-86D9-7BCF07596DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB8EAA4A-D802-4442-86D9-7BCF07596DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB8EAA4A-D802-4442-86D9-7BCF07596DF6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{921C0263-C56A-4332-897C-2107D0E0DDF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{921C0263-C56A-4332-897C-2107D0E0DDF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{921C0263-C56A-4332-897C-2107D0E0DDF2}.Release|Any CPU.ActiveCfg = Release|Any CPU

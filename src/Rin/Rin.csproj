@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Authors>Mayuki Sawatari</Authors>
+    <Copyright>Mayuki Sawatari</Copyright>
+    <PackageProjectUrl>http://github.com/mayuki/Rin</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/mayuki/Rin/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageTags>Rin ASP.NET Request Inspector</PackageTags>
+    <Description>Request/response Inspector for ASP.NET Core</Description>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -9,13 +16,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.1.0" />
-    <PackageReference Include="System.Threading.Channels" Version="4.5.0" />
+    <None Remove="Resources.zip" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Rin.FrontendResources\Rin.FrontendResources.csproj" />
+    <EmbeddedResource Include="Resources.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.1.0" />
+    <PackageReference Include="System.Threading.Channels" Version="4.5.0" />
   </ItemGroup>
 
 </Project>
