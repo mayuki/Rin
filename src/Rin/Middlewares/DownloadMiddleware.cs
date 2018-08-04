@@ -15,9 +15,9 @@ namespace Rin.Middlewares
     public class DownloadRequestBodyMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IMessageStorage<HttpRequestRecord> _storage;
+        private readonly IRecordStorage _storage;
 
-        public DownloadRequestBodyMiddleware(RequestDelegate next, IMessageStorage<HttpRequestRecord> storage)
+        public DownloadRequestBodyMiddleware(RequestDelegate next, IRecordStorage storage)
         {
             _next = next;
             _storage = storage;
@@ -44,9 +44,9 @@ namespace Rin.Middlewares
     public class DownloadResponseBodyMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IMessageStorage<HttpRequestRecord> _storage;
+        private readonly IRecordStorage _storage;
 
-        public DownloadResponseBodyMiddleware(RequestDelegate next, IMessageStorage<HttpRequestRecord> storage)
+        public DownloadResponseBodyMiddleware(RequestDelegate next, IRecordStorage storage)
         {
             _next = next;
             _storage = storage;

@@ -1,6 +1,8 @@
 ﻿using Rin.Channel;
 using Rin.Core;
+using Rin.Core.Event;
 using Rin.Core.Storage;
+using Rin.Hubs.HubClients;
 using Rin.Hubs.Payloads;
 using System;
 using System.Collections.Generic;
@@ -12,10 +14,10 @@ namespace Rin.Hubs
 {
     public class RinCoreHub : IHub
     {
-        private IMessageStorage<HttpRequestRecord> _storage;
+        private IRecordStorage _storage;
         private RinChannel _rinChannel;
 
-        public RinCoreHub(IMessageStorage<HttpRequestRecord> storage, RinChannel rinChannel)
+        public RinCoreHub(IRecordStorage storage, RinChannel rinChannel)
         {
             _storage = storage;
             _rinChannel = rinChannel;
@@ -50,6 +52,28 @@ namespace Rin.Hubs
         public bool Ping()
         {
             return true;
+        }
+
+        public class MessageSubscriber : IMessageSubscriber<RequestEventMessage>
+        {
+            private IRinCoreHubClient _client;
+            public MessageSubscriber(RinChannel channel)
+            {
+                _client = channel.GetClient<RinCoreHub, IRinCoreHubClient>();
+            }
+
+            public void Publish(RequestEventMessage message)
+            {
+                switch (message.Event)
+                {
+                    case RequestEvent.BeginRequest:
+                        _client.RequestBegin(new RequestEventPayload(message.Value));
+                        break;
+                    case RequestEvent.CompleteRequest:
+                        _client.RequestEnd(new RequestEventPayload(message.Value));
+                        break;
+                }
+            }
         }
     }
 }

@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
-namespace Rin.Core
+namespace Rin.Core.Storage
 {
-    public class HttpRequestRecord : IMessage
+    public class HttpRequestRecord
     {
         public string Id { get; internal set; }
         public bool IsHttps { get; internal set; }

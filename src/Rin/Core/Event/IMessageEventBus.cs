@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace Rin.Core.Event
 {
-    public interface IMessageEventBus<T> : IDisposable where T : IMessage
+    public interface IMessageEventBus<T> : IDisposable
     {
-        Task PostAsync(T value);
+        ValueTask PostAsync(T value);
     }
 }

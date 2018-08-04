@@ -1,7 +1,7 @@
 ﻿namespace Rin.Core.Event
 {
-    public interface IMessageSubscriber<T> where T: IMessage
+    public interface IMessageSubscriber<T>
     {
-        void Publish(T value);
+        void Publish(T message);
     }
 }

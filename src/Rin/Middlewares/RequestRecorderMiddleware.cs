@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Rin.Channel;
 using Rin.Core;
 using Rin.Core.Event;
+using Rin.Core.Storage;
 using Rin.Extensions;
 using Rin.Features;
 using Rin.Hubs;
@@ -18,19 +19,20 @@ namespace Rin.Middlewares
     public class RequestRecorderMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IMessageEventBus<HttpRequestRecord> _eventBus;
-        private readonly IRinCoreHubClient _hubClient;
+        private readonly IMessageEventBus<RequestEventMessage> _eventBus;
 
-        public RequestRecorderMiddleware(RequestDelegate next, IMessageEventBus<HttpRequestRecord> eventBus, RinChannel rinChannel)
+        public RequestRecorderMiddleware(RequestDelegate next, IMessageEventBus<RequestEventMessage> eventBus, RinChannel rinChannel)
         {
             _next = next;
             _eventBus = eventBus;
-            _hubClient = rinChannel.GetClient<RinCoreHub, IRinCoreHubClient>();
         }
 
         public async Task InvokeAsync(HttpContext context, RinOptions options)
         {
-            if (context.Request.Path.StartsWithSegments(options.Inspector.MountPath) || (options.RequestRecorder.Excludes?.Invoke(context.Request.Path) ?? false))
+            var request = context.Request;
+            var response = context.Response;
+
+            if (request.Path.StartsWithSegments(options.Inspector.MountPath) || (options.RequestRecorder.Excludes?.Invoke(request) ?? false))
             {
                 await _next(context);
                 return;
@@ -39,20 +41,18 @@ namespace Rin.Middlewares
             var record = new HttpRequestRecord()
             {
                 Id = Guid.NewGuid().ToString(),
-                IsHttps = context.Request.IsHttps,
-                Host = context.Request.Host,
-                QueryString = context.Request.QueryString,
-                Path = context.Request.Path,
-                Method = context.Request.Method,
+                IsHttps = request.IsHttps,
+                Host = request.Host,
+                QueryString = request.QueryString,
+                Path = request.Path,
+                Method = request.Method,
                 RequestReceivedAt = DateTime.Now,
-                RequestHeaders = context.Request.Headers.ToDictionary(k => k.Key, v => v.Value),
-                RemoteIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress,
+                RequestHeaders = request.Headers.ToDictionary(k => k.Key, v => v.Value),
+                RemoteIpAddress = request.HttpContext.Connection.RemoteIpAddress,
                 Traces = new System.Collections.Concurrent.ConcurrentQueue<TraceLogRecord>()
             };
 
-            await _eventBus.PostAsync(record);
-
-            _hubClient.RequestBegin(new RequestEventPayload(record)).Forget();
+            await _eventBus.PostAsync(new RequestEventMessage(record, RequestEvent.BeginRequest));
 
             var feature = new RinRequestRecordingFeature(record);
             context.Features.Set<IRinRequestRecordingFeature>(feature);
@@ -60,10 +60,10 @@ namespace Rin.Middlewares
             if (options.RequestRecorder.EnableBodyCapturing)
             {
                 context.EnableResponseDataCapturing();
-                context.Request.EnableBuffering();
+                request.EnableBuffering();
             }
-            context.Response.OnStarting(OnStarting, record);
-            context.Response.OnCompleted(OnCompleted, record);
+            response.OnStarting(OnStarting, record);
+            response.OnCompleted(OnCompleted, record);
 
             record.ProcessingStartedAt = DateTime.Now;
             try
@@ -79,14 +79,14 @@ namespace Rin.Middlewares
             {
                 record.ProcessingCompletedAt = DateTime.Now;
 
-                record.ResponseStatusCode = context.Response.StatusCode;
-                record.ResponseHeaders = context.Response.Headers.ToDictionary(k => k.Key, v => v.Value);
+                record.ResponseStatusCode = response.StatusCode;
+                record.ResponseHeaders = response.Headers.ToDictionary(k => k.Key, v => v.Value);
 
                 if (options.RequestRecorder.EnableBodyCapturing)
                 {
                     var memoryStreamRequestBody = new MemoryStream();
-                    context.Request.Body.Position = 0; // rewind the stream to head
-                    await context.Request.Body.CopyToAsync(memoryStreamRequestBody);
+                    request.Body.Position = 0; // rewind the stream to head
+                    await request.Body.CopyToAsync(memoryStreamRequestBody);
                     record.RequestBody = memoryStreamRequestBody.ToArray();
                     record.ResponseBody = feature.ResponseDataStream.GetCapturedData();
                 }
@@ -112,9 +112,7 @@ namespace Rin.Middlewares
 
             record.TransferringCompletedAt = DateTime.Now;
 
-            _hubClient.RequestEnd(new RequestEventPayload(record)).Forget();
-
-            return Task.CompletedTask;
+            return _eventBus.PostAsync(new RequestEventMessage(record, RequestEvent.CompleteRequest)).AsTask();
         }
     }
 }

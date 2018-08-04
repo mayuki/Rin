@@ -19,11 +19,15 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddHttpContextAccessor();
 
             var channel = new RinChannel();
-            var storage = new InMemoryMessageStorage<HttpRequestRecord>(options.RequestRecorder.RetentionMaxRequests);
-            var eventBus = new MessageEventBus<HttpRequestRecord>(new[] { storage });
+            var storage = new InMemoryRecordStorage(options.RequestRecorder.RetentionMaxRequests);
+            var eventBus = new MessageEventBus<RequestEventMessage>(new IMessageSubscriber<RequestEventMessage>[]
+            {
+                storage,
+                new Rin.Hubs.RinCoreHub.MessageSubscriber(channel)
+            });
 
-            services.AddSingleton<IMessageStorage<HttpRequestRecord>>(storage);
-            services.AddSingleton<IMessageEventBus<HttpRequestRecord>>(eventBus);
+            services.AddSingleton<IRecordStorage>(storage);
+            services.AddSingleton<IMessageEventBus<RequestEventMessage>>(eventBus);
             services.AddSingleton<RinOptions>(options);
             services.AddSingleton<RinChannel>(channel);
         }

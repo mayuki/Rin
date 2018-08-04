@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rin.Core.Event
 {
-    public class MessageEventBus<T> : IMessageEventBus<T> where T: IMessage
+    public class MessageEventBus<T> : IMessageEventBus<T>
     {
         private IMessageSubscriber<T>[] _subscribers;
         private System.Threading.Channels.Channel<T> _channel;
@@ -39,7 +39,7 @@ namespace Rin.Core.Event
             }
         }
 
-        public async Task PostAsync(T item)
+        public async ValueTask PostAsync(T item)
         {
             await _channel.Writer.WaitToWriteAsync(_cancellationTokenSource.Token);
             await _channel.Writer.WriteAsync(item, _cancellationTokenSource.Token);

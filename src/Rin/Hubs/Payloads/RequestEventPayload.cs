@@ -1,4 +1,5 @@
 ﻿using Rin.Core;
+using Rin.Core.Storage;
 
 namespace Rin.Hubs.Payloads
 {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Extensions.Primitives;
 using Rin.Core;
+using Rin.Core.Storage;
 using System;
 using System.Collections.Generic;
 using System.Net;

@@ -16,17 +16,15 @@ namespace Rin.Middlewares
 {
     internal class ChannelMiddleware
     {
-        private readonly IMessageStorage<HttpRequestRecord> _storage;
-        private readonly IMessageEventBus<HttpRequestRecord> _eventBus;
+        private readonly IRecordStorage _storage;
         private readonly RinChannel _rinChannel;
         private readonly RequestDelegate _next;
 
-        public ChannelMiddleware(RequestDelegate next, IMessageEventBus<HttpRequestRecord> eventBus, IMessageStorage<HttpRequestRecord> storage, RinChannel rinChannel, IApplicationLifetime applicationLifetime)
+        public ChannelMiddleware(RequestDelegate next, IRecordStorage storage, RinChannel rinChannel, IApplicationLifetime applicationLifetime)
         {
             _next = next;
 
             _storage = storage;
-            _eventBus = eventBus;
             _rinChannel = rinChannel;
 
             applicationLifetime.ApplicationStopping.Register(() => _rinChannel.Dispose());

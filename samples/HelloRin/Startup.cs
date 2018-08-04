@@ -35,7 +35,7 @@ namespace HelloRin
 
             services.AddRin(options =>
             {
-                options.RequestRecorder.RetentionMaxRequests = 10;
+                options.RequestRecorder.RetentionMaxRequests = 1000;
             });
         }
 
