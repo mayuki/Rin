@@ -1,8 +1,8 @@
 export interface IRinCoreHub {
   GetRecordingList(): Promise<RequestEventPayload[]>;
   GetDetailById(id: string): Promise<RequestRecordDetailPayload>;
-  GetRequestBody(id: string): Promise<any>;
-  GetResponseBody(id: string): Promise<any>;
+  GetRequestBody(id: string): Promise<BodyDataPayload>;
+  GetResponseBody(id: string): Promise<BodyDataPayload>;
 }
 
 export interface RequestEventPayload {
@@ -11,6 +11,12 @@ export interface RequestEventPayload {
   Method: string;
   Path: string;
   ResponseStatusCode: number;
+}
+
+export interface BodyDataPayload {
+  Body: string;
+  IsBase64Encoded: boolean;
+  PresentationContentType: string;
 }
 
 export interface RequestRecordDetailPayload {

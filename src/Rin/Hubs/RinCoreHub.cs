@@ -1,4 +1,5 @@
-﻿using Rin.Channel;
+﻿using Microsoft.Extensions.Primitives;
+using Rin.Channel;
 using Rin.Core;
 using Rin.Core.Event;
 using Rin.Core.Storage;
@@ -16,11 +17,13 @@ namespace Rin.Hubs
     {
         private IRecordStorage _storage;
         private RinChannel _rinChannel;
+        private IBodyDataTransformer _bodyDataTransformer;
 
-        public RinCoreHub(IRecordStorage storage, RinChannel rinChannel)
+        public RinCoreHub(IRecordStorage storage, RinChannel rinChannel, IBodyDataTransformer bodyDataTransformer)
         {
             _storage = storage;
             _rinChannel = rinChannel;
+            _bodyDataTransformer = bodyDataTransformer;
         }
 
         public RequestEventPayload[] GetRecordingList()
@@ -35,18 +38,37 @@ namespace Rin.Hubs
                 : null;
         }
 
-        public byte[] GetRequestBody(string id)
+        public BodyDataPayload GetRequestBody(string id)
         {
             return (_storage.TryGetById(id, out var value))
-                ? value.RequestBody
+                ? CreateFromRecord(value.RequestHeaders, value.RequestBody)
                 : null;
         }
 
-        public byte[] GetResponseBody(string id)
+        public BodyDataPayload GetResponseBody(string id)
         {
             return (_storage.TryGetById(id, out var value))
-                ? value.ResponseBody
+                ? CreateFromRecord(value.ResponseHeaders, value.ResponseBody)
                 : null;
+        }
+
+        private BodyDataPayload CreateFromRecord(IDictionary<string, StringValues> headers, byte[] body)
+        {
+            if (headers.TryGetValue("Content-Type", out var contentType))
+            {
+                var result = _bodyDataTransformer.Transform(body, contentType);
+
+                if (result.ContentType.StartsWith("text/") || result.ContentType.StartsWith("application/json") || result.ContentType.StartsWith("text/json"))
+                {
+                    return new BodyDataPayload(new UTF8Encoding(false).GetString(result.Body), false, result.TransformedContentType ?? "");
+                }
+                else
+                {
+                    return new BodyDataPayload(Convert.ToBase64String(result.Body), true, result.TransformedContentType ?? "");
+                }
+            }
+
+            return new BodyDataPayload(Convert.ToBase64String(body), true, "");
         }
 
         public bool Ping()

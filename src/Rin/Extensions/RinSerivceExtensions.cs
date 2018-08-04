@@ -26,6 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 new Rin.Hubs.RinCoreHub.MessageSubscriber(channel)
             });
 
+            services.AddSingleton<IBodyDataTransformer>(new BodyDataTransformerPipeline(options.Inspector.BodyDataTransformers));
             services.AddSingleton<IRecordStorage>(storage);
             services.AddSingleton<IMessageEventBus<RequestEventMessage>>(eventBus);
             services.AddSingleton<RinOptions>(options);

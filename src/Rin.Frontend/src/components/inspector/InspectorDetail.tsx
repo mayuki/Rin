@@ -65,14 +65,13 @@ export class InspectorDetail extends React.Component<IInspectorDetailProps, {}> 
   public renderResponseView() {
     const selectedRecord = this.props.inspectorStore.currentRecordDetail!;
     const headers = selectedRecord.ResponseHeaders;
-    const bodyRaw = this.props.inspectorStore.responseBody ? this.props.inspectorStore.responseBody : '';
 
     return (
       <InspectorDetailRequestResponseView
         record={selectedRecord}
         generals={[{ key: 'StatusCode', value: selectedRecord.ResponseStatusCode + '' }]}
         headers={headers}
-        bodyRaw={bodyRaw}
+        body={this.props.inspectorStore.responseBody}
       />
     );
   }
@@ -80,7 +79,6 @@ export class InspectorDetail extends React.Component<IInspectorDetailProps, {}> 
   public renderRequestView() {
     const selectedRecord = this.props.inspectorStore.currentRecordDetail!;
     const headers = { ...selectedRecord.RequestHeaders };
-    const bodyRaw = this.props.inspectorStore.requestBody ? this.props.inspectorStore.requestBody : '';
 
     const url =
       (selectedRecord.IsHttps ? 'https' : 'http') +
@@ -98,7 +96,7 @@ export class InspectorDetail extends React.Component<IInspectorDetailProps, {}> 
           { key: 'Remote Address', value: selectedRecord.RemoteIpAddress }
         ]}
         headers={headers}
-        bodyRaw={bodyRaw}
+        body={this.props.inspectorStore.requestBody}
       />
     );
   }

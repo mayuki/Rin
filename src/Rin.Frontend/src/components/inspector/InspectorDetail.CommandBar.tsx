@@ -24,7 +24,7 @@ export class InspectorDetailCommandBar extends React.Component<
     }
 
     const disableRequestDownload =
-      !this.props.inspectorStore.requestBody || this.props.inspectorStore.requestBody.length === 0;
+      !this.props.inspectorStore.requestBody || this.props.inspectorStore.requestBody.Body.length === 0;
 
     return [
       {

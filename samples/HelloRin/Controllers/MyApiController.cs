@@ -81,6 +81,34 @@ namespace HelloRin.Controllers
             return new { ValueA = bodyValueA, ValueB = bodyValueB };
         }
 
+        // Custom Content-Type response body is transformed/viewable on Inspector
+        // See RinCustomContentTypeTransformer class in this project.
+        public IActionResult CustomContentType()
+        {
+            var data = MessagePack.LZ4MessagePackSerializer.Serialize(new MyClass
+            {
+                ValueA = "ValueA12345",
+                ValueB = 123,
+                ValueC = new MyClass.InnerClass
+                {
+                    ValueD = 37564,
+                    ValueE = new[] { "Hauhau", "Maumau" }
+                },
+                ValueF = Enumerable.Range(0, 100).Select(x => new MyClass()
+                {
+                    ValueA = x.ToString(),
+                    ValueB = x,
+                    ValueC = new MyClass.InnerClass
+                    {
+                        ValueD = x * 10,
+                        ValueE = new[] { x.ToString() }
+                    }
+                }).ToArray()
+            }, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+
+            return File(data, "application/x-rin-custom");
+        }
+
         public class MyClass
         {
             public string ValueA { get; set; }

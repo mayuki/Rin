@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HelloRin.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -35,7 +36,8 @@ namespace HelloRin
 
             services.AddRin(options =>
             {
-                options.RequestRecorder.RetentionMaxRequests = 1000;
+                options.RequestRecorder.RetentionMaxRequests = 100;
+                options.Inspector.BodyDataTransformers.Add(new RinCustomContentTypeTransformer());
             });
         }
 

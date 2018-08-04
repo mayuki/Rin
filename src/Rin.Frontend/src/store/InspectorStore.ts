@@ -1,13 +1,13 @@
 import { action, computed, observable, runInAction } from 'mobx';
 import { IHubClient } from '../api/hubClient';
-import { IRinCoreHub, RequestEventPayload, RequestRecordDetailPayload } from '../api/IRinCoreHub';
+import { BodyDataPayload, IRinCoreHub, RequestEventPayload, RequestRecordDetailPayload } from '../api/IRinCoreHub';
 
 export class InspectorStore {
   @observable currentDetailView: DetailViewType = DetailViewType.Request;
   @observable selectedId: string | null = null;
   @observable query: string = '';
-  @observable requestBody: string | null = null;
-  @observable responseBody: string | null = null;
+  @observable requestBody: BodyDataPayload | null = null;
+  @observable responseBody: BodyDataPayload | null = null;
   @observable currentRecordDetail: RequestRecordDetailPayload | null;
 
   @observable items: RequestEventPayload[] = [];

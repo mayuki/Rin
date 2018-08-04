@@ -12,14 +12,14 @@ import {
 import * as React from 'react';
 import { ObjectInspector } from 'react-inspector';
 import MonacoEditor from 'react-monaco-editor';
-import { RequestRecordDetailPayload } from '../../api/IRinCoreHub';
+import { BodyDataPayload, RequestRecordDetailPayload } from '../../api/IRinCoreHub';
 import { copyTextToClipboard, getContentType, getMonacoLanguage, isImage, isJson, isText } from '../../utilities';
 
 export interface IInspectorRequestResponseViewProps {
   record: RequestRecordDetailPayload;
   generals: { key: string; value: string }[];
   headers: { [key: string]: string[] };
-  bodyRaw: string | null;
+  body: BodyDataPayload | null;
 }
 
 @observer
@@ -121,9 +121,18 @@ export class InspectorDetailRequestResponseView extends React.Component<
   }
 
   render() {
-    const contentType = this.props.record.IsCompleted && getContentType(this.props.headers);
-    const body = this.props.bodyRaw ? atob(this.props.bodyRaw) : '';
-    const hasBody = !!this.props.bodyRaw;
+    const contentType = this.props.record.IsCompleted
+      ? this.props.body != null && this.props.body.PresentationContentType !== ''
+        ? this.props.body.PresentationContentType
+        : getContentType(this.props.headers)
+      : null;
+    const body =
+      this.props.body != null
+        ? this.props.body.IsBase64Encoded
+          ? atob(this.props.body.Body)
+          : this.props.body.Body
+        : '';
+    const hasBody = this.props.body != null;
 
     return (
       <div className="inspectorRequestResponseView">
@@ -169,7 +178,7 @@ export class InspectorDetailRequestResponseView extends React.Component<
                   <>
                     {isText(contentType) && <EditorPreview contentType={contentType} body={body} />}
                     {isImage(contentType) && (
-                      <ImagePreview contentType={contentType} bodyAsBase64={this.props.bodyRaw!} />
+                      <ImagePreview contentType={contentType} bodyAsBase64={this.props.body!.Body} />
                     )}
                   </>
                 )}
