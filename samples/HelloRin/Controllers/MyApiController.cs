@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Rin.Core.Record;
 
 namespace HelloRin.Controllers
 {
@@ -107,6 +109,56 @@ namespace HelloRin.Controllers
             }, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
 
             return File(data, "application/x-msgpack");
+        }
+
+        public async Task<IActionResult> Timeline()
+        {
+            using (new TimelineScope("First"))
+            {
+                await Task.Delay(500);
+                using (new TimelineScope("Second"))
+                {
+                    await Task.Delay(500);
+                    var t1 = HogeAsync();
+                    var t2 = HogeAsync();
+                    var t3 = HogeAsync();
+                    await Task.WhenAll(t1, t2, t3);
+                }
+                await Task.Delay(500);
+            }
+
+            NewThread();
+
+            return Content("OK");
+        }
+
+        void NewThread()
+        {
+            var t = new Thread(() =>
+            {
+                using (new TimelineScope())
+                {
+                    Thread.Sleep(500);
+                }
+            });
+
+            t.Start();
+            t.Join();
+        }
+
+        async Task HogeAsync()
+        {
+            using (new TimelineScope())
+            {
+                await MogeAsync();
+            }
+        }
+        async Task MogeAsync()
+        {
+            using (new TimelineScope())
+            {
+                await Task.Delay(10);
+            }
         }
 
         public class MyClass

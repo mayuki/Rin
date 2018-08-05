@@ -30,6 +30,7 @@ namespace Rin.Core.Record
         public Exception Exception { get; internal set; }
 
         public ConcurrentQueue<TraceLogRecord> Traces { get; internal set; }
+        public TimelineScope Timeline { get; internal set; }
 
         public bool IsCompleted => TransferringCompletedAt != default(DateTime);
     }
