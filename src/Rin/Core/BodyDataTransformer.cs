@@ -6,13 +6,13 @@ namespace Rin.Core
 {
     public interface IBodyDataTransformer
     {
-        bool CanTransform(StringValues contentTypeHeaderValues);
-        BodyDataTransformResult Transform(byte[] body, StringValues contentTypeHeaderValues);
+        bool CanTransform(HttpRequestRecord record, StringValues contentTypeHeaderValues);
+        BodyDataTransformResult Transform(HttpRequestRecord record, byte[] body, StringValues contentTypeHeaderValues);
     }
 
     public abstract class BodyDataTransformer : IBodyDataTransformer
     {
-        public abstract bool CanTransform(StringValues contentTypeHeaderValues);
-        public abstract BodyDataTransformResult Transform(byte[] body, StringValues contentTypeHeaderValues);
+        public abstract bool CanTransform(HttpRequestRecord record, StringValues contentTypeHeaderValues);
+        public abstract BodyDataTransformResult Transform(HttpRequestRecord record, byte[] body, StringValues contentTypeHeaderValues);
     }
 }

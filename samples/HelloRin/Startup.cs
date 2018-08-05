@@ -37,7 +37,7 @@ namespace HelloRin
             services.AddRin(options =>
             {
                 options.RequestRecorder.RetentionMaxRequests = 100;
-                options.Inspector.BodyDataTransformers.Add(new RinCustomContentTypeTransformer());
+                options.Inspector.ResponseBodyDataTransformers.Add(new RinCustomContentTypeTransformer());
             });
         }
 

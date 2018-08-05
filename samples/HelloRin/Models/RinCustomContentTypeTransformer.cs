@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Primitives;
 using Rin.Core;
+using Rin.Core.Record;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +12,12 @@ namespace HelloRin.Models
 {
     public class RinCustomContentTypeTransformer : BodyDataTransformer
     {
-        public override bool CanTransform(StringValues contentTypeHeaderValues)
+        public override bool CanTransform(HttpRequestRecord record, StringValues contentTypeHeaderValues)
         {
             return contentTypeHeaderValues.Any(x => x == "application/x-msgpack");
         }
 
-        public override BodyDataTransformResult Transform(byte[] body, StringValues contentTypeHeaderValues)
+        public override BodyDataTransformResult Transform(HttpRequestRecord record, byte[] body, StringValues contentTypeHeaderValues)
         {
             var data = MessagePack.LZ4MessagePackSerializer.Deserialize<MyClass>(body, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
             var json = MessagePack.MessagePackSerializer.ToJson<MyClass>(data, MessagePack.Resolvers.ContractlessStandardResolver.Instance);

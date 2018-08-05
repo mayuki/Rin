@@ -18,17 +18,17 @@ namespace Rin.Middlewares
     {
         private readonly IRecordStorage _storage;
         private readonly RinChannel _rinChannel;
-        private readonly IBodyDataTransformer _bodyDataTransformer;
+        private readonly BodyDataTransformerSet _bodyDataTransformerSet;
 
         private readonly RequestDelegate _next;
 
-        public ChannelMiddleware(RequestDelegate next, IRecordStorage storage, RinChannel rinChannel, IBodyDataTransformer bodyDataTransformer, IApplicationLifetime applicationLifetime)
+        public ChannelMiddleware(RequestDelegate next, IRecordStorage storage, RinChannel rinChannel, BodyDataTransformerSet bodyDataTransformerSet, IApplicationLifetime applicationLifetime)
         {
             _next = next;
 
             _storage = storage;
             _rinChannel = rinChannel;
-            _bodyDataTransformer = bodyDataTransformer;
+            _bodyDataTransformerSet = bodyDataTransformerSet;
 
             applicationLifetime.ApplicationStopping.Register(() => _rinChannel.Dispose());
         }
@@ -39,7 +39,7 @@ namespace Rin.Middlewares
             {
                 var conn = await context.WebSockets.AcceptWebSocketAsync();
 
-                var hub = new RinCoreHub(_storage, _rinChannel, _bodyDataTransformer);
+                var hub = new RinCoreHub(_storage, _rinChannel, _bodyDataTransformerSet);
                 await _rinChannel.ManageAsync(conn, hub);
             }
             else

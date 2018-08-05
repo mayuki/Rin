@@ -125,6 +125,13 @@ namespace HelloRin.Controllers
                     await Task.WhenAll(t1, t2, t3);
                 }
                 await Task.Delay(500);
+                using (new TimelineScope("Third"))
+                {
+                    await Task.Delay(500);
+                    await HogeAsync();
+                    await Task.Delay(500);
+                    await HogeAsync();
+                }
             }
 
             NewThread();

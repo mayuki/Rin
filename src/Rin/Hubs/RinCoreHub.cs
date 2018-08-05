@@ -17,13 +17,13 @@ namespace Rin.Hubs
     {
         private IRecordStorage _storage;
         private RinChannel _rinChannel;
-        private IBodyDataTransformer _bodyDataTransformer;
+        private BodyDataTransformerSet _bodyDataTransformerSet;
 
-        public RinCoreHub(IRecordStorage storage, RinChannel rinChannel, IBodyDataTransformer bodyDataTransformer)
+        public RinCoreHub(IRecordStorage storage, RinChannel rinChannel, BodyDataTransformerSet bodyDataTransformerSet)
         {
             _storage = storage;
             _rinChannel = rinChannel;
-            _bodyDataTransformer = bodyDataTransformer;
+            _bodyDataTransformerSet = bodyDataTransformerSet;
         }
 
         public RequestEventPayload[] GetRecordingList()
@@ -41,22 +41,22 @@ namespace Rin.Hubs
         public BodyDataPayload GetRequestBody(string id)
         {
             return (_storage.TryGetById(id, out var value))
-                ? CreateFromRecord(value.RequestHeaders, value.RequestBody)
+                ? CreateFromRecord(value, value.RequestHeaders, value.RequestBody, _bodyDataTransformerSet.Request)
                 : null;
         }
 
         public BodyDataPayload GetResponseBody(string id)
         {
             return (_storage.TryGetById(id, out var value))
-                ? CreateFromRecord(value.ResponseHeaders, value.ResponseBody)
+                ? CreateFromRecord(value, value.ResponseHeaders, value.ResponseBody, _bodyDataTransformerSet.Response)
                 : null;
         }
 
-        private BodyDataPayload CreateFromRecord(IDictionary<string, StringValues> headers, byte[] body)
+        private BodyDataPayload CreateFromRecord(HttpRequestRecord record, IDictionary<string, StringValues> headers, byte[] body, IBodyDataTransformer transformer)
         {
             if (headers.TryGetValue("Content-Type", out var contentType))
             {
-                var result = _bodyDataTransformer.Transform(body, contentType);
+                var result = transformer.Transform(record, body, contentType);
 
                 if (result.ContentType.StartsWith("text/") || result.ContentType.StartsWith("application/json") || result.ContentType.StartsWith("text/json"))
                 {
