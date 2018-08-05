@@ -1,5 +1,5 @@
 # Rin
-**R**equest/response **In**spector for ASP.NET Core. like Fiddler on a web server.
+**R**equest/response **In**spector for ASP.NET Core. like Glimpse and Fiddler.
 
 Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured data. It's useful tool to debug your Web application.
 
