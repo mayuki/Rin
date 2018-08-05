@@ -1,4 +1,4 @@
-﻿namespace Rin.Core.Storage
+﻿namespace Rin.Core.Record
 {
     public interface IRecord
     {

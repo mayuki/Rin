@@ -3,7 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
-namespace Rin.Core.Storage
+namespace Rin.Core.Record
 {
     public interface IRecordStorage : IMessageSubscriber<RequestEventMessage>
     {

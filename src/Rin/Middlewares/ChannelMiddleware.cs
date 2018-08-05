@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Rin.Channel;
 using Rin.Core;
 using Rin.Core.Event;
-using Rin.Core.Storage;
+using Rin.Core.Record;
 using Rin.Hubs;
 using System;
 using System.Collections.Generic;

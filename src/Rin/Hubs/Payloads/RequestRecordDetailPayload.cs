@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Extensions.Primitives;
 using Rin.Core;
-using Rin.Core.Storage;
+using Rin.Core.Record;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -32,6 +33,7 @@ namespace Rin.Hubs.Payloads
         public Exception Exception { get; private set; }
 
         public TraceLogRecord[] Traces { get; private set; }
+        public TimelineData Timeline { get; private set; }
 
         public RequestRecordDetailPayload(HttpRequestRecord record)
         {
@@ -55,6 +57,23 @@ namespace Rin.Hubs.Payloads
 
             Exception = record.Exception;
             Traces = record.Traces.ToArray();
+            Timeline = new TimelineData(record.Timeline);
+        }
+
+        public class TimelineData
+        {
+            public DateTime BeginTime { get; }
+            public long Duration { get; }
+            public string Name { get; }
+            public TimelineData[] Children { get; }
+
+            public TimelineData(TimelineScope scope)
+            {
+                BeginTime = scope.BeginTime;
+                Duration = (long)scope.Duration.TotalMilliseconds;
+                Name = scope.Name;
+                Children = scope.Children.Select(x => new TimelineData(x)).ToArray();
+            }
         }
     }
 }

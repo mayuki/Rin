@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Primitives;
-using Rin.Core.Storage;
+using Rin.Core.Record;
 using System.Linq;
 
 namespace Rin.Core

@@ -1,5 +1,5 @@
 ﻿using Rin.Core;
-using Rin.Core.Storage;
+using Rin.Core.Record;
 
 namespace Rin.Hubs.Payloads
 {

@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Rin.Core.Storage;
+using Rin.Core.Record;
 using Rin.Features;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Rin.Core.Diagnostics
+namespace Rin.Logging
 {
     internal class RinLogger : ILogger
     {

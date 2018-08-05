@@ -1,5 +1,5 @@
 ﻿using Rin.Core;
-using Rin.Core.Storage;
+using Rin.Core.Record;
 using Rin.IO;
 using System;
 using System.Collections.Generic;

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Rin.Core.Diagnostics;
+﻿using Rin.Logging;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,7 +1,7 @@
 ﻿using Rin.Channel;
 using Rin.Core;
 using Rin.Core.Event;
-using Rin.Core.Storage;
+using Rin.Core.Record;
 using System;
 using System.Collections.Generic;
 using System.Linq;
