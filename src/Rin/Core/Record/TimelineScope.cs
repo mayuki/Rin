@@ -19,18 +19,20 @@ namespace Rin.Core.Record
 
         public TimelineScope Parent { get; }
         public string Name { get; }
+        public string Category { get; }
 
         public IReadOnlyCollection<TimelineScope> Children => _children.IsValueCreated ? _children.Value : (IReadOnlyCollection<TimelineScope>)Array.Empty<TimelineScope>();
 
         public static TimelineScope Prepare()
         {
-            CurrentScope.Value = new TimelineScope("Root");
+            CurrentScope.Value = new TimelineScope("Root", TimelineScopeCategory.Root);
             return CurrentScope.Value;
         }
 
-        public TimelineScope([CallerMemberName]string name = "")
+        public TimelineScope([CallerMemberName]string name = "", string category = TimelineScopeCategory.Method)
         {
             BeginTime = DateTime.Now;
+            Category = category;
             Name = name;
             Parent = CurrentScope.Value;
 
@@ -47,10 +49,50 @@ namespace Rin.Core.Record
             _children.Value.Enqueue(s);
         }
 
-        public void Dispose()
+        public void Compelte()
         {
+            if (CurrentScope.Value != this) return;
+
             Duration = DateTime.Now - BeginTime;
             CurrentScope.Value = Parent;
         }
+
+        void IDisposable.Dispose()
+        {
+            Compelte();
+        }
+    }
+
+    /// <summary>
+    /// Pre-defined TimelineScope categories
+    /// </summary>
+    public static class TimelineScopeCategory
+    {
+        internal const string Root = "Rin.Timeline.Root";
+
+        /// <summary>
+        /// Method Call events.
+        /// </summary>
+        public const string Method = "Rin.Timeline.Method";
+
+        /// <summary>
+        /// Data access events.
+        /// </summary>
+        public const string Data = "Rin.Timeline.Data";
+
+        /// <summary>
+        /// ASP.NET Core common events.
+        /// </summary>
+        public const string AspNetCoreCommon = "Rin.Timeline.AspNetCore.Common";
+
+        /// <summary>
+        /// ASP.NET MVC Core view events.
+        /// </summary>
+        public const string AspNetCoreMvcView = "Rin.Timeline.AspNetCore.Mvc.View";
+
+        /// <summary>
+        /// ASP.NET MVC Core action events.
+        /// </summary>
+        public const string AspNetCoreMvcAction = "Rin.Timeline.AspNetCore.Mvc.Action";
     }
 }

@@ -22,15 +22,17 @@ namespace Rin.Core.Record
         public IDictionary<string, StringValues> RequestHeaders { get; internal set; }
         public byte[] ResponseBody { get; internal set; }
         public IDictionary<string, StringValues> ResponseHeaders { get; internal set; }
+
         public DateTime RequestReceivedAt { get; internal set; }
-        public DateTime ProcessingStartedAt { get; internal set; }
-        public DateTime ProcessingCompletedAt { get; internal set; }
-        public DateTime TransferringStartedAt { get; internal set; }
         public DateTime TransferringCompletedAt { get; internal set; }
+
         public Exception Exception { get; internal set; }
 
         public ConcurrentQueue<TraceLogRecord> Traces { get; internal set; }
         public TimelineScope Timeline { get; internal set; }
+
+        internal TimelineScope Processing { get; set; }
+        internal TimelineScope Transferring { get; set; }
 
         public bool IsCompleted => TransferringCompletedAt != default(DateTime);
     }

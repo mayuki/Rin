@@ -91,7 +91,12 @@ export class InspectorStore {
   ready(hubClient: IHubClient & IRinCoreHub) {
     this.hubClient = hubClient;
     this.hubClient.on('reconnecting', () => {
-      runInAction(() => this.fetchItemsAsync());
+      runInAction(() => {
+        this.requestBody = null;
+        this.responseBody = null;
+        this.currentRecordDetail = null;
+        this.fetchItemsAsync();
+      });
     });
 
     this.hubClient.on('RequestBegin', args => {

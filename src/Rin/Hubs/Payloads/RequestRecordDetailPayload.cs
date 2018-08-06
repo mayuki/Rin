@@ -50,9 +50,6 @@ namespace Rin.Hubs.Payloads
             RequestHeaders = record.RequestHeaders;
             ResponseHeaders = record.ResponseHeaders;
             RequestReceivedAt = record.RequestReceivedAt;
-            ProcessingStartedAt = record.ProcessingStartedAt;
-            ProcessingCompletedAt = record.ProcessingCompletedAt;
-            TransferringStartedAt = record.TransferringStartedAt;
             TransferringCompletedAt = record.TransferringCompletedAt;
 
             Exception = record.Exception;
@@ -64,6 +61,7 @@ namespace Rin.Hubs.Payloads
         {
             public DateTime BeginTime { get; }
             public long Duration { get; }
+            public string Category { get; }
             public string Name { get; }
             public TimelineData[] Children { get; }
 
@@ -71,6 +69,7 @@ namespace Rin.Hubs.Payloads
             {
                 BeginTime = scope.BeginTime;
                 Duration = (long)scope.Duration.TotalMilliseconds;
+                Category = scope.Category;
                 Name = scope.Name;
                 Children = scope.Children.Select(x => new TimelineData(x)).ToArray();
             }

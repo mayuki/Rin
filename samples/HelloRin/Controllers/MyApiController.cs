@@ -125,9 +125,9 @@ namespace HelloRin.Controllers
                     await Task.WhenAll(t1, t2, t3);
                 }
                 await Task.Delay(500);
-                using (new TimelineScope("Third"))
+                using (new TimelineScope("Third", TimelineScopeCategory.Data))
                 {
-                    await Task.Delay(500);
+                    await Task.Delay(120);
                     await HogeAsync();
                     await Task.Delay(500);
                     await HogeAsync();

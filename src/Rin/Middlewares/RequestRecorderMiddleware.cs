@@ -66,7 +66,7 @@ namespace Rin.Middlewares
             response.OnStarting(OnStarting, record);
             response.OnCompleted(OnCompleted, record);
 
-            record.ProcessingStartedAt = DateTime.Now;
+            record.Processing = new TimelineScope("Processing", TimelineScopeCategory.AspNetCoreCommon);
             try
             {
                 await _next(context);
@@ -78,8 +78,8 @@ namespace Rin.Middlewares
             }
             finally
             {
-                record.ProcessingCompletedAt = DateTime.Now;
-                record.Timeline.Dispose();
+                record.Processing.Compelte();
+                record.Timeline.Compelte();
 
                 record.ResponseStatusCode = response.StatusCode;
                 record.ResponseHeaders = response.Headers.ToDictionary(k => k.Key, v => v.Value);
@@ -104,7 +104,7 @@ namespace Rin.Middlewares
         private Task OnStarting(object state)
         {
             var record = ((HttpRequestRecord)state);
-            record.TransferringStartedAt = DateTime.Now;
+            record.Transferring = new TimelineScope("Transferring", TimelineScopeCategory.AspNetCoreCommon);
             return Task.CompletedTask;
         }
 
@@ -113,6 +113,7 @@ namespace Rin.Middlewares
             var record = ((HttpRequestRecord)state);
 
             record.TransferringCompletedAt = DateTime.Now;
+            record.Transferring.Compelte();
 
             return _eventBus.PostAsync(new RequestEventMessage(record, RequestEvent.CompleteRequest)).AsTask();
         }

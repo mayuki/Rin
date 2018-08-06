@@ -43,6 +43,7 @@ export interface RequestRecordDetailPayload {
 
 export interface TimelineData {
   BeginTime: string;
+  Category: string;
   Name: string;
   Duration: number;
   Children: TimelineData[];
