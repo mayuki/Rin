@@ -14,6 +14,7 @@ namespace Rin.Core.Record
 
         private Lazy<ConcurrentQueue<TimelineScope>> _children { get; } = new Lazy<ConcurrentQueue<TimelineScope>>(() => new ConcurrentQueue<TimelineScope>(), LazyThreadSafetyMode.PublicationOnly);
         private TimelineScope _parent { get; }
+        private bool _completed;
 
         public DateTime BeginTime { get; private set; }
         public TimeSpan Duration { get; private set; }
@@ -76,8 +77,9 @@ namespace Rin.Core.Record
 
         public void Complete()
         {
-            if (CurrentScope.Value != this) return;
+            if (_completed) return;
 
+            _completed = true;
             Duration = DateTime.Now - BeginTime;
             CurrentScope.Value = _parent;
         }
