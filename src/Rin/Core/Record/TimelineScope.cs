@@ -7,17 +7,38 @@ using System.Threading;
 
 namespace Rin.Core.Record
 {
+    public sealed class NullTimelineScope : ITimelineScope
+    {
+        public static NullTimelineScope Instance { get; } = new NullTimelineScope();
+
+        public string Name => String.Empty;
+
+        public string Category => String.Empty;
+
+        public string Data => null;
+
+        public IReadOnlyCollection<TimelineScope> Children => Array.Empty<TimelineScope>();
+
+        public void Complete()
+        {
+        }
+
+        public void Dispose()
+        {
+        }
+    }
+
     [DebuggerDisplay("TimelineScope: {Name}")]
-    public class TimelineScope : IDisposable
+    public class TimelineScope : ITimelineScope
     {
         private static readonly AsyncLocal<TimelineScope> CurrentScope = new AsyncLocal<TimelineScope>();
 
         private Lazy<ConcurrentQueue<TimelineScope>> _children { get; } = new Lazy<ConcurrentQueue<TimelineScope>>(() => new ConcurrentQueue<TimelineScope>(), LazyThreadSafetyMode.PublicationOnly);
+        private TimelineScope _parent { get; }
 
         public DateTime BeginTime { get; private set; }
         public TimeSpan Duration { get; private set; }
 
-        public TimelineScope Parent { get; }
         public string Name { get; }
         public string Category { get; }
         public string Data { get; set; }
@@ -26,24 +47,38 @@ namespace Rin.Core.Record
 
         public static TimelineScope Prepare()
         {
-            CurrentScope.Value = new TimelineScope("Root", TimelineScopeCategory.Root);
+            CurrentScope.Value = new TimelineScope("Root", TimelineScopeCategory.Root, null);
             return CurrentScope.Value;
         }
 
-        public TimelineScope([CallerMemberName]string name = "", string category = TimelineScopeCategory.Method, string data = null)
+        private TimelineScope(string name, string category, string data)
         {
             BeginTime = DateTime.Now;
             Category = category;
             Name = name;
             Data = data;
-            Parent = CurrentScope.Value;
+            _parent = CurrentScope.Value;
 
-            if (Parent != null)
+            if (_parent != null)
             {
-                Parent.AddChild(this);
+                _parent.AddChild(this);
             }
 
             CurrentScope.Value = this;
+        }
+
+        /// <summary>
+        /// Create a instance of TimelineScope. When Rin is disabled on production environment, this method returns NullScope.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="category"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static TimelineScope Create([CallerMemberName]string name = "", string category = TimelineScopeCategory.Method, string data = null)
+        {
+            // TODO: Disable option
+            // return NullTimelineScope.Instance;
+            return new TimelineScope(name, category, data);
         }
 
         private void AddChild(TimelineScope s)
@@ -56,7 +91,7 @@ namespace Rin.Core.Record
             if (CurrentScope.Value != this) return;
 
             Duration = DateTime.Now - BeginTime;
-            CurrentScope.Value = Parent;
+            CurrentScope.Value = _parent;
         }
 
         void IDisposable.Dispose()

@@ -113,10 +113,10 @@ namespace HelloRin.Controllers
 
         public async Task<IActionResult> Timeline()
         {
-            using (new TimelineScope("First"))
+            using (TimelineScope.Create("First"))
             {
                 await Task.Delay(500);
-                using (new TimelineScope("Second"))
+                using (TimelineScope.Create("Second"))
                 {
                     await Task.Delay(500);
                     var t1 = HogeAsync();
@@ -125,7 +125,7 @@ namespace HelloRin.Controllers
                     await Task.WhenAll(t1, t2, t3);
                 }
                 await Task.Delay(500);
-                using (new TimelineScope("Third", TimelineScopeCategory.Data))
+                using (TimelineScope.Create("Third", TimelineScopeCategory.Data))
                 {
                     await Task.Delay(120);
                     await HogeAsync();
@@ -143,7 +143,7 @@ namespace HelloRin.Controllers
         {
             var t = new Thread(() =>
             {
-                using (new TimelineScope())
+                using (TimelineScope.Create())
                 {
                     Thread.Sleep(500);
                 }
@@ -155,14 +155,14 @@ namespace HelloRin.Controllers
 
         async Task HogeAsync()
         {
-            using (new TimelineScope())
+            using (TimelineScope.Create())
             {
                 await MogeAsync();
             }
         }
         async Task MogeAsync()
         {
-            using (new TimelineScope())
+            using (TimelineScope.Create())
             {
                 await Task.Delay(10);
             }

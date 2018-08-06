@@ -66,7 +66,7 @@ namespace Rin.Middlewares
             response.OnStarting(OnStarting, record);
             response.OnCompleted(OnCompleted, record);
 
-            record.Processing = new TimelineScope("Processing", TimelineScopeCategory.AspNetCoreCommon);
+            record.Processing = TimelineScope.Create("Processing", TimelineScopeCategory.AspNetCoreCommon);
             try
             {
                 await _next(context);
@@ -104,7 +104,7 @@ namespace Rin.Middlewares
         private Task OnStarting(object state)
         {
             var record = ((HttpRequestRecord)state);
-            record.Transferring = new TimelineScope("Transferring", TimelineScopeCategory.AspNetCoreCommon);
+            record.Transferring = TimelineScope.Create("Transferring", TimelineScopeCategory.AspNetCoreCommon);
             return Task.CompletedTask;
         }
 
