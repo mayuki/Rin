@@ -7,6 +7,7 @@ import { InspectorDetailCommandBar } from './InspectorDetail.CommandBar';
 import './InspectorDetail.css';
 import { InspectorDetailExceptionView } from './InspectorDetail.ExceptionView';
 import { InspectorDetailRequestResponseView } from './InspectorDetail.RequestResponseView';
+import { Timeline } from './InspectorDetail.Timeline';
 import { InspectorDetailTraceView } from './InspectorDetail.TraceView';
 
 export interface IInspectorDetailProps {
@@ -22,6 +23,9 @@ export class InspectorDetail extends React.Component<IInspectorDetailProps, {}> 
 
   public render() {
     const selectedRecord = this.props.inspectorStore.currentRecordDetail;
+
+    const whenCompleted = (c: () => any) => (selectedRecord != null && selectedRecord.IsCompleted ? c() : <></>);
+
     return (
       <div className="inspectorDetail">
         <div className="inspectorDetail_CommandBar">
@@ -32,12 +36,12 @@ export class InspectorDetail extends React.Component<IInspectorDetailProps, {}> 
             <div className="inspectorDetail_Pivot">
               <Pivot selectedKey={this.props.inspectorStore.currentDetailView} onLinkClick={this.onPivotItemClicked}>
                 <PivotItem itemKey={DetailViewType.Request} headerText="Request" itemIcon="CloudUpload" />
-                {selectedRecord.IsCompleted ? (
+                {whenCompleted(() => (
                   <PivotItem itemKey={DetailViewType.Response} headerText="Response" itemIcon="CloudDownload" />
-                ) : (
-                  <></>
-                )}
-                {/*<PivotItem itemKey={DetailViewType.Timings} headerText="Timings" itemIcon="TimelineProgress" />*/}
+                ))}
+                {whenCompleted(() => (
+                  <PivotItem itemKey={DetailViewType.Timeline} headerText="Timeline" itemIcon="TimelineProgress" />
+                ))}
                 <PivotItem itemKey={DetailViewType.Trace} headerText="Trace" itemIcon="TimeEntry" />
                 {selectedRecord.Exception ? (
                   <PivotItem itemKey={DetailViewType.Exception} headerText="Exception" itemIcon="StatusErrorFull" />
@@ -49,6 +53,9 @@ export class InspectorDetail extends React.Component<IInspectorDetailProps, {}> 
             <div className="inspectorDetail_DetailView">
               {this.props.inspectorStore.currentDetailView === DetailViewType.Request && this.renderRequestView()}
               {this.props.inspectorStore.currentDetailView === DetailViewType.Response && this.renderResponseView()}
+              {this.props.inspectorStore.currentDetailView === DetailViewType.Timeline && (
+                <Timeline data={selectedRecord.Timeline} />
+              )}
               {this.props.inspectorStore.currentDetailView === DetailViewType.Trace && (
                 <InspectorDetailTraceView record={selectedRecord} />
               )}

@@ -3,14 +3,21 @@ import { IHubClient } from '../api/hubClient';
 import { BodyDataPayload, IRinCoreHub, RequestEventPayload, RequestRecordDetailPayload } from '../api/IRinCoreHub';
 
 export class InspectorStore {
-  @observable currentDetailView: DetailViewType = DetailViewType.Request;
-  @observable selectedId: string | null = null;
-  @observable query: string = '';
-  @observable requestBody: BodyDataPayload | null = null;
-  @observable responseBody: BodyDataPayload | null = null;
-  @observable currentRecordDetail: RequestRecordDetailPayload | null;
+  @observable
+  currentDetailView: DetailViewType = DetailViewType.Request;
+  @observable
+  selectedId: string | null = null;
+  @observable
+  query: string = '';
+  @observable
+  requestBody: BodyDataPayload | null = null;
+  @observable
+  responseBody: BodyDataPayload | null = null;
+  @observable
+  currentRecordDetail: RequestRecordDetailPayload | null;
 
-  @observable items: RequestEventPayload[] = [];
+  @observable
+  items: RequestEventPayload[] = [];
 
   private hubClient: IHubClient & IRinCoreHub;
   private requestEventQueue: { event: 'RequestBegin' | 'RequestEnd'; args: any }[] = [];
@@ -129,7 +136,7 @@ export class InspectorStore {
 export enum DetailViewType {
   Request = 'Request',
   Response = 'Response',
-  Timing = 'Timing',
+  Timeline = 'Timeline',
   Trace = 'Trace',
   Exception = 'Exception'
 }

@@ -38,6 +38,14 @@ export interface RequestRecordDetailPayload {
   TransferringCompletedAt: string;
   Exception: any;
   Traces: { DateTime: string; LogLevel: LogLevel; Message: string }[];
+  Timeline: TimelineData;
+}
+
+export interface TimelineData {
+  BeginTime: string;
+  Name: string;
+  Duration: number;
+  Children: TimelineData[];
 }
 
 export interface TraceLogRecord {
