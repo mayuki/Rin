@@ -13,6 +13,7 @@ Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured 
 - 🌎 Inspection from Web browser
     - ⚡ Realtime (powered by WebSocket)
     - ⏲ Timeline view
+        - ![](docs/images/Screenshot-02.png)
     - 🔍 Preview a request/response body
         - JSON as tree view
         - Image view (PNG, JPEG, SVG, ...)
