@@ -12,12 +12,12 @@ Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured 
         - Unhandled Exception
 - 🌎 Inspection from Web browser
     - ⚡ Realtime (powered by WebSocket)
-    - ⏲ Timeline view
-        - ![](docs/images/Screenshot-02.png)
+    - ⏲ Timeline view<br>![](docs/images/Screenshot-02.png)
     - 🔍 Preview a request/response body
-        - JSON as tree view
+        - JSON as tree view<br>![](docs/images/Screenshot-03.png)
         - Image view (PNG, JPEG, SVG, ...)
         - Syntax highligting (powered by Monaco Editor)
+    - 📝 View trace logs
 
 # Requirements
 - .NET Core 2.0 or later
