@@ -14,7 +14,8 @@
   .inspectorFrame .leftPane {
     grid-column: 1;
     height: calc(100vh - 48px);
-    overflow: hidden scroll;
+    overflow-x: hidden;
+    overflow-y: scroll;
     border-right: 1px solid #ccc;
 
     display: grid;
