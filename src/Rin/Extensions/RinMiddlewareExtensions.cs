@@ -1,6 +1,8 @@
 ﻿using Rin.Core;
+using Rin.DiagnosticListeners;
 using Rin.Middlewares;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +15,7 @@ namespace Microsoft.AspNetCore.Builder
         {
             app.UseRinInspector();
             app.UseRinRecorder();
+            app.UseRinDiagnosticsListener();
         }
 
         private static void UseRinInspector(this IApplicationBuilder app)
@@ -28,6 +31,12 @@ namespace Microsoft.AspNetCore.Builder
                 // ResourcesMiddleware must be last at pipeline.
                 branch.UseRinEmbeddedResources();
             });
+        }
+
+        private static void UseRinDiagnosticsListener(this IApplicationBuilder app)
+        {
+            var diagnosticListener = app.ApplicationServices.GetService(typeof(DiagnosticListener)) as DiagnosticListener;
+            diagnosticListener.SubscribeWithAdapter(new AspNetMvcCoreDiagnosticListener());
         }
 
         private static void UseRinDownloadEndpoints(this IApplicationBuilder app)

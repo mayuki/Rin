@@ -61,7 +61,7 @@
     border-color: #c55056;
     background-color: #c55056;
 }
-.timelineSpan[data-rin-timeline-category='Rin.Timeline.AspNetCore.Common'] .timelineSpan_bar {
+.timelineSpan[data-rin-timeline-category^='Rin.Timeline.AspNetCore.'] .timelineSpan_bar {
     border-color: #79a7c9;
     background-color: #79a7c9;
 }

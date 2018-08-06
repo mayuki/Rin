@@ -27,4 +27,10 @@
     <PackageReference Include="System.Threading.Channels" Version="4.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DiagnosticAdapter">
+      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.diagnosticadapter\2.1.0\lib\netcoreapp2.0\Microsoft.Extensions.DiagnosticAdapter.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -116,6 +116,11 @@ namespace Rin.Core.Record
         public const string AspNetCoreMvcView = "Rin.Timeline.AspNetCore.Mvc.View";
 
         /// <summary>
+        /// ASP.NET MVC Core result events.
+        /// </summary>
+        public const string AspNetCoreMvcResult = "Rin.Timeline.AspNetCore.Mvc.Result";
+
+        /// <summary>
         /// ASP.NET MVC Core action events.
         /// </summary>
         public const string AspNetCoreMvcAction = "Rin.Timeline.AspNetCore.Mvc.Action";
