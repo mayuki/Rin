@@ -78,8 +78,8 @@ namespace Rin.Middlewares
             }
             finally
             {
-                record.Processing.Compelte();
-                record.Timeline.Compelte();
+                record.Processing.Complete();
+                record.Timeline.Complete();
 
                 record.ResponseStatusCode = response.StatusCode;
                 record.ResponseHeaders = response.Headers.ToDictionary(k => k.Key, v => v.Value);
@@ -113,7 +113,7 @@ namespace Rin.Middlewares
             var record = ((HttpRequestRecord)state);
 
             record.TransferringCompletedAt = DateTime.Now;
-            record.Transferring.Compelte();
+            record.Transferring.Complete();
 
             return _eventBus.PostAsync(new RequestEventMessage(record, RequestEvent.CompleteRequest)).AsTask();
         }

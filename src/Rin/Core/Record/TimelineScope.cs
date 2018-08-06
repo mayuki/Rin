@@ -51,7 +51,7 @@ namespace Rin.Core.Record
             _children.Value.Enqueue(s);
         }
 
-        public void Compelte()
+        public void Complete()
         {
             if (CurrentScope.Value != this) return;
 
@@ -61,7 +61,7 @@ namespace Rin.Core.Record
 
         void IDisposable.Dispose()
         {
-            Compelte();
+            Complete();
         }
     }
 
