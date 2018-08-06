@@ -7,27 +7,6 @@ using System.Threading;
 
 namespace Rin.Core.Record
 {
-    public sealed class NullTimelineScope : ITimelineScope
-    {
-        public static NullTimelineScope Instance { get; } = new NullTimelineScope();
-
-        public string Name => String.Empty;
-
-        public string Category => String.Empty;
-
-        public string Data => null;
-
-        public IReadOnlyCollection<TimelineScope> Children => Array.Empty<TimelineScope>();
-
-        public void Complete()
-        {
-        }
-
-        public void Dispose()
-        {
-        }
-    }
-
     [DebuggerDisplay("TimelineScope: {Name}")]
     public class TimelineScope : ITimelineScope
     {
@@ -45,7 +24,11 @@ namespace Rin.Core.Record
 
         public IReadOnlyCollection<TimelineScope> Children => _children.IsValueCreated ? _children.Value : (IReadOnlyCollection<TimelineScope>)Array.Empty<TimelineScope>();
 
-        public static TimelineScope Prepare()
+        /// <summary>
+        /// Prepare a TimelineScope for current ExecutionContext (async execution flow).
+        /// </summary>
+        /// <returns></returns>
+        internal static TimelineScope Prepare()
         {
             CurrentScope.Value = new TimelineScope("Root", TimelineScopeCategory.Root, null);
             return CurrentScope.Value;
@@ -68,16 +51,21 @@ namespace Rin.Core.Record
         }
 
         /// <summary>
-        /// Create a instance of TimelineScope. When Rin is disabled on production environment, this method returns NullScope.
+        /// Create a instance of TimelineScope. When Rin is disabled on production environment, this method returns immutable NullScope.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="category"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static TimelineScope Create([CallerMemberName]string name = "", string category = TimelineScopeCategory.Method, string data = null)
+        public static ITimelineScope Create([CallerMemberName]string name = "", string category = TimelineScopeCategory.Method, string data = null)
         {
-            // TODO: Disable option
-            // return NullTimelineScope.Instance;
+            if (CurrentScope.Value == null) return NullTimelineScope.Instance;
+
+            return ((ITimelineScope)CurrentScope.Value).Create(name, category, data);
+        }
+
+        ITimelineScope ITimelineScope.Create(string name, string category, string data)
+        {
             return new TimelineScope(name, category, data);
         }
 

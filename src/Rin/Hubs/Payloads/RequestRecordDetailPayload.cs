@@ -66,7 +66,7 @@ namespace Rin.Hubs.Payloads
             public string Data { get; }
             public TimelineData[] Children { get; }
 
-            public TimelineData(TimelineScope scope)
+            public TimelineData(ITimelineScope scope)
             {
                 BeginTime = scope.BeginTime;
                 Duration = (long)scope.Duration.TotalMilliseconds;
