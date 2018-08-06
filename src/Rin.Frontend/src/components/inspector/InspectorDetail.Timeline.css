@@ -53,8 +53,9 @@
   border: 1px solid #555;
   background-color: #555;
   box-sizing: border-box;
-  margin-top: 4px;
-  margin-bottom: 4px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  border-radius: 2px;
 }
 
 .timelineSpan[data-rin-timeline-category='Rin.Timeline.Data'] .timelineSpan_bar {
@@ -64,4 +65,8 @@
 .timelineSpan[data-rin-timeline-category^='Rin.Timeline.AspNetCore.'] .timelineSpan_bar {
     border-color: #79a7c9;
     background-color: #79a7c9;
+}
+.timelineSpan[data-rin-timeline-category^='Rin.Timeline.AspNetCore.Mvc.'] .timelineSpan_bar {
+    border-color: #9ec7be;
+    background-color: #9ec7be;
 }
