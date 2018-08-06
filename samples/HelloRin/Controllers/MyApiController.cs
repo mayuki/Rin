@@ -123,22 +123,22 @@ namespace HelloRin.Controllers
         {
             using (TimelineScope.Create("First"))
             {
-                await Task.Delay(500);
+                await Task.Delay(50);
                 using (TimelineScope.Create("Second"))
                 {
-                    await Task.Delay(500);
-                    var t1 = HogeAsync();
-                    var t2 = HogeAsync();
-                    var t3 = HogeAsync();
+                    await Task.Delay(100);
+                    var t1 = HogeAsync(12);
+                    var t2 = HogeAsync(34);
+                    var t3 = HogeAsync(56);
                     await Task.WhenAll(t1, t2, t3);
                 }
-                await Task.Delay(500);
+                await Task.Delay(85);
                 using (TimelineScope.Create("Third", TimelineScopeCategory.Data))
                 {
                     await Task.Delay(120);
-                    await HogeAsync();
-                    await Task.Delay(500);
-                    await HogeAsync();
+                    await MogeAsync(22);
+                    await Task.Delay(80);
+                    await MogeAsync(33);
                 }
             }
 
@@ -153,7 +153,7 @@ namespace HelloRin.Controllers
             {
                 using (TimelineScope.Create())
                 {
-                    Thread.Sleep(500);
+                    Thread.Sleep(120);
                 }
             });
 
@@ -161,18 +161,19 @@ namespace HelloRin.Controllers
             t.Join();
         }
 
-        async Task HogeAsync()
+        async Task HogeAsync(int delay)
         {
             using (TimelineScope.Create())
             {
-                await MogeAsync();
+                await Task.Delay(delay);
+                await MogeAsync(delay * 2);
             }
         }
-        async Task MogeAsync()
+        async Task MogeAsync(int delay)
         {
             using (TimelineScope.Create())
             {
-                await Task.Delay(10);
+                await Task.Delay(delay);
             }
         }
 
