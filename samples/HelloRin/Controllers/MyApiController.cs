@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using HelloRin.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -109,6 +111,12 @@ namespace HelloRin.Controllers
             }, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
 
             return File(data, "application/x-msgpack");
+        }
+
+        public IActionResult LongResult()
+        {
+            var stream = new MemoryStream(new byte[1024 * 1024 * 1]);
+            return File(new SlowStream(stream), "application/octet-stream");
         }
 
         public async Task<IActionResult> Timeline()
