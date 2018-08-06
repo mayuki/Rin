@@ -27,14 +27,12 @@ namespace Rin.DiagnosticListeners
         [DiagnosticName("Microsoft.AspNetCore.Mvc.BeforeOnResultExecuting")]
         public void OnBeforeOnResultExecuting()
         {
-            Console.WriteLine("BeforeOnResultExecuting");
-            _onResultScope.Value = TimelineScope.Create("ResultExecuting", TimelineScopeCategory.AspNetCoreMvcView);
+            _onResultScope.Value = TimelineScope.Create("ResultExecuting", TimelineScopeCategory.AspNetCoreMvcResult);
         }
 
-        [DiagnosticName("Microsoft.AspNetCore.Mvc.AfterOnResultExecuting")]
-        public void OnAfterOnResultExecuting()
+        [DiagnosticName("Microsoft.AspNetCore.Mvc.AfterOnResultExecuted")]
+        public void OnAfterOnResultExecuted()
         {
-            Console.WriteLine("AfterOnResultExecuting");
             _onResultScope?.Value?.Complete();
         }
     }
