@@ -20,6 +20,7 @@ namespace Rin.Core.Record
         public TimelineScope Parent { get; }
         public string Name { get; }
         public string Category { get; }
+        public string Data { get; set; }
 
         public IReadOnlyCollection<TimelineScope> Children => _children.IsValueCreated ? _children.Value : (IReadOnlyCollection<TimelineScope>)Array.Empty<TimelineScope>();
 
@@ -29,11 +30,12 @@ namespace Rin.Core.Record
             return CurrentScope.Value;
         }
 
-        public TimelineScope([CallerMemberName]string name = "", string category = TimelineScopeCategory.Method)
+        public TimelineScope([CallerMemberName]string name = "", string category = TimelineScopeCategory.Method, string data = null)
         {
             BeginTime = DateTime.Now;
             Category = category;
             Name = name;
+            Data = data;
             Parent = CurrentScope.Value;
 
             if (Parent != null)

@@ -51,17 +51,21 @@ class TimelineSpan extends React.Component<{ data: TimelineData; totalDuration: 
     const elapsedMilliSecFromOrigin = new Date(this.props.data.BeginTime).valueOf() - this.props.originDate.valueOf();
     const width = (this.props.data.Duration / this.props.totalDuration) * 100;
     const left = 100 - ((this.props.totalDuration - elapsedMilliSecFromOrigin) / this.props.totalDuration) * 100;
+    const label = this.props.data.Category.replace('Rin.Timeline.', '') + ': ' + this.props.data.Name;
     return (
       <>
-        <div
-          className="timelineSpan"
-          data-rin-timeline-category={this.props.data.Category}
-          title={this.props.data.Duration + 'ms'}
-        >
-          <div className="timelineSpan_name">
-            {this.props.data.Category.replace('Rin.Timeline.', '')}: {this.props.data.Name}
+        <div className="timelineSpan" data-rin-timeline-category={this.props.data.Category}>
+          <div
+            className="timelineSpan_name"
+            title={label + (this.props.data.Data != null ? '\n' + this.props.data.Data : '')}
+          >
+            {label}
           </div>
-          <div className="timelineSpan_bar" style={{ width: width + '%', marginLeft: left + '%' }} />
+          <div
+            className="timelineSpan_bar"
+            title={this.props.data.Duration + 'ms'}
+            style={{ width: width + '%', marginLeft: left + '%' }}
+          />
         </div>
         {this.props.data.Children.map((x, i) => (
           <TimelineSpan

@@ -36,7 +36,6 @@
   box-sizing: border-box;
   display: grid;
   grid-template-columns: 200px auto;
-  padding: 4px;
 }
 .timelineSpan:nth-child(2n) {
   background: #efefef;
@@ -45,11 +44,17 @@
   font-size: 0.75rem;
   font-weight: bold;
   text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 4px;
 }
 .timelineSpan_bar {
   border: 1px solid #555;
   background-color: #555;
   box-sizing: border-box;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 
 .timelineSpan[data-rin-timeline-category='Rin.Timeline.Data'] .timelineSpan_bar {

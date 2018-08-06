@@ -63,6 +63,7 @@ namespace Rin.Hubs.Payloads
             public long Duration { get; }
             public string Category { get; }
             public string Name { get; }
+            public string Data { get; }
             public TimelineData[] Children { get; }
 
             public TimelineData(TimelineScope scope)
@@ -71,6 +72,7 @@ namespace Rin.Hubs.Payloads
                 Duration = (long)scope.Duration.TotalMilliseconds;
                 Category = scope.Category;
                 Name = scope.Name;
+                Data = scope.Data;
                 Children = scope.Children.Select(x => new TimelineData(x)).ToArray();
             }
         }

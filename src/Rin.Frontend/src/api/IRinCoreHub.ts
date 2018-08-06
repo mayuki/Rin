@@ -45,6 +45,7 @@ export interface TimelineData {
   BeginTime: string;
   Category: string;
   Name: string;
+  Data: string | null;
   Duration: number;
   Children: TimelineData[];
 }
