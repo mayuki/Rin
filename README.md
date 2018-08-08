@@ -81,6 +81,9 @@ public class Startup
             // Important: `UseRin` (Middlewares) must be top of the HTTP pipeline.
             app.UseRin();
 
+            // Add(option): Enable ASP.NET MVC Core support if the project built with ASP.NET MVC Core
+            app.UseRinMvcSupport();
+
             app.UseDeveloperExceptionPage();
 
             // Add: Enable Exception recorder. this handler must be after `UseDeveloperExceptionPage`.
