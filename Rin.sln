@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloRin", "samples\HelloRi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{B82C9F89-AD8F-473B-AA41-3061CD0FE9DF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rin.Mvc", "src\Rin.Mvc\Rin.Mvc.csproj", "{BDFF983D-4A01-4F65-BA97-45DB18B124D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{921C0263-C56A-4332-897C-2107D0E0DDF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{921C0263-C56A-4332-897C-2107D0E0DDF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{921C0263-C56A-4332-897C-2107D0E0DDF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDFF983D-4A01-4F65-BA97-45DB18B124D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDFF983D-4A01-4F65-BA97-45DB18B124D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDFF983D-4A01-4F65-BA97-45DB18B124D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDFF983D-4A01-4F65-BA97-45DB18B124D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -47,6 +47,7 @@ namespace HelloRin
             if (env.IsDevelopment())
             {
                 app.UseRin();
+                app.UseRinMvcSupport();
                 app.UseDeveloperExceptionPage();
                 app.UseRinDiagnosticsHandler();
             }
