@@ -29,16 +29,18 @@ Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured 
 
 ## Install NuGet Package
 ### Using Visual Studio
-`Dependencies` -> `Manage NuGet Packages...` -> Search and install `Rin` package.
+`Dependencies` -> `Manage NuGet Packages...` -> Search and install `Rin` and `Rin.Mvc` (if your project is built with ASP.NET MVC Core) package.
 
 ### Using dotnet command
 ```
 dotnet add package Rin
+dotnet add package Rin.Mvc
 ```
 
 ### Using Package Manager
 ```
 Install-Package Rin
+Install-Package Rin.Mvc
 ```
 
 ## Setup and configure Rin
