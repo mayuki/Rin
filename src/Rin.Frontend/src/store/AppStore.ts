@@ -21,7 +21,11 @@ export class AppStore {
   @action.bound
   ready() {
     const isDevelopment = process.env.NODE_ENV === 'development';
-    const host = isDevelopment ? 'localhost:5000' : location.host;
+    const host = isDevelopment
+      ? location.search.match(/__rin__dev__host=([^&]+)/)
+        ? location.search.match(/__rin__dev__host=([^&]+)/)![1]
+        : 'localhost:5000'
+      : location.host;
     const protocol = location.protocol === 'http:' ? 'ws:' : 'wss:';
     const pathBase = document.querySelector('html')!.dataset.rinConfigPathBase || '/rin';
     const channelEndPoint = pathBase + '/chan';

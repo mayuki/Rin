@@ -51,7 +51,7 @@ class TimelineSpan extends React.Component<{ data: TimelineData; totalDuration: 
     const elapsedMilliSecFromOrigin = new Date(this.props.data.BeginTime).valueOf() - this.props.originDate.valueOf();
     const width = (this.props.data.Duration / this.props.totalDuration) * 100;
     const left = 100 - ((this.props.totalDuration - elapsedMilliSecFromOrigin) / this.props.totalDuration) * 100;
-    const label = this.props.data.Category.replace('Rin.Timeline.', '') + ': ' + this.props.data.Name;
+    const label = this.props.data.Category.replace(/^Rin\.Timeline\.(AspNetCore\.)?/, '') + ': ' + this.props.data.Name;
     return (
       <>
         <div className="timelineSpan" data-rin-timeline-category={this.props.data.Category}>
