@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Rin.Mvc\Rin.Mvc.csproj" />
-    <ProjectReference Include="..\..\src\Rin.Mvc\Rin.Mvc.csproj" />
     <ProjectReference Include="..\..\src\Rin\Rin.csproj" />
   </ItemGroup>
 
