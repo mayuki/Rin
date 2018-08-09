@@ -42,7 +42,7 @@ export interface RequestRecordDetailPayload {
 }
 
 export interface TimelineData {
-  BeginTime: string;
+  Timestamp: string;
   Category: string;
   Name: string;
   Data: string | null;

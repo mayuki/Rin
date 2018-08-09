@@ -59,7 +59,7 @@ namespace Rin.Hubs.Payloads
 
         public class TimelineData
         {
-            public DateTime BeginTime { get; }
+            public DateTimeOffset Timestamp { get; }
             public long Duration { get; }
             public string Category { get; }
             public string Name { get; }
@@ -68,7 +68,7 @@ namespace Rin.Hubs.Payloads
 
             public TimelineData(ITimelineScope scope)
             {
-                BeginTime = scope.BeginTime;
+                Timestamp = scope.Timestamp;
                 Duration = (long)scope.Duration.TotalMilliseconds;
                 Category = scope.Category;
                 Name = scope.Name;

@@ -35,7 +35,7 @@ export class Timeline extends React.Component<{ data: TimelineData }> {
 class TimelineSpans extends React.Component<{ data: TimelineData }> {
   render() {
     const totalDuration = this.props.data.Duration;
-    const originDate = new Date(this.props.data.BeginTime);
+    const originDate = new Date(this.props.data.Timestamp);
     return (
       <>
         {this.props.data.Children.map((x, i) => (
@@ -48,7 +48,7 @@ class TimelineSpans extends React.Component<{ data: TimelineData }> {
 
 class TimelineSpan extends React.Component<{ data: TimelineData; totalDuration: number; originDate: Date }> {
   render() {
-    const elapsedMilliSecFromOrigin = new Date(this.props.data.BeginTime).valueOf() - this.props.originDate.valueOf();
+    const elapsedMilliSecFromOrigin = new Date(this.props.data.Timestamp).valueOf() - this.props.originDate.valueOf();
     const width = (this.props.data.Duration / this.props.totalDuration) * 100;
     const left = 100 - ((this.props.totalDuration - elapsedMilliSecFromOrigin) / this.props.totalDuration) * 100;
     const label = this.props.data.Category.replace(/^Rin\.Timeline\.(AspNetCore\.)?/, '') + ': ' + this.props.data.Name;

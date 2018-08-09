@@ -15,15 +15,33 @@ namespace Rin.Core.Record
         private Lazy<ConcurrentQueue<TimelineScope>> _children { get; } = new Lazy<ConcurrentQueue<TimelineScope>>(() => new ConcurrentQueue<TimelineScope>(), LazyThreadSafetyMode.PublicationOnly);
         private TimelineScope _parent { get; }
         private bool _completed;
+        private string _name;
+        private string _category;
 
-        public DateTime BeginTime { get; private set; }
-        public TimeSpan Duration { get; private set; }
+        public DateTimeOffset Timestamp { get; set; }
+        public TimeSpan Duration { get; set; }
 
-        public string Name { get; }
-        public string Category { get; }
+        public string Name
+        {
+            get => _name;
+            set => SetValue(ref _name, value);
+        }
+
+        public string Category
+        {
+            get => _category;
+            set => SetValue(ref _category, value);
+        }
+
         public string Data { get; set; }
 
         public IReadOnlyCollection<TimelineScope> Children => _children.IsValueCreated ? _children.Value : (IReadOnlyCollection<TimelineScope>)Array.Empty<TimelineScope>();
+
+        private void SetValue<T>(ref T field, T value)
+        {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+            field = value;
+        }
 
         /// <summary>
         /// Prepare a TimelineScope for current ExecutionContext (async execution flow).
@@ -37,7 +55,7 @@ namespace Rin.Core.Record
 
         private TimelineScope(string name, string category, string data)
         {
-            BeginTime = DateTime.Now;
+            Timestamp = DateTimeOffset.Now;
             Category = category;
             Name = name;
             Data = data;
@@ -80,7 +98,7 @@ namespace Rin.Core.Record
             if (_completed) return;
 
             _completed = true;
-            Duration = DateTime.Now - BeginTime;
+            Duration = DateTimeOffset.Now - Timestamp;
             CurrentScope.Value = _parent;
         }
 

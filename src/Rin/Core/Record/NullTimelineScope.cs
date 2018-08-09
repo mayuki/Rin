@@ -7,17 +7,37 @@ namespace Rin.Core.Record
     {
         public static NullTimelineScope Instance { get; } = new NullTimelineScope();
 
-        public string Name => String.Empty;
+        public string Name
+        {
+            get => String.Empty;
+            set { }
+        }
 
-        public string Category => String.Empty;
+        public string Category
+        {
+            get => String.Empty;
+            set { }
+        }
 
-        public string Data => null;
+        public string Data
+        {
+            get => null;
+            set { }
+        }
 
         public IReadOnlyCollection<TimelineScope> Children => Array.Empty<TimelineScope>();
 
-        public DateTime BeginTime => default;
+        public DateTimeOffset Timestamp
+        {
+            get => default;
+            set { }
+        }
 
-        public TimeSpan Duration => default;
+        public TimeSpan Duration
+        {
+            get => default;
+            set { }
+        }
 
         public void Complete()
         {

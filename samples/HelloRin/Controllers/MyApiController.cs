@@ -144,6 +144,15 @@ namespace HelloRin.Controllers
 
             NewThread();
 
+            var scope = TimelineScope.Create("Manual", TimelineScopeCategory.Data);
+            {
+                var scope2 = TimelineScope.Create("Manual.Inner", TimelineScopeCategory.Data);
+                scope2.Complete();
+                scope2.Duration = TimeSpan.FromMilliseconds(24);
+            }
+            scope.Complete();
+            scope.Duration = TimeSpan.FromMilliseconds(12);
+
             return Content("OK");
         }
 
