@@ -33,7 +33,7 @@ export function createCSharpCodeFromDetail(record: RequestRecordDetailPayload, r
     }
 
     codeLines.push(
-      `request.Headers.TryAddWithoutValidation("${escapeStringLiteral(x)}", "${escapeStringLiteral(
+      `request.Headers.TryAddWithoutValidation("${escapeCSharpStringLiteral(x)}", "${escapeCSharpStringLiteral(
         record.RequestHeaders[x].join('\n')
       )}");`
     );
@@ -45,20 +45,20 @@ export function createCSharpCodeFromDetail(record: RequestRecordDetailPayload, r
       case 'PUT':
         if (requestBody.IsBase64Encoded) {
           codeLines.push(
-            `request.Content = new ByteArrayContent(Convert.FromBase64String("${escapeStringLiteral(
+            `request.Content = new ByteArrayContent(Convert.FromBase64String("${escapeCSharpStringLiteral(
               requestBody.Body
             )}"));`
           );
         } else {
           codeLines.push(
-            `request.Content = new ByteArrayContent(new UTF8Encoding(false).GetBytes("${escapeStringLiteral(
+            `request.Content = new ByteArrayContent(new UTF8Encoding(false).GetBytes("${escapeCSharpStringLiteral(
               requestBody.Body
             )}"));`
           );
         }
         codeLines.push('');
         codeLines.push(
-          `request.Content.Headers.TryAddWithoutValidation("Content-Type", "${escapeStringLiteral(
+          `request.Content.Headers.TryAddWithoutValidation("Content-Type", "${escapeCSharpStringLiteral(
             requestContentType
           )}");`
         );
@@ -79,7 +79,7 @@ export function createCSharpCodeFromDetail(record: RequestRecordDetailPayload, r
   return codeLines.join('\r\n');
 }
 
-function escapeStringLiteral(value: string) {
+function escapeCSharpStringLiteral(value: string) {
   return value
     .replace(/\\/g, '\\\\')
     .replace(/"/g, '\\"')
@@ -94,4 +94,39 @@ export function createUrl(record: RequestRecordDetailPayload) {
     record.Path +
     (record.QueryString != null && record.QueryString !== '' ? record.QueryString : '')
   );
+}
+
+export function createCurlFromDetail(record: RequestRecordDetailPayload, body: BodyDataPayload | null) {
+  const url = createUrl(record);
+  const commandParams = ['curl', url];
+  const headers = Object.keys(record.RequestHeaders).map(
+    x => `-H ${escapeShellLiteral(x + ': ' + record.RequestHeaders[x].join(' '))}`
+  );
+
+  const hasBody =
+    (record.Method.toUpperCase() === 'POST' || record.Method.toUpperCase() === 'PUT') &&
+    record.IsCompleted &&
+    body != null;
+
+  if (hasBody && body != null) {
+    return commandParams
+      .concat(headers)
+      .concat([
+        '--data-binary ' + escapeShellLiteral(body.IsBase64Encoded ? btoa(body.Body) : body.Body),
+        '--compressed'
+      ])
+      .join(' ');
+  } else {
+    return commandParams
+      .concat(headers)
+      .concat(['--compressed'])
+      .join(' ');
+  }
+}
+function escapeShellLiteral(value: string) {
+  if (value.match(/\\|'/)) {
+    return "$'" + value.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "'";
+  } else {
+    return "'" + value + "'";
+  }
 }

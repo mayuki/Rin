@@ -1,6 +1,6 @@
 import { CommandBar, ContextualMenuItemType, ICommandBarItemProps } from 'office-ui-fabric-react';
 import * as React from 'react';
-import { createCSharpCodeFromDetail } from '../../domain/RequestRecord';
+import { createCSharpCodeFromDetail, createCurlFromDetail } from '../../domain/RequestRecord';
 import { AppStore } from '../../store/AppStore';
 import { InspectorStore } from '../../store/InspectorStore';
 import { copyTextToClipboard } from '../../utilities';
@@ -42,7 +42,10 @@ export class InspectorDetailCommandBar extends React.Component<
                 topDivider: false,
                 bottomDivider: true,
                 title: 'Export',
-                items: [{ key: 'CopyAsCSharp', text: 'Copy Request as C# (LINQPad)' }]
+                items: [
+                  { key: 'CopyAsCSharp', text: 'Copy Request as C# (LINQPad)' },
+                  { key: 'CopyAsCurl', text: 'Copy Request as cURL' }
+                ]
               }
             },
             {
@@ -76,12 +79,21 @@ export class InspectorDetailCommandBar extends React.Component<
       case 'CopyAsCSharp':
         this.copyAsCSharp();
         break;
+      case 'CopyAsCurl':
+        this.copyAsCurl();
+        break;
     }
   };
 
   private copyAsCSharp() {
     const selectedRecord = this.props.inspectorStore.currentRecordDetail!;
     const code = createCSharpCodeFromDetail(selectedRecord, this.props.inspectorStore.requestBody);
+    copyTextToClipboard(code);
+  }
+
+  private copyAsCurl() {
+    const selectedRecord = this.props.inspectorStore.currentRecordDetail!;
+    const code = createCurlFromDetail(selectedRecord, this.props.inspectorStore.requestBody);
     copyTextToClipboard(code);
   }
 }
