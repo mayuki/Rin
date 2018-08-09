@@ -1,6 +1,4 @@
-﻿using Rin.Core;
-using Rin.DiagnosticListeners;
-using Rin.Middlewares;
+﻿using Rin.Mvc.DiagnosticListeners;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;

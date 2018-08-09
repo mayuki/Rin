@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace Rin.DiagnosticListeners
+namespace Rin.Mvc.DiagnosticListeners
 {
     internal class AspNetMvcCoreDiagnosticListener
     {
