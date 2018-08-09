@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import * as React from 'react';
+import { createUrl } from '../../domain/RequestRecord';
 import { AppStore } from '../../store/AppStore';
 import { DetailViewType, InspectorStore } from '../../store/InspectorStore';
 import { InspectorDetailCommandBar } from './InspectorDetail.CommandBar';
@@ -86,13 +87,7 @@ export class InspectorDetail extends React.Component<IInspectorDetailProps, {}> 
   public renderRequestView() {
     const selectedRecord = this.props.inspectorStore.currentRecordDetail!;
     const headers = { ...selectedRecord.RequestHeaders };
-
-    const url =
-      (selectedRecord.IsHttps ? 'https' : 'http') +
-      '://' +
-      selectedRecord.Host +
-      selectedRecord.Path +
-      (selectedRecord.QueryString != null && selectedRecord.QueryString !== '' ? selectedRecord.QueryString : '');
+    const url = createUrl(selectedRecord);
 
     return (
       <InspectorDetailRequestResponseView

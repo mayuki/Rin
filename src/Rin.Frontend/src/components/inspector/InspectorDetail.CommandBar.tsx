@@ -81,7 +81,7 @@ export class InspectorDetailCommandBar extends React.Component<
 
   private copyAsCSharp() {
     const selectedRecord = this.props.inspectorStore.currentRecordDetail!;
-    const code = createCSharpCodeFromDetail(selectedRecord);
+    const code = createCSharpCodeFromDetail(selectedRecord, this.props.inspectorStore.requestBody);
     copyTextToClipboard(code);
   }
 }
