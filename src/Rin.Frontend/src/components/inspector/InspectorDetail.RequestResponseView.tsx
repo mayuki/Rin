@@ -240,7 +240,7 @@ class EditorPreview extends React.Component<{ contentType: string; body: string 
       <MonacoEditor
         width="100%"
         height="100%"
-        options={{ readOnly: true, automaticLayout: true }}
+        options={{ readOnly: true, automaticLayout: true, wordWrap: 'on' }}
         language={getMonacoLanguage(this.props.contentType)}
         value={this.props.body}
         editorDidMount={this.editorDidMount}
