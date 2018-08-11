@@ -6,6 +6,7 @@ import { inspectorStore } from '../../store/InspectorStore';
 import './Inspector.css';
 import { InspectorDetail } from './InspectorDetail';
 
+// Container Component
 @observer
 export class Inspector extends React.Component {
   private readonly columns: IColumn[] = [

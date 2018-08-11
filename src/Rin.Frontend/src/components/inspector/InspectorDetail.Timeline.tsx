@@ -1,12 +1,18 @@
-import { observer } from 'mobx-react';
 import { Callout, DirectionalHint, FontClassNames, Icon } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { TimelineData } from '../../api/IRinCoreHub';
-import { inspectorTimelineStore } from '../../store/InspectorTimelineStore';
 import './InspectorDetail.Timeline.css';
 
-@observer
-export class Timeline extends React.Component<{ data: TimelineData }, {}> {
+export interface TimelineProps {
+  data: TimelineData;
+  isCalloutVisible: boolean;
+  showCallout: (data: TimelineData, target: HTMLElement) => void;
+  dismissCallout: () => void;
+  calloutTimelineData: TimelineData | null;
+  calloutTarget: HTMLElement;
+}
+
+export class Timeline extends React.Component<TimelineProps> {
   render() {
     const columns = [
       <div key="Column-Event" className="timeline_headerColumn">
@@ -29,28 +35,28 @@ export class Timeline extends React.Component<{ data: TimelineData }, {}> {
       <div className="timeline">
         <div className="timeline_header">{columns}</div>
         <div className="timeline_spans">
-          <TimelineSpans data={this.props.data} />
+          <TimelineSpans data={this.props.data} onTimelineSpanClick={this.props.showCallout} />
         </div>
-        {inspectorTimelineStore.isCalloutVisible &&
-          inspectorTimelineStore.calloutTimelineData != null && (
+        {this.props.isCalloutVisible &&
+          this.props.calloutTimelineData != null && (
             <Callout
               gapSpace={0}
-              target={inspectorTimelineStore.calloutTarget}
+              target={this.props.calloutTarget}
               setInitialFocus={true}
-              hidden={!inspectorTimelineStore.isCalloutVisible}
-              onDismiss={inspectorTimelineStore.dismissCallout}
+              hidden={!this.props.isCalloutVisible}
+              onDismiss={this.props.dismissCallout}
               directionalHint={DirectionalHint.bottomCenter}
             >
               <div className="timelineCalloutContent">
                 <h2 className={FontClassNames.large}>
-                  {inspectorTimelineStore.calloutTimelineData.Category.replace(/^Rin\.Timeline\./, '')}:{' '}
-                  {inspectorTimelineStore.calloutTimelineData.Name}
+                  {this.props.calloutTimelineData.Category.replace(/^Rin\.Timeline\./, '')}:{' '}
+                  {this.props.calloutTimelineData.Name}
                 </h2>
-                {inspectorTimelineStore.calloutTimelineData.Data && (
-                  <pre className="timelineCalloutContent_data">{inspectorTimelineStore.calloutTimelineData.Data}</pre>
+                {this.props.calloutTimelineData.Data && (
+                  <pre className="timelineCalloutContent_data">{this.props.calloutTimelineData.Data}</pre>
                 )}
                 <div>
-                  <Icon iconName="Timer" /> {inspectorTimelineStore.calloutTimelineData.Duration}
+                  <Icon iconName="Timer" /> {this.props.calloutTimelineData.Duration}
                   ms
                 </div>
               </div>
@@ -61,14 +67,23 @@ export class Timeline extends React.Component<{ data: TimelineData }, {}> {
   }
 }
 
-class TimelineSpans extends React.Component<{ data: TimelineData }> {
+class TimelineSpans extends React.Component<{
+  data: TimelineData;
+  onTimelineSpanClick: (data: TimelineData, target: HTMLElement) => void;
+}> {
   render() {
     const totalDuration = this.props.data.Duration;
     const originDate = new Date(this.props.data.Timestamp);
     return (
       <>
         {this.props.data.Children.map((x, i) => (
-          <TimelineSpan key={'timelineSpan-' + i} data={x} totalDuration={totalDuration} originDate={originDate} />
+          <TimelineSpan
+            key={'timelineSpan-' + i}
+            data={x}
+            totalDuration={totalDuration}
+            originDate={originDate}
+            onTimelineSpanClick={this.props.onTimelineSpanClick}
+          />
         ))}
       </>
     );
@@ -79,6 +94,7 @@ class TimelineSpan extends React.Component<{
   data: TimelineData;
   totalDuration: number;
   originDate: Date;
+  onTimelineSpanClick: (data: TimelineData, target: HTMLElement) => void;
 }> {
   private timelineSpanBarRef = React.createRef<HTMLDivElement>();
 
@@ -109,6 +125,7 @@ class TimelineSpan extends React.Component<{
             data={x}
             totalDuration={this.props.totalDuration}
             originDate={this.props.originDate}
+            onTimelineSpanClick={this.props.onTimelineSpanClick}
           />
         ))}
       </>
@@ -116,6 +133,6 @@ class TimelineSpan extends React.Component<{
   }
 
   private onClick = () => {
-    inspectorTimelineStore.showCallout(this.props.data, this.timelineSpanBarRef.current!);
+    this.props.onTimelineSpanClick(this.props.data, this.timelineSpanBarRef.current!);
   };
 }

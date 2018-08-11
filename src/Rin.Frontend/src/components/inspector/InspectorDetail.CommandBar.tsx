@@ -1,11 +1,16 @@
 import { CommandBar, ContextualMenuItemType, ICommandBarItemProps } from 'office-ui-fabric-react';
 import * as React from 'react';
+import { BodyDataPayload, RequestRecordDetailPayload } from '../../api/IRinCoreHub';
 import { createCSharpCodeFromDetail, createCurlFromDetail } from '../../domain/RequestRecord';
-import { appStore } from '../../store/AppStore';
-import { inspectorStore } from '../../store/InspectorStore';
 import { copyTextToClipboard } from '../../utilities';
 
-export class InspectorDetailCommandBar extends React.Component {
+export interface InspectorDetailCommandBarProps {
+  endpointUrlBase: string;
+  requestBody: BodyDataPayload | null;
+  currentRecordDetail: RequestRecordDetailPayload | null;
+}
+
+export class InspectorDetailCommandBar extends React.Component<InspectorDetailCommandBarProps> {
   private readonly commandBarItems: ICommandBarItemProps[] = [
     // { key: 'Replay', text: 'Replay', iconProps: { iconName: 'SendMirrored' } }
   ];
@@ -15,14 +20,13 @@ export class InspectorDetailCommandBar extends React.Component {
   }
 
   private getCommandBarFarItems(): ICommandBarItemProps[] {
-    const record = inspectorStore.currentRecordDetail;
+    const record = this.props.currentRecordDetail;
     if (record === null || record === undefined) {
       return [];
     }
 
     const disableRequestDownload =
-      !inspectorStore.requestBody ||
-      (inspectorStore.requestBody.Body != null && inspectorStore.requestBody.Body.length === 0);
+      !this.props.requestBody || (this.props.requestBody.Body != null && this.props.requestBody.Body.length === 0);
 
     return [
       {
@@ -65,13 +69,13 @@ export class InspectorDetailCommandBar extends React.Component {
   }
 
   private onContextualMenuItemClicked = (ev: any, item: any) => {
-    const selectedRecord = inspectorStore.currentRecordDetail!;
+    const selectedRecord = this.props.currentRecordDetail!;
     switch (item.key) {
       case 'SaveResponseBody':
-        window.open(`${appStore.endpointUrlBase}/download/response?id=${selectedRecord.Id}`);
+        window.open(`${this.props.endpointUrlBase}/download/response?id=${selectedRecord.Id}`);
         break;
       case 'SaveRequestBody':
-        window.open(`${appStore.endpointUrlBase}/download/request?id=${selectedRecord.Id}`);
+        window.open(`${this.props.endpointUrlBase}/download/request?id=${selectedRecord.Id}`);
         break;
       case 'CopyAsCSharp':
         this.copyAsCSharp();
@@ -83,14 +87,14 @@ export class InspectorDetailCommandBar extends React.Component {
   };
 
   private copyAsCSharp() {
-    const selectedRecord = inspectorStore.currentRecordDetail!;
-    const code = createCSharpCodeFromDetail(selectedRecord, inspectorStore.requestBody);
+    const selectedRecord = this.props.currentRecordDetail!;
+    const code = createCSharpCodeFromDetail(selectedRecord, this.props.requestBody);
     copyTextToClipboard(code);
   }
 
   private copyAsCurl() {
-    const selectedRecord = inspectorStore.currentRecordDetail!;
-    const code = createCurlFromDetail(selectedRecord, inspectorStore.requestBody);
+    const selectedRecord = this.props.currentRecordDetail!;
+    const code = createCurlFromDetail(selectedRecord, this.props.requestBody);
     copyTextToClipboard(code);
   }
 }

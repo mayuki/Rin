@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react';
 import * as monacoEditor from 'monaco-editor';
 import {
   CheckboxVisibility,
@@ -22,7 +21,6 @@ export interface IInspectorRequestResponseViewProps {
   body: BodyDataPayload | null;
 }
 
-@observer
 export class InspectorDetailRequestResponseView extends React.Component<
   IInspectorRequestResponseViewProps,
   { bodyView: 'Tree' | 'Source' }

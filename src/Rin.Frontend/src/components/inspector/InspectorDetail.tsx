@@ -2,7 +2,9 @@ import { observer } from 'mobx-react';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import * as React from 'react';
 import { createUrl } from '../../domain/RequestRecord';
+import { appStore } from '../../store/AppStore';
 import { DetailViewType, inspectorStore } from '../../store/InspectorStore';
+import { inspectorTimelineStore } from '../../store/InspectorTimelineStore';
 import { InspectorDetailCommandBar } from './InspectorDetail.CommandBar';
 import './InspectorDetail.css';
 import { InspectorDetailExceptionView } from './InspectorDetail.ExceptionView';
@@ -10,6 +12,7 @@ import { InspectorDetailRequestResponseView } from './InspectorDetail.RequestRes
 import { Timeline } from './InspectorDetail.Timeline';
 import { InspectorDetailTraceView } from './InspectorDetail.TraceView';
 
+// Container Component
 @observer
 export class InspectorDetail extends React.Component {
   public render() {
@@ -20,7 +23,11 @@ export class InspectorDetail extends React.Component {
     return (
       <div className="inspectorDetail">
         <div className="inspectorDetail_CommandBar">
-          <InspectorDetailCommandBar />
+          <InspectorDetailCommandBar
+            endpointUrlBase={appStore.endpointUrlBase}
+            currentRecordDetail={inspectorStore.currentRecordDetail}
+            requestBody={inspectorStore.requestBody}
+          />
         </div>
         {selectedRecord != null && (
           <>
@@ -45,7 +52,14 @@ export class InspectorDetail extends React.Component {
               {inspectorStore.currentDetailView === DetailViewType.Request && this.renderRequestView()}
               {inspectorStore.currentDetailView === DetailViewType.Response && this.renderResponseView()}
               {inspectorStore.currentDetailView === DetailViewType.Timeline && (
-                <Timeline data={selectedRecord.Timeline} />
+                <Timeline
+                  data={selectedRecord.Timeline}
+                  calloutTarget={inspectorTimelineStore.calloutTarget}
+                  calloutTimelineData={inspectorTimelineStore.calloutTimelineData}
+                  isCalloutVisible={inspectorTimelineStore.isCalloutVisible}
+                  dismissCallout={inspectorTimelineStore.dismissCallout}
+                  showCallout={inspectorTimelineStore.showCallout}
+                />
               )}
               {inspectorStore.currentDetailView === DetailViewType.Trace && (
                 <InspectorDetailTraceView record={selectedRecord} />

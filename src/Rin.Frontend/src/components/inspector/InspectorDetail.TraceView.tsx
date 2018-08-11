@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react';
 import {
   CheckboxVisibility,
   DetailsList,
@@ -14,7 +13,6 @@ export interface IInspectorDetailTraceViewProps {
   record: RequestRecordDetailPayload;
 }
 
-@observer
 export class InspectorDetailTraceView extends React.Component<IInspectorDetailTraceViewProps, {}> {
   private readonly traceColumns: IColumn[] = [
     {
