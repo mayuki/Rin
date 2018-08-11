@@ -1,7 +1,8 @@
 import { action, observable, runInAction } from 'mobx';
 import { createHubClient, IHubClient } from '../api/hubClient';
 import { IRinCoreHub } from '../api/IRinCoreHub';
-import { InspectorStore } from './InspectorStore';
+import { inspectorStore } from './InspectorStore';
+import { inspectorTimelineStore } from './InspectorTimelineStore';
 
 export interface IAppStoreProps {
   appStore: AppStore;
@@ -9,7 +10,6 @@ export interface IAppStoreProps {
 
 export class AppStore {
   hubClient: IHubClient & IRinCoreHub;
-  inspector = new InspectorStore();
 
   @observable
   viewMode: ViewMode = ViewMode.Inspector;
@@ -17,6 +17,9 @@ export class AppStore {
   connected: boolean = false;
 
   endpointUrlBase: string;
+
+  inspectorTimelineStore = inspectorTimelineStore;
+  inspectorStore = inspectorStore;
 
   @action.bound
   ready() {
@@ -32,7 +35,8 @@ export class AppStore {
 
     this.endpointUrlBase = `${location.protocol}//${host}${pathBase}`;
     this.hubClient = createHubClient<IRinCoreHub>(`${protocol}//${host}${channelEndPoint}`);
-    this.inspector.ready(this.hubClient);
+
+    inspectorStore.ready(this.hubClient);
 
     this.hubClient.on('connected', () => {
       runInAction(() => (this.connected = true));
@@ -46,3 +50,5 @@ export class AppStore {
 export enum ViewMode {
   Inspector
 }
+
+export const appStore = new AppStore();

@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './components/app/App';
 import './index.css';
-import { AppStore } from './store/AppStore';
+import { appStore } from './store/AppStore';
 
 // Initialize Office UI Fabric
 initializeIcons(/* optional base url */);
@@ -35,7 +35,6 @@ loadTheme({
   }
 });
 
-const appStore = new AppStore();
 (window as any).__appStore = appStore;
 
-ReactDOM.render(<App appStore={appStore} />, document.getElementById('root') as HTMLElement);
+ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);

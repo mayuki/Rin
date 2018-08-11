@@ -145,3 +145,5 @@ export enum DetailViewType {
   Trace = 'Trace',
   Exception = 'Exception'
 }
+
+export const inspectorStore = new InspectorStore();

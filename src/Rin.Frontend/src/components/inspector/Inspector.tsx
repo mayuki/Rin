@@ -2,13 +2,12 @@ import { observer } from 'mobx-react';
 import { Icon, SearchBox } from 'office-ui-fabric-react';
 import { CheckboxVisibility, DetailsList, IColumn } from 'office-ui-fabric-react/lib/DetailsList';
 import * as React from 'react';
-import { AppStore } from '../../store/AppStore';
-import { InspectorStore } from '../../store/InspectorStore';
+import { inspectorStore } from '../../store/InspectorStore';
 import './Inspector.css';
 import { InspectorDetail } from './InspectorDetail';
 
 @observer
-export class Inspector extends React.Component<{ appStore: AppStore; inspectorStore: InspectorStore }, {}> {
+export class Inspector extends React.Component {
   private readonly columns: IColumn[] = [
     {
       key: 'icon',
@@ -74,20 +73,20 @@ export class Inspector extends React.Component<{ appStore: AppStore; inspectorSt
             <SearchBox
               placeholder="Filter"
               underlined={true}
-              onChange={this.props.inspectorStore.onFilterChange}
-              value={this.props.inspectorStore.query}
+              onChange={inspectorStore.onFilterChange}
+              value={inspectorStore.query}
             />
             <DetailsList
               compact={true}
               checkboxVisibility={CheckboxVisibility.hidden}
               columns={this.columns}
-              items={this.props.inspectorStore.filteredItems}
-              onActiveItemChanged={this.props.inspectorStore.onActiveItemChanged}
+              items={inspectorStore.filteredItems}
+              onActiveItemChanged={inspectorStore.onActiveItemChanged}
               selectionPreservedOnEmptyClick={true}
             />
           </div>
           <div className="rightPane">
-            <InspectorDetail appStore={this.props.appStore} inspectorStore={this.props.inspectorStore} />
+            <InspectorDetail />
           </div>
         </div>
       </>

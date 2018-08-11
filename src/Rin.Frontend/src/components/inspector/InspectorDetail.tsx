@@ -2,8 +2,7 @@ import { observer } from 'mobx-react';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import * as React from 'react';
 import { createUrl } from '../../domain/RequestRecord';
-import { AppStore } from '../../store/AppStore';
-import { DetailViewType, InspectorStore } from '../../store/InspectorStore';
+import { DetailViewType, inspectorStore } from '../../store/InspectorStore';
 import { InspectorDetailCommandBar } from './InspectorDetail.CommandBar';
 import './InspectorDetail.css';
 import { InspectorDetailExceptionView } from './InspectorDetail.ExceptionView';
@@ -11,31 +10,22 @@ import { InspectorDetailRequestResponseView } from './InspectorDetail.RequestRes
 import { Timeline } from './InspectorDetail.Timeline';
 import { InspectorDetailTraceView } from './InspectorDetail.TraceView';
 
-export interface IInspectorDetailProps {
-  appStore: AppStore;
-  inspectorStore: InspectorStore;
-}
-
 @observer
-export class InspectorDetail extends React.Component<IInspectorDetailProps, {}> {
-  constructor(props: IInspectorDetailProps) {
-    super(props);
-  }
-
+export class InspectorDetail extends React.Component {
   public render() {
-    const selectedRecord = this.props.inspectorStore.currentRecordDetail;
+    const selectedRecord = inspectorStore.currentRecordDetail;
 
     const whenCompleted = (c: () => any) => (selectedRecord != null && selectedRecord.IsCompleted ? c() : <></>);
 
     return (
       <div className="inspectorDetail">
         <div className="inspectorDetail_CommandBar">
-          <InspectorDetailCommandBar appStore={this.props.appStore} inspectorStore={this.props.inspectorStore} />
+          <InspectorDetailCommandBar />
         </div>
         {selectedRecord != null && (
           <>
             <div className="inspectorDetail_Pivot">
-              <Pivot selectedKey={this.props.inspectorStore.currentDetailView} onLinkClick={this.onPivotItemClicked}>
+              <Pivot selectedKey={inspectorStore.currentDetailView} onLinkClick={this.onPivotItemClicked}>
                 <PivotItem itemKey={DetailViewType.Request} headerText="Request" itemIcon="CloudUpload" />
                 {whenCompleted(() => (
                   <PivotItem itemKey={DetailViewType.Response} headerText="Response" itemIcon="CloudDownload" />
@@ -52,15 +42,15 @@ export class InspectorDetail extends React.Component<IInspectorDetailProps, {}> 
               </Pivot>
             </div>
             <div className="inspectorDetail_DetailView">
-              {this.props.inspectorStore.currentDetailView === DetailViewType.Request && this.renderRequestView()}
-              {this.props.inspectorStore.currentDetailView === DetailViewType.Response && this.renderResponseView()}
-              {this.props.inspectorStore.currentDetailView === DetailViewType.Timeline && (
+              {inspectorStore.currentDetailView === DetailViewType.Request && this.renderRequestView()}
+              {inspectorStore.currentDetailView === DetailViewType.Response && this.renderResponseView()}
+              {inspectorStore.currentDetailView === DetailViewType.Timeline && (
                 <Timeline data={selectedRecord.Timeline} />
               )}
-              {this.props.inspectorStore.currentDetailView === DetailViewType.Trace && (
+              {inspectorStore.currentDetailView === DetailViewType.Trace && (
                 <InspectorDetailTraceView record={selectedRecord} />
               )}
-              {this.props.inspectorStore.currentDetailView === DetailViewType.Exception && (
+              {inspectorStore.currentDetailView === DetailViewType.Exception && (
                 <InspectorDetailExceptionView record={selectedRecord} />
               )}
             </div>
@@ -71,7 +61,7 @@ export class InspectorDetail extends React.Component<IInspectorDetailProps, {}> 
   }
 
   public renderResponseView() {
-    const selectedRecord = this.props.inspectorStore.currentRecordDetail!;
+    const selectedRecord = inspectorStore.currentRecordDetail!;
     const headers = selectedRecord.ResponseHeaders;
 
     return (
@@ -79,13 +69,13 @@ export class InspectorDetail extends React.Component<IInspectorDetailProps, {}> 
         record={selectedRecord}
         generals={[{ key: 'StatusCode', value: selectedRecord.ResponseStatusCode + '' }]}
         headers={headers}
-        body={this.props.inspectorStore.responseBody}
+        body={inspectorStore.responseBody}
       />
     );
   }
 
   public renderRequestView() {
-    const selectedRecord = this.props.inspectorStore.currentRecordDetail!;
+    const selectedRecord = inspectorStore.currentRecordDetail!;
     const headers = { ...selectedRecord.RequestHeaders };
     const url = createUrl(selectedRecord);
 
@@ -98,12 +88,12 @@ export class InspectorDetail extends React.Component<IInspectorDetailProps, {}> 
           { key: 'Remote Address', value: selectedRecord.RemoteIpAddress }
         ]}
         headers={headers}
-        body={this.props.inspectorStore.requestBody}
+        body={inspectorStore.requestBody}
       />
     );
   }
 
   private onPivotItemClicked = (item: PivotItem) => {
-    this.props.inspectorStore.selectDetailView(item.props.itemKey as DetailViewType);
+    inspectorStore.selectDetailView(item.props.itemKey as DetailViewType);
   };
 }

@@ -2,7 +2,7 @@ import * as mobx from 'mobx';
 import { observer } from 'mobx-react';
 import { Fabric, FontClassNames, Overlay, Spinner, SpinnerSize } from 'office-ui-fabric-react';
 import * as React from 'react';
-import { IAppStoreProps } from '../../store/AppStore';
+import { appStore } from '../../store/AppStore';
 import { Inspector } from '../inspector/Inspector';
 import './App.css';
 
@@ -11,10 +11,11 @@ mobx.configure({
 });
 
 @observer
-class App extends React.Component<IAppStoreProps, {}> {
-  constructor(props: IAppStoreProps) {
+class App extends React.Component {
+  constructor(props: {}) {
     super(props);
-    props.appStore.ready();
+
+    appStore.ready();
   }
 
   public render() {
@@ -25,8 +26,8 @@ class App extends React.Component<IAppStoreProps, {}> {
             <h1 className={FontClassNames.xLarge}>Rin</h1>
           </header>
           <div className="contentArea">
-            <Inspector appStore={this.props.appStore} inspectorStore={this.props.appStore.inspector} />
-            {!this.props.appStore.connected && (
+            <Inspector />
+            {!appStore.connected && (
               <>
                 <Overlay className="connectingOverlay">
                   <Spinner size={SpinnerSize.large} label="Connecting..." ariaLive="assertive" />
