@@ -133,7 +133,16 @@ namespace HelloRin.Controllers
                     await Task.WhenAll(t1, t2, t3);
                 }
                 await Task.Delay(85);
-                using (TimelineScope.Create("Third", TimelineScopeCategory.Data))
+
+                var sql = @"SELECT
+    *
+FROM
+    SugoiTable
+WHERE
+    Nantoka = 1 AND Kantoka IN (1, 2, 3, 4, 5)
+ORDER BY
+    Id DESC";
+                using (TimelineScope.Create("Third", TimelineScopeCategory.Data, sql))
                 {
                     await Task.Delay(120);
                     await MogeAsync(22);
@@ -152,6 +161,13 @@ namespace HelloRin.Controllers
             }
             scope.Complete();
             scope.Duration = TimeSpan.FromMilliseconds(12);
+
+            for (var i = 0; i < 30; i++)
+            {
+                var scope2 = TimelineScope.Create("Manual." + i, TimelineScopeCategory.Data);
+                scope2.Complete();
+                scope2.Duration = TimeSpan.FromMilliseconds(24 + i);
+            }
 
             return Content("OK");
         }
