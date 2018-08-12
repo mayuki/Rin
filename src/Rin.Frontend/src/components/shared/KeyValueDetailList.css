@@ -1,0 +1,15 @@
+.keyValueDetailListCell_Command {
+    display: inline-flex;
+    height: 100%;
+    opacity: 0;
+}
+.keyValueDetailListCell_Command > .ms-Button {
+    margin-top: -6px;
+    margin-bottom: -6px;
+}
+.keyValueDetailListCell_Command > .ms-Button .ms-Button-menuIcon {
+    display: none;
+}
+.ms-DetailsRow:hover .keyValueDetailListCell_Command {
+    opacity: 1;
+}

@@ -1,18 +1,11 @@
 import * as monacoEditor from 'monaco-editor';
-import {
-  CheckboxVisibility,
-  DetailsList,
-  IColumn,
-  IconButton,
-  Pivot,
-  PivotItem,
-  SelectionMode
-} from 'office-ui-fabric-react';
+import { Pivot, PivotItem } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { ObjectInspector } from 'react-inspector';
 import MonacoEditor from 'react-monaco-editor';
 import { BodyDataPayload, RequestRecordDetailPayload } from '../../api/IRinCoreHub';
-import { copyTextToClipboard, getContentType, getMonacoLanguage, isImage, isJson, isText } from '../../utilities';
+import { getContentType, getMonacoLanguage, isImage, isJson, isText } from '../../utilities';
+import { KeyValueDetailList } from '../shared/KeyValueDetailList';
 
 export interface IInspectorRequestResponseViewProps {
   record: RequestRecordDetailPayload;
@@ -25,85 +18,6 @@ export class InspectorDetailRequestResponseView extends React.Component<
   IInspectorRequestResponseViewProps,
   { bodyView: 'Tree' | 'Source' }
 > {
-  private readonly headersColumns: IColumn[] = [
-    {
-      key: 'Key',
-      name: 'Header',
-      fieldName: 'Key',
-      minWidth: 0,
-      maxWidth: 100,
-      isResizable: true,
-      onRender: (item: any) => (
-        <span title={item.Key} style={{ color: '#000' }}>
-          {item.Key}
-        </span>
-      )
-    },
-    {
-      key: 'Value',
-      name: 'Value',
-      fieldName: 'Value',
-      minWidth: 100,
-      isResizable: true,
-      onRender: (item: any) => (
-        <>
-          <span title={item.Value}>{item.Value}</span>
-        </>
-      )
-    },
-    {
-      key: 'Command',
-      name: '',
-      fieldName: '',
-      minWidth: 32,
-      onRender: (item: any, index, column) => (
-        <>
-          <div className="inspectorRequestResponseHeadersListCell_Command">
-            <IconButton
-              iconProps={{ iconName: 'MoreVertical' }}
-              menuProps={{
-                items: [
-                  { iconProps: { iconName: 'Copy' }, key: 'CopyHeader', text: 'Copy Header', item },
-                  { iconProps: { iconName: 'Copy' }, key: 'CopyValue', text: 'Copy Value only', item }
-                ],
-                onItemClick: this.onHeadersCommandClicked
-              }}
-              split={false}
-            />
-          </div>
-        </>
-      )
-    }
-  ];
-
-  private readonly generalsColumns: IColumn[] = [
-    {
-      key: 'Key',
-      name: 'Name',
-      fieldName: 'key',
-      minWidth: 0,
-      maxWidth: 100,
-      isResizable: true,
-      onRender: (item: any) => (
-        <span title={item.key} style={{ color: '#000' }}>
-          {item.key}
-        </span>
-      )
-    },
-    {
-      key: 'Value',
-      name: 'Value',
-      fieldName: 'value',
-      minWidth: 100,
-      isResizable: true,
-      onRender: (item: any) => (
-        <>
-          <span title={item.value}>{item.value}</span>
-        </>
-      )
-    }
-  ];
-
   constructor(props: IInspectorRequestResponseViewProps) {
     super(props);
     this.state = {
@@ -138,24 +52,16 @@ export class InspectorDetailRequestResponseView extends React.Component<
         <div className="inspectorRequestResponseView_General">
           {this.props.generals != null &&
             this.props.generals.length > 0 && (
-              <DetailsList
-                compact={true}
-                checkboxVisibility={CheckboxVisibility.hidden}
-                selectionMode={SelectionMode.none}
-                columns={this.generalsColumns}
-                items={this.props.generals}
-              />
+              <KeyValueDetailList keyName="Name" valueName="Value" items={this.props.generals} />
             )}
         </div>
         <div className="inspectorRequestResponseView_Headers">
-          <DetailsList
-            compact={true}
-            checkboxVisibility={CheckboxVisibility.hidden}
-            selectionMode={SelectionMode.none}
-            columns={this.headersColumns}
+          <KeyValueDetailList
+            keyName="Header"
+            valueName="Value"
             items={Object.keys(this.props.headers).map(x => ({
-              Key: x,
-              Value: this.props.headers[x].join('\n')
+              key: x,
+              value: this.props.headers[x].join('\n')
             }))}
           />
         </div>
@@ -199,14 +105,6 @@ export class InspectorDetailRequestResponseView extends React.Component<
   private onBodyPivotItemClicked = (item: PivotItem) => {
     this.setState({ bodyView: item.props.itemKey as 'Tree' | 'Source' });
   };
-
-  private onHeadersCommandClicked = (ev: any, item: any) => {
-    if (item.key === 'CopyHeader') {
-      copyTextToClipboard(`${item.item.Key}: ${item.item.Value}`);
-    } else {
-      copyTextToClipboard(item.item.Value);
-    }
-  };
 }
 
 class EditorPreview extends React.Component<{ contentType: string; body: string }, {}> {
@@ -229,7 +127,7 @@ class EditorPreview extends React.Component<{ contentType: string; body: string 
     this.unsubscribe();
   }
 
-  editorDidMount = (editor: monacoEditor.editor.IStandaloneCodeEditor, monaco: typeof monacoEditor) => {
+  editorDidMount = (editor: monacoEditor.editor.IStandaloneCodeEditor) => {
     this.editor = editor;
   };
 
