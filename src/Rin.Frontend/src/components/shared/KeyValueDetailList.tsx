@@ -52,7 +52,7 @@ export class KeyValueDetailList extends React.Component<{
                 iconProps={{ iconName: 'MoreVertical' }}
                 menuProps={{
                   items: [
-                    { iconProps: { iconName: 'Copy' }, key: 'CopyKeyValue', text: 'Copy ' + this.props.keyName, item },
+                    { iconProps: { iconName: 'Copy' }, key: 'CopyKeyValue', text: 'Copy', item },
                     { iconProps: { iconName: 'Copy' }, key: 'CopyValue', text: 'Copy Value only', item }
                   ],
                   onItemClick: this.onRowCommandClicked
@@ -80,9 +80,9 @@ export class KeyValueDetailList extends React.Component<{
 
   private onRowCommandClicked = (ev: any, item: any) => {
     if (item.key === 'CopyKeyValue') {
-      copyTextToClipboard(`${item.item.Key}: ${item.item.Value}`);
+      copyTextToClipboard(`${item.item.key}: ${item.item.value}`);
     } else {
-      copyTextToClipboard(item.item.Value);
+      copyTextToClipboard(item.item.value);
     }
   };
 }
