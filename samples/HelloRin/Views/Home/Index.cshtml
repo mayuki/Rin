@@ -74,7 +74,7 @@
     <div class="col-md-3">
         <h2>Post Requests</h2>
         <ul>
-            <li><a href="#" onclick="fetch('/MyApi/PostWithFormBody', { method: 'POST', headers: new Headers({'Content-Type':'application/x-www-form-urlencoded'}), body: new URLSearchParams({ bodyValueA: 'Hello Konnichiwa!', bodyValueB: 12345 }).toString() }); alert('sent');">POST: with x-www-form-urlencoded</a></li>
+            <li><a href="#" onclick="fetch('/MyApi/PostWithFormBody', { method: 'POST', headers: new Headers({'Content-Type':'application/x-www-form-urlencoded'}), body: new URLSearchParams({ bodyValueA: 'Hello Konnichiwa!', bodyValueB: 12345, a:1, b:2, c:3, d:4, e:5, f:6, g:7, h:8 }).toString() }); alert('sent');">POST: with x-www-form-urlencoded</a></li>
             <li><a href="#" onclick="fetch('/MyApi/PostWithFormData', {
     method: 'POST', headers: new Headers({ 'Content-Type': 'application/json' }), body: JSON.stringify({ bodyValueA: 'Hello Konnichiwa!', bodyValueB: 12345 }) }); alert('sent');">POST: with JSON body</a></li>
         </ul>

@@ -30,6 +30,10 @@ export function isJson(contentType: string) {
   return contentType.startsWith('text/json') || contentType.startsWith('application/json');
 }
 
+export function isWwwFormUrlencoded(contentType: string) {
+  return contentType.startsWith('application/x-www-form-urlencoded');
+}
+
 export function isText(contentType: string) {
   return (
     contentType.startsWith('text/') ||
@@ -51,4 +55,11 @@ export function copyTextToClipboard(value: string) {
   inputE.select();
   document.execCommand('copy');
   document.body.removeChild(inputE);
+}
+
+export function createKeyValuePairFromUrlEncoded(urlEncodedParams: string) {
+  const items: { key: string; value: string }[] = [];
+  new URLSearchParams(urlEncodedParams).forEach((value, key) => items.push({ key, value }));
+
+  return items;
 }

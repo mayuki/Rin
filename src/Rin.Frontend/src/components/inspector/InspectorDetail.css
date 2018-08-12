@@ -49,6 +49,10 @@
     margin: 0 12px;
 }
 
+.inspectorRequestResponseViewKeyValueDetailList {
+    overflow: auto;
+}
+
 .inspectorRequestResponseViewObjectInspector {
     overflow: auto;
     padding: 0 12px 12px;

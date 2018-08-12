@@ -4,7 +4,15 @@ import * as React from 'react';
 import { ObjectInspector } from 'react-inspector';
 import MonacoEditor from 'react-monaco-editor';
 import { BodyDataPayload, RequestRecordDetailPayload } from '../../api/IRinCoreHub';
-import { getContentType, getMonacoLanguage, isImage, isJson, isText } from '../../utilities';
+import {
+  createKeyValuePairFromUrlEncoded,
+  getContentType,
+  getMonacoLanguage,
+  isImage,
+  isJson,
+  isText,
+  isWwwFormUrlencoded
+} from '../../utilities';
 import { KeyValueDetailList } from '../shared/KeyValueDetailList';
 
 export interface IInspectorRequestResponseViewProps {
@@ -14,9 +22,11 @@ export interface IInspectorRequestResponseViewProps {
   body: BodyDataPayload | null;
 }
 
+type PreviewType = 'Tree' | 'Source' | 'List';
+
 export class InspectorDetailRequestResponseView extends React.Component<
   IInspectorRequestResponseViewProps,
-  { bodyView: 'Tree' | 'Source' }
+  { bodyView: PreviewType }
 > {
   constructor(props: IInspectorRequestResponseViewProps) {
     super(props);
@@ -72,12 +82,26 @@ export class InspectorDetailRequestResponseView extends React.Component<
               <>
                 <Pivot selectedKey={this.state.bodyView} onLinkClick={this.onBodyPivotItemClicked}>
                   {isJson(contentType) ? <PivotItem itemKey="Tree" headerText="Tree" itemIcon="RowsChild" /> : <></>}
+                  {isWwwFormUrlencoded(contentType) ? (
+                    <PivotItem itemKey="List" headerText="List" itemIcon="ViewList" />
+                  ) : (
+                    <></>
+                  )}
                   <PivotItem
                     itemKey="Source"
                     headerText={isTransformed ? `View as ${contentType}` : 'Source'}
                     itemIcon="Code"
                   />
                 </Pivot>
+                {this.state.bodyView === 'List' && (
+                  <div className="inspectorRequestResponseViewKeyValueDetailList">
+                    <KeyValueDetailList
+                      keyName="Key"
+                      valueName="Value"
+                      items={createKeyValuePairFromUrlEncoded(body)}
+                    />
+                  </div>
+                )}
                 {this.state.bodyView === 'Tree' && (
                   <div className="inspectorRequestResponseViewObjectInspector">
                     <ObjectInspector data={JSON.parse(body)} />
@@ -99,11 +123,11 @@ export class InspectorDetailRequestResponseView extends React.Component<
   }
 
   private canPreview(contentType: string) {
-    return isJson(contentType) || isText(contentType) || isImage(contentType);
+    return isJson(contentType) || isWwwFormUrlencoded(contentType) || isText(contentType) || isImage(contentType);
   }
 
   private onBodyPivotItemClicked = (item: PivotItem) => {
-    this.setState({ bodyView: item.props.itemKey as 'Tree' | 'Source' });
+    this.setState({ bodyView: item.props.itemKey as PreviewType });
   };
 }
 
