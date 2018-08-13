@@ -9,51 +9,61 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rin.Middlewares
 {
     public class ResourcesMiddleware
     {
+        private static readonly object _syncLock = new object();
+
         public ResourcesMiddleware(RequestDelegate next)
         {
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public Task InvokeAsync(HttpContext context)
         {
             if (String.IsNullOrEmpty(context.Request.Path.Value))
             {
                 context.Response.Redirect(context.Request.PathBase + "/", true);
-                return;
+                return Task.CompletedTask;
             }
 
-
-            Stream stream;
-            String contentType;
-
-            if (Resources.TryOpen(context.Request.Path.Value.TrimStart('/'), out stream, out contentType))
+            // TODO: ZipArchive(ZipArchiveEntry) provides a resource stream.
+            // But the archive doesn't guarantee thread-safety. Only one stream can be open at once.
+            lock (_syncLock)
             {
-                using (stream)
+                Stream stream;
+                String contentType;
+
+                if (Resources.TryOpen(context.Request.Path.Value.TrimStart('/'), out stream, out contentType))
                 {
-                    await WriteStreamToClientAsync(context, stream, contentType);
-                    return;
+                    using (stream)
+                    {
+                        WriteStreamToClientAsync(context, stream, contentType).Wait();
+                        return Task.CompletedTask;
+                    }
+                }
+                // for SPA (+ rewrite paths in HTML)
+                else if (
+                    context.Request.Headers.TryGetValue("Accept", out var acceptHeaders) &&
+                    acceptHeaders.Any(x => x.Contains("text/html")) &&
+                    Resources.TryOpen("index.html", out stream, out contentType)
+                )
+                {
+                    using (stream)
+                    {
+                        WriteStreamToClientAsync(context,
+                            RewriteHtmlIfNeeded(stream, contentType, context.Request.PathBase), contentType).Wait();
+                        return Task.CompletedTask;
+                    }
                 }
             }
-            // for SPA (+ rewrite paths in HTML)
-            else if (
-                context.Request.Headers.TryGetValue("Accept", out var acceptHeaders) &&
-                acceptHeaders.Any(x => x.Contains("text/html")) &&
-                Resources.TryOpen("index.html", out stream, out contentType)
-            )
-            {
-                using (stream)
-                {
-                    await WriteStreamToClientAsync(context, RewriteHtmlIfNeeded(stream, contentType, context.Request.PathBase), contentType);
-                    return;
-                }
-            }
+
 
             context.Response.StatusCode = 404;
+            return Task.CompletedTask;
         }
 
         private async Task WriteStreamToClientAsync(HttpContext context, Stream stream, string contentType)
