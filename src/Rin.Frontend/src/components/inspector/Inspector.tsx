@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import { Icon, SearchBox } from 'office-ui-fabric-react';
 import { CheckboxVisibility, DetailsList, IColumn } from 'office-ui-fabric-react/lib/DetailsList';
 import * as React from 'react';
+import { RequestEventPayload } from '../../api/IRinCoreHub';
 import { inspectorStore } from '../../store/InspectorStore';
 import './Inspector.css';
 import { InspectorDetail } from './InspectorDetail';
@@ -16,7 +17,7 @@ export class Inspector extends React.Component {
       isIconOnly: true,
       minWidth: 16,
       maxWidth: 16,
-      onRender: (item: any) => {
+      onRender: (item: RequestEventPayload) => {
         return (
           <Icon
             iconName={
@@ -40,13 +41,14 @@ export class Inspector extends React.Component {
       fieldName: 'Path',
       minWidth: 100,
       isResizable: true,
-      onRender: (item: any) => (
-        <span
+      onRender: (item: RequestEventPayload) => (
+        <div
           title={item.Path}
           style={{ color: item.ResponseStatusCode >= 400 && item.ResponseStatusCode <= 599 ? '#a80000' : '#000' }}
         >
-          {item.Path}
-        </span>
+          <div className="inspectorEventsItem_Path">{item.Path}</div>
+          <div className="inspectorEventsItem_ReceivedAt">{new Date(item.RequestReceivedAt).toLocaleString()}</div>
+        </div>
       )
     },
     {
@@ -55,11 +57,14 @@ export class Inspector extends React.Component {
       fieldName: 'ResponseStatusCode',
       minWidth: 64,
       isResizable: true,
-      onRender: (item: any) =>
+      onRender: (item: RequestEventPayload) =>
         item.ResponseStatusCode === 0 ? (
           <span>-</span>
         ) : (
-          <span style={{ color: item.ResponseStatusCode >= 400 && item.ResponseStatusCode <= 599 ? '#a80000' : '' }}>
+          <span
+            className="inspectorEventsItem_ResponseStatusCode"
+            style={{ color: item.ResponseStatusCode >= 400 && item.ResponseStatusCode <= 599 ? '#a80000' : '' }}
+          >
             {item.ResponseStatusCode}
           </span>
         )

@@ -1,5 +1,6 @@
 ﻿using Rin.Core;
 using Rin.Core.Record;
+using System;
 
 namespace Rin.Hubs.Payloads
 {
@@ -7,6 +8,7 @@ namespace Rin.Hubs.Payloads
     {
         public string Id { get; private set; }
         public bool IsCompleted { get; private set; }
+        public DateTimeOffset RequestReceivedAt { get; private set; }
         public string Method { get; private set; }
         public string Path { get; private set; }
         public int ResponseStatusCode { get; private set; }
@@ -14,6 +16,7 @@ namespace Rin.Hubs.Payloads
         public RequestEventPayload(HttpRequestRecord record)
         {
             Id = record.Id;
+            RequestReceivedAt = record.RequestReceivedAt;
             IsCompleted = record.IsCompleted;
             Method = record.Method;
             Path = record.Path;

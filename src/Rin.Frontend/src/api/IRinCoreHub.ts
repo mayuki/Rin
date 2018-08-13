@@ -8,6 +8,7 @@ export interface IRinCoreHub {
 export interface RequestEventPayload {
   Id: string;
   IsCompleted: boolean;
+  RequestReceivedAt: string;
   Method: string;
   Path: string;
   ResponseStatusCode: number;
