@@ -41,34 +41,15 @@ namespace Rin.Hubs
         public BodyDataPayload GetRequestBody(string id)
         {
             return (_storage.TryGetById(id, out var value))
-                ? CreateFromRecord(value, value.RequestHeaders, value.RequestBody, _bodyDataTransformerSet.Request)
+                ? BodyDataPayload.CreateFromRecord(value, value.RequestHeaders, value.RequestBody, _bodyDataTransformerSet.Request)
                 : null;
         }
 
         public BodyDataPayload GetResponseBody(string id)
         {
             return (_storage.TryGetById(id, out var value))
-                ? CreateFromRecord(value, value.ResponseHeaders, value.ResponseBody, _bodyDataTransformerSet.Response)
+                ? BodyDataPayload.CreateFromRecord(value, value.ResponseHeaders, value.ResponseBody, _bodyDataTransformerSet.Response)
                 : null;
-        }
-
-        private BodyDataPayload CreateFromRecord(HttpRequestRecord record, IDictionary<string, StringValues> headers, byte[] body, IBodyDataTransformer transformer)
-        {
-            if (headers.TryGetValue("Content-Type", out var contentType))
-            {
-                var result = transformer.Transform(record, body, contentType);
-
-                if (result.ContentType.StartsWith("text/") || result.ContentType.StartsWith("application/json") || result.ContentType.StartsWith("text/json"))
-                {
-                    return new BodyDataPayload(new UTF8Encoding(false).GetString(result.Body), false, result.TransformedContentType ?? "");
-                }
-                else
-                {
-                    return new BodyDataPayload(Convert.ToBase64String(result.Body), true, result.TransformedContentType ?? "");
-                }
-            }
-
-            return new BodyDataPayload(Convert.ToBase64String(body), true, "");
         }
 
         public bool Ping()
