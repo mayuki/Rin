@@ -28,7 +28,6 @@ namespace Rin.Core.Record
 
         public Exception Exception { get; internal set; }
 
-        public ConcurrentQueue<TraceLogRecord> Traces { get; internal set; }
         public ITimelineScope Timeline { get; internal set; }
 
         internal ITimelineScope Processing { get; set; }

@@ -126,6 +126,11 @@ namespace Rin.Core.Record
         public const string Data = "Rin.Timeline.Data";
 
         /// <summary>
+        /// Log/Trace events.
+        /// </summary>
+        public const string Trace = "Rin.Timeline.Trace";
+
+        /// <summary>
         /// ASP.NET Core common events.
         /// </summary>
         public const string AspNetCoreCommon = "Rin.Timeline.AspNetCore.Common";

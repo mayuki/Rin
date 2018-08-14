@@ -7,7 +7,7 @@ import {
   SelectionMode
 } from 'office-ui-fabric-react';
 import * as React from 'react';
-import { LogLevel, RequestRecordDetailPayload, TraceLogRecord } from '../../api/IRinCoreHub';
+import { RequestRecordDetailPayload, TimelineData, TimelineScopeCategory } from '../../api/IRinCoreHub';
 
 export interface IInspectorDetailTraceViewProps {
   record: RequestRecordDetailPayload;
@@ -18,7 +18,7 @@ export class InspectorDetailTraceView extends React.Component<IInspectorDetailTr
     {
       key: 'Time',
       name: 'Time',
-      fieldName: 'DateTime',
+      fieldName: 'Timestamp',
       minWidth: 200,
       maxWidth: 200,
       isResizable: true
@@ -30,16 +30,16 @@ export class InspectorDetailTraceView extends React.Component<IInspectorDetailTr
       minWidth: 64,
       maxWidth: 72,
       isResizable: true,
-      onRender: (item: TraceLogRecord) => (
+      onRender: (item: TimelineData) => (
         <>
-          <span>{LogLevel[item.LogLevel]}</span>
+          <span>{item.Name}</span>
         </>
       )
     },
     {
       key: 'Message',
       name: 'Message',
-      fieldName: 'Message',
+      fieldName: 'Data',
       minWidth: 100,
       isResizable: true
     }
@@ -53,7 +53,7 @@ export class InspectorDetailTraceView extends React.Component<IInspectorDetailTr
           checkboxVisibility={CheckboxVisibility.hidden}
           selectionMode={SelectionMode.none}
           columns={this.traceColumns}
-          items={this.props.record.Traces}
+          items={collectTraces(this.props.record.Timeline)}
           onRenderRow={this.onRenderRow}
         />
       </div>
@@ -61,12 +61,25 @@ export class InspectorDetailTraceView extends React.Component<IInspectorDetailTr
   }
 
   private onRenderRow(props: IDetailsRowProps) {
-    const traceLogRecord = props.item as TraceLogRecord;
-    const className = `inspectorDetailTraceView_Row inspectorDetailTraceView_Row-${LogLevel[traceLogRecord.LogLevel]}`;
+    const timelineData = props.item as TimelineData;
+    const className = `inspectorDetailTraceView_Row inspectorDetailTraceView_Row-${timelineData.Name}`;
     return (
       <div className={className}>
         <DetailsRow {...props} />
       </div>
     );
   }
+}
+
+function collectTraces(data: TimelineData): TimelineData[] {
+  return data.Children.reduce(
+    (r, v) => {
+      if (v.Category === TimelineScopeCategory.Trace) {
+        r.push(v);
+      }
+
+      return r.concat(collectTraces(v));
+    },
+    [] as TimelineData[]
+  );
 }

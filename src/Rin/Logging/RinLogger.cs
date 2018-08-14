@@ -33,7 +33,8 @@ namespace Rin.Logging
             var recording = httpContext?.Features.Get<IRinRequestRecordingFeature>();
             if (recording == null) return;
 
-            recording.Record.Traces.Enqueue(new TraceLogRecord(DateTime.Now, logLevel, formatter(state, exception)));
+            var scope = TimelineScope.Create(logLevel.ToString(), TimelineScopeCategory.Trace, formatter(state, exception));
+            scope.Complete();
         }
     }
 }

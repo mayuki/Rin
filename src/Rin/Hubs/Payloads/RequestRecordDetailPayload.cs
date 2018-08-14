@@ -32,7 +32,6 @@ namespace Rin.Hubs.Payloads
 
         public Exception Exception { get; private set; }
 
-        public TraceLogRecord[] Traces { get; private set; }
         public TimelineData Timeline { get; private set; }
 
         public RequestRecordDetailPayload(HttpRequestRecord record)
@@ -53,7 +52,6 @@ namespace Rin.Hubs.Payloads
             TransferringCompletedAt = record.TransferringCompletedAt;
 
             Exception = record.Exception;
-            Traces = record.Traces.ToArray();
             Timeline = new TimelineData(record.Timeline);
         }
 

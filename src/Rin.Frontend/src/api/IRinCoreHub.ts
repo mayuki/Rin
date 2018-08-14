@@ -38,23 +38,27 @@ export interface RequestRecordDetailPayload {
   TransferringStartedAt: string;
   TransferringCompletedAt: string;
   Exception: any;
-  Traces: { DateTime: string; LogLevel: LogLevel; Message: string }[];
   Timeline: TimelineData;
 }
 
 export interface TimelineData {
   Timestamp: string;
-  Category: string;
+  Category: TimelineScopeCategory | string;
   Name: string;
   Data: string | null;
   Duration: number;
   Children: TimelineData[];
 }
 
-export interface TraceLogRecord {
-  DateTime: string;
-  LogLevel: LogLevel;
-  Message: string;
+export enum TimelineScopeCategory {
+  Root = 'Rin.Timeline.Root',
+  Method = 'Rin.Timeline.Method',
+  Data = 'Rin.Timeline.Data',
+  Trace = 'Rin.Timeline.Trace',
+  AspNetCoreCommon = 'Rin.Timeline.AspNetCore.Common',
+  AspNetCoreMvcView = 'Rin.Timeline.AspNetCore.Mvc.View',
+  AspNetCoreMvcResult = 'Rin.Timeline.AspNetCore.Mvc.Result',
+  AspNetCoreMvcAction = 'Rin.Timeline.AspNetCore.Mvc.Action'
 }
 
 // from Microsoft.Extensions.Logging.LogLevel

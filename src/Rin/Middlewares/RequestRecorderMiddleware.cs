@@ -49,7 +49,6 @@ namespace Rin.Middlewares
                 RequestReceivedAt = DateTime.Now,
                 RequestHeaders = request.Headers.ToDictionary(k => k.Key, v => v.Value),
                 RemoteIpAddress = request.HttpContext.Connection.RemoteIpAddress,
-                Traces = new System.Collections.Concurrent.ConcurrentQueue<TraceLogRecord>(),
                 Timeline = TimelineScope.Prepare(),
             };
 
@@ -79,7 +78,6 @@ namespace Rin.Middlewares
             finally
             {
                 record.Processing.Complete();
-                record.Timeline.Complete();
 
                 record.ResponseStatusCode = response.StatusCode;
                 record.ResponseHeaders = response.Headers.ToDictionary(k => k.Key, v => v.Value);
@@ -114,6 +112,7 @@ namespace Rin.Middlewares
 
             record.TransferringCompletedAt = DateTime.Now;
             record.Transferring.Complete();
+            record.Timeline.Complete();
 
             return _eventBus.PostAsync(new RequestEventMessage(record, RequestEvent.CompleteRequest)).AsTask();
         }

@@ -33,6 +33,7 @@
 .timeline_spans {
   grid-row: 2;
   grid-column: 1;
+  overflow: hidden;
 }
 .timelineSpan {
   border-bottom: 1px solid #eee;
@@ -61,18 +62,69 @@
   margin-bottom: 6px;
   border-radius: 2px;
 }
+.timelineSpan_name::before {
+  content: '';
+  border: 12px solid #555;
+  border-width: 6px 3px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-right: 4px;
+}
 
+.timelineSpan_point {
+  border: 1px solid #555;
+  background-color: #555;
+  box-sizing: border-box;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  border-radius: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 6px;
+}
+
+
+
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Data'] .timelineSpan_name::before,
 .timelineSpan[data-rin-timeline-category='Rin.Timeline.Data'] .timelineSpan_bar {
     border-color: #c55056;
     background-color: #c55056;
 }
+.timelineSpan[data-rin-timeline-category^='Rin.Timeline.AspNetCore.'] .timelineSpan_name::before,
 .timelineSpan[data-rin-timeline-category^='Rin.Timeline.AspNetCore.'] .timelineSpan_bar {
     border-color: #79a7c9;
     background-color: #79a7c9;
 }
+.timelineSpan[data-rin-timeline-category^='Rin.Timeline.AspNetCore.Mvc.'] .timelineSpan_name::before,
 .timelineSpan[data-rin-timeline-category^='Rin.Timeline.AspNetCore.Mvc.'] .timelineSpan_bar {
     border-color: #9ec7be;
     background-color: #9ec7be;
+}
+
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'] .timelineSpan_name::before {
+  border-width: 3px 3px;
+}
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Debug'] .timelineSpan_name::before,
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Debug'] .timelineSpan_point {
+  border-color: #ccc;
+  background-color: #ccc;
+}
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Information'] .timelineSpan_name::before,
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Information'] .timelineSpan_point {
+  border-color: #aaa;
+  background-color: #aaa;
+}
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Warning'] .timelineSpan_name::before,
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Warning'] .timelineSpan_point {
+  border-color: #e0ad06;
+  background-color: #e0ad06;
+}
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Error'] .timelineSpan_name::before,
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Error'] .timelineSpan_point,
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Critical'] .timelineSpan_name::before,
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Critical'] .timelineSpan_point {
+  border-color: #a80000;
+  background-color: #a80000;
 }
 
 .timelineCalloutContent {
