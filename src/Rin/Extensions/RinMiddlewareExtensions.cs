@@ -1,5 +1,7 @@
-﻿using Rin.Core;
+﻿using Microsoft.AspNetCore.Hosting;
+using Rin.Core;
 using Rin.Middlewares;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,6 +14,13 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static void UseRin(this IApplicationBuilder app)
         {
+            var options = app.ApplicationServices.GetService(typeof(RinOptions)) as RinOptions;
+            var env = app.ApplicationServices.GetService(typeof(IHostingEnvironment)) as IHostingEnvironment;
+            if (env.IsProduction() && !options.RequestRecorder.AllowRunningOnProduction)
+            {
+                throw new InvalidOperationException("Rin requires non-Production environment to run. If you want to run in Production environment, configure AllowRunningOnProduction option.");
+            }
+
             app.UseRinInspector();
             app.UseRinRecorder();
         }

@@ -13,5 +13,7 @@ namespace Rin.Core
         public int RetentionMaxRequests { get; set; } = 100;
 
         public bool EnableBodyCapturing { get; set; } = true;
+
+        public bool AllowRunningOnProduction { get; set; } = false;
     }
 }
