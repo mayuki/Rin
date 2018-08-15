@@ -84,6 +84,8 @@ export class InspectorDetail extends React.Component {
         generals={[{ key: 'StatusCode', value: selectedRecord.ResponseStatusCode + '' }]}
         headers={headers}
         body={inspectorStore.responseBody}
+        paneSize={inspectorStore.requestResponsePaneSize}
+        onPaneSizeChange={inspectorStore.onUpdateRequestResponsePaneSize}
       />
     );
   }
@@ -103,6 +105,8 @@ export class InspectorDetail extends React.Component {
         ]}
         headers={headers}
         body={inspectorStore.requestBody}
+        paneSize={inspectorStore.requestResponsePaneSize}
+        onPaneSizeChange={inspectorStore.onUpdateRequestResponsePaneSize}
       />
     );
   }

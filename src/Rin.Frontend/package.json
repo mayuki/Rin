@@ -29,6 +29,7 @@
     "react-dom": "^16.4.2",
     "react-inspector": "^2.3.0",
     "react-monaco-editor": "^0.17.2",
+    "react-splitter-layout": "^3.0.1",
     "resolve": "^1.8.1",
     "source-map-loader": "^0.2.1",
     "style-loader": "^0.21.0",

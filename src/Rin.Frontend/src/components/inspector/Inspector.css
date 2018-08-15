@@ -1,5 +1,5 @@
 .inspectorFrame {
-  height: 100vh;
+  height: calc(100vh - 46px);
   border: 1px solid transparent;
   overflow: hidden;
   box-sizing: border-box;
@@ -7,24 +7,19 @@
   grid-column: 1;
   grid-row: 2;
 
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  grid-template-rows: 1fr;
+  position: relative;
 }
-.inspectorFrame .leftPane {
-  grid-column: 1;
-  height: calc(100vh - 48px);
-  overflow-x: hidden;
-  overflow-y: scroll;
-  border-right: 1px solid #ccc;
+.inspectorFrame > .splitter-layout > .layout-pane:nth-child(3) {
+  overflow: hidden;
+}
 
+.inspectorFrame .leftPane {
   display: grid;
   grid-template-rows: auto 1fr;
 }
 .inspectorFrame .rightPane {
-  grid-column: 2;
-  height: calc(100vh - 48px);
-  overflow: auto;
+  overflow: hidden;
+  height: 100%;
 }
 
 .inspectorEventsItem_ReceivedAt {

@@ -3,6 +3,7 @@ import { Pivot, PivotItem } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { ObjectInspector } from 'react-inspector';
 import MonacoEditor from 'react-monaco-editor';
+import SplitterLayout from 'react-splitter-layout';
 import { BodyDataPayload, RequestRecordDetailPayload } from '../../api/IRinCoreHub';
 import {
   createKeyValuePairFromUrlEncoded,
@@ -20,6 +21,8 @@ export interface IInspectorRequestResponseViewProps {
   generals: { key: string; value: string }[];
   headers: { [key: string]: string[] };
   body: BodyDataPayload | null;
+  paneSize: number | null;
+  onPaneSizeChange: (newSize: number) => void;
 }
 
 type PreviewType = 'Tree' | 'Source' | 'List';
@@ -59,65 +62,76 @@ export class InspectorDetailRequestResponseView extends React.Component<
 
     return (
       <div className="inspectorRequestResponseView">
-        <div className="inspectorRequestResponseView_General">
-          {this.props.generals != null &&
-            this.props.generals.length > 0 && (
-              <KeyValueDetailList keyName="Name" valueName="Value" items={this.props.generals} />
-            )}
-        </div>
-        <div className="inspectorRequestResponseView_Headers">
-          <KeyValueDetailList
-            keyName="Header"
-            valueName="Value"
-            items={Object.keys(this.props.headers).map(x => ({
-              key: x,
-              value: this.props.headers[x].join('\n')
-            }))}
-          />
-        </div>
-        <div className="inspectorRequestResponseView_Body">
-          {hasBody &&
-            contentType &&
-            this.canPreview(contentType) && (
-              <>
-                <Pivot selectedKey={this.state.bodyView} onLinkClick={this.onBodyPivotItemClicked}>
-                  {isJson(contentType) ? <PivotItem itemKey="Tree" headerText="Tree" itemIcon="RowsChild" /> : <></>}
-                  {isWwwFormUrlencoded(contentType) ? (
-                    <PivotItem itemKey="List" headerText="List" itemIcon="ViewList" />
-                  ) : (
-                    <></>
-                  )}
-                  <PivotItem
-                    itemKey="Source"
-                    headerText={isTransformed ? `View as ${contentType}` : 'Source'}
-                    itemIcon="Code"
-                  />
-                </Pivot>
-                {this.state.bodyView === 'List' && (
-                  <div className="inspectorRequestResponseViewKeyValueDetailList">
-                    <KeyValueDetailList
-                      keyName="Key"
-                      valueName="Value"
-                      items={createKeyValuePairFromUrlEncoded(body)}
-                    />
-                  </div>
+        <SplitterLayout
+          vertical={true}
+          percentage={true}
+          secondaryInitialSize={this.props.paneSize || undefined}
+          onSecondaryPaneSizeChange={this.props.onPaneSizeChange}
+          primaryMinSize={10}
+          secondaryMinSize={10}
+        >
+          <div>
+            <div className="inspectorRequestResponseView_General">
+              {this.props.generals != null &&
+                this.props.generals.length > 0 && (
+                  <KeyValueDetailList keyName="Name" valueName="Value" items={this.props.generals} />
                 )}
-                {this.state.bodyView === 'Tree' && (
-                  <div className="inspectorRequestResponseViewObjectInspector">
-                    <ObjectInspector data={JSON.parse(body)} />
-                  </div>
-                )}
-                {this.state.bodyView === 'Source' && (
-                  <>
-                    {isText(contentType) && <EditorPreview contentType={contentType} body={body} />}
-                    {isImage(contentType) && (
-                      <ImagePreview contentType={contentType} bodyAsBase64={this.props.body!.Body} />
+            </div>
+            <div className="inspectorRequestResponseView_Headers">
+              <KeyValueDetailList
+                keyName="Header"
+                valueName="Value"
+                items={Object.keys(this.props.headers).map(x => ({
+                  key: x,
+                  value: this.props.headers[x].join('\n')
+                }))}
+              />
+            </div>
+          </div>
+          <div className="inspectorRequestResponseView_Body">
+            {hasBody &&
+              contentType &&
+              this.canPreview(contentType) && (
+                <>
+                  <Pivot selectedKey={this.state.bodyView} onLinkClick={this.onBodyPivotItemClicked}>
+                    {isJson(contentType) ? <PivotItem itemKey="Tree" headerText="Tree" itemIcon="RowsChild" /> : <></>}
+                    {isWwwFormUrlencoded(contentType) ? (
+                      <PivotItem itemKey="List" headerText="List" itemIcon="ViewList" />
+                    ) : (
+                      <></>
                     )}
-                  </>
-                )}
-              </>
-            )}
-        </div>
+                    <PivotItem
+                      itemKey="Source"
+                      headerText={isTransformed ? `View as ${contentType}` : 'Source'}
+                      itemIcon="Code"
+                    />
+                  </Pivot>
+                  {this.state.bodyView === 'List' && (
+                    <div className="inspectorRequestResponseViewKeyValueDetailList">
+                      <KeyValueDetailList
+                        keyName="Key"
+                        valueName="Value"
+                        items={createKeyValuePairFromUrlEncoded(body)}
+                      />
+                    </div>
+                  )}
+                  {this.state.bodyView === 'Tree' && (
+                    <div className="inspectorRequestResponseViewObjectInspector">
+                      <ObjectInspector data={JSON.parse(body)} />
+                    </div>
+                  )}
+                  {this.state.bodyView === 'Source' && (
+                    <>
+                      {isText(contentType) && <EditorPreview contentType={contentType} body={body} />}
+                      {isImage(contentType) && (
+                        <ImagePreview contentType={contentType} bodyAsBase64={this.props.body!.Body} />
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+          </div>
+        </SplitterLayout>
       </div>
     );
   }

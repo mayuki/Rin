@@ -70,3 +70,8 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+/* react-splitter-layout */
+.applicationFrame .splitter-layout > .layout-splitter {
+  background: rgb(244, 244, 244);
+}

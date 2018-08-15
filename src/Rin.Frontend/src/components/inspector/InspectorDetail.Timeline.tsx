@@ -136,7 +136,7 @@ class TimelineSpan extends React.Component<{
             <div
               className="timelineSpan_point"
               ref={this.timelineSpanItemRef}
-              style={{ marginLeft: 'calc(' + left + '% - 8px)' }}
+              style={{ marginLeft: 'calc(' + left + '% - 4px)' }}
             />
           ) : (
             <div

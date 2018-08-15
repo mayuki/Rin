@@ -17,6 +17,11 @@ export class InspectorStore {
   currentRecordDetail: RequestRecordDetailPayload | null;
 
   @observable
+  leftPaneSize: number = 300;
+  @observable
+  requestResponsePaneSize: number | null;
+
+  @observable
   items: RequestEventPayload[] = [];
 
   private hubClient: IHubClient & IRinCoreHub;
@@ -88,6 +93,18 @@ export class InspectorStore {
     });
   }
 
+  @action.bound
+  onUpdateLeftPaneSize(newSize: number) {
+    this.leftPaneSize = newSize;
+    window.localStorage['Rin.Inspector.LeftPaneSize'] = this.leftPaneSize.toString();
+  }
+  @action.bound
+  onUpdateRequestResponsePaneSize(newSize: number) {
+    this.requestResponsePaneSize = newSize;
+    window.localStorage['Rin.Inspector.RequestResponsePaneSize'] = this.requestResponsePaneSize.toString();
+  }
+
+  @action.bound
   ready(hubClient: IHubClient & IRinCoreHub) {
     this.hubClient = hubClient;
     this.hubClient.on('reconnecting', () => {
@@ -109,6 +126,9 @@ export class InspectorStore {
     });
 
     this.fetchItemsAsync();
+
+    this.leftPaneSize = JSON.parse(window.localStorage['Rin.Inspector.LeftPaneSize'] || '300');
+    this.requestResponsePaneSize = JSON.parse(window.localStorage['Rin.Inspector.RequestResponsePaneSize'] || 'null');
   }
 
   private triggerRequestEventQueue() {

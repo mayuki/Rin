@@ -33,7 +33,6 @@
 .timeline_spans {
   grid-row: 2;
   grid-column: 1;
-  overflow: hidden;
 }
 .timelineSpan {
   border-bottom: 1px solid #eee;

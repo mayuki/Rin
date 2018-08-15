@@ -24,10 +24,9 @@
 }
 
 .inspectorRequestResponseView {
-    display: grid;
-    grid-template-rows: auto 1fr 1fr;
     height: 100%;
     padding: 0;
+    position: relative;
 }
 .inspectorRequestResponseView_General {
 }
@@ -44,6 +43,7 @@
     display: grid;
     grid-template-rows: auto 1fr;
     grid-gap: 12px;
+    height: 100%;
 }
 .inspectorRequestResponseView_Body .ms-Pivot {
     margin: 0 12px;
