@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{B82C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rin.Mvc", "src\Rin.Mvc\Rin.Mvc.csproj", "{BDFF983D-4A01-4F65-BA97-45DB18B124D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rin.Log4NetAppender", "src\Rin.Log4NetAppender\Rin.Log4NetAppender.csproj", "{20890D4F-9D03-4663-ACCE-D4404E8A8AF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{BDFF983D-4A01-4F65-BA97-45DB18B124D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDFF983D-4A01-4F65-BA97-45DB18B124D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDFF983D-4A01-4F65-BA97-45DB18B124D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20890D4F-9D03-4663-ACCE-D4404E8A8AF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20890D4F-9D03-4663-ACCE-D4404E8A8AF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20890D4F-9D03-4663-ACCE-D4404E8A8AF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20890D4F-9D03-4663-ACCE-D4404E8A8AF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

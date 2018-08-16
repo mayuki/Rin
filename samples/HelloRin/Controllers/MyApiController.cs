@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using HelloRin.Models;
+using log4net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,7 @@ namespace HelloRin.Controllers
     public class MyApiController : ControllerBase
     {
         private readonly ILogger<MyApiController> _logger;
+        private readonly ILog _loggerLog4Net = log4net.LogManager.GetLogger(typeof(MyApiController));
 
         public MyApiController(ILogger<MyApiController> logger)
         {
@@ -121,6 +123,8 @@ namespace HelloRin.Controllers
 
         public async Task<IActionResult> Timeline()
         {
+            _loggerLog4Net.Warn("Begin Timeline (logging via log4net)");
+
             using (TimelineScope.Create("First"))
             {
                 await Task.Delay(50);

@@ -3,17 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <Authors>Mayuki Sawatari</Authors>
-    <Description>This package adds support for ASP.NET MVC Core to Rin</Description>
-    <Company>Mayuki Sawatari</Company>
+    <Description>This package adds support for tracing with log4net to Rin</Description>
     <Copyright>Mayuki Sawatari</Copyright>
     <PackageLicenseUrl>https://github.com/mayuki/Rin/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
-    <PackageTags>Rin MVC</PackageTags>
+    <PackageTags>Rin</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DiagnosticAdapter" Version="2.1.0" />
+    <PackageReference Include="log4net" Version="2.0.8" />
   </ItemGroup>
 
   <ItemGroup>
