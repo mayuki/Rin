@@ -103,9 +103,11 @@
 .timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'] .timelineSpan_name::before {
   border-width: 3px 3px;
 }
-.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Debug'] .timelineSpan_name::before,
-.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Debug'] .timelineSpan_point {
-  border-color: #ccc;
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Trace'] .timelineSpan_name::before,
+.timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Trace'] .timelineSpan_point,
+  .timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Debug'] .timelineSpan_name::before,
+  .timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Debug'] .timelineSpan_point {
+    border-color: #ccc;
   background-color: #ccc;
 }
 .timelineSpan[data-rin-timeline-category='Rin.Timeline.Trace'][data-rin-timeline-name='Information'] .timelineSpan_name::before,
