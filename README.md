@@ -1,27 +1,28 @@
-# Rin
-**R**equest/response **In**spector middleware for ASP.NET Core. like Glimpse and Fiddler.
+# <img src="docs/images/logo.svg" alt="" width="32" /> Rin
+**R**equest/response **In**spector middleware for ASP.NET Core. like Glimpse.
 
 Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured data. It's useful tool to debug your Web application.
 
 ![](docs/images/Demo-01.gif)
 
 # Features
-- 📼 Recording requests and responses
-    - Including...
-        - Traces (`Microsoft.Extensions.Logging.ILogger`)
-        - Unhandled Exception
-- 🌎 Inspection from Web browser
-    - ⚡ Realtime (powered by WebSocket)
-    - ⏲ Timeline view<br>![](docs/images/Screenshot-02.png)
-    - 🔍 Preview a request/response body
-        - JSON as tree view<br>![](docs/images/Screenshot-03.png)
-        - Image view (PNG, JPEG, SVG, ...)
-        - Syntax highligting (powered by Monaco Editor)
-    - 📝 View trace logs
+## 📼 Record requests and responses (+additional metrics)
+- Traces (`Microsoft.Extensions.Logging.ILogger`, log4net, ...)
+- Unhandled Exception
+## 🌎 Inspect from Web browser
+### ⚡ Realtime (powered by WebSocket)
+### ⏲ Timeline view<br>![](docs/images/Screenshot-02.png)
+### 🔍 Preview a request/response body
+- JSON as tree view<br>![](docs/images/Screenshot-03.png)
+- Image view (PNG, JPEG, SVG, ...)
+- Syntax highligting (powered by Monaco Editor)
+### 📝 View trace logs
+### 💾 Save and export request/response
+
 
 # Requirements
-- .NET Core 2.0 or later
-- ASP.NET Core 2.1 or later
+- .NET Core 2.0+
+- ASP.NET Core 2.1+
 - Modern browser (e.g. Microsoft Edge, Google Chrome, Firefox, Safari...)
     - WebSocket connectivity
 
