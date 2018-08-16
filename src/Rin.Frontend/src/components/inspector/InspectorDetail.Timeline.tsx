@@ -1,7 +1,39 @@
-import { Callout, DirectionalHint, FontClassNames, Icon } from 'office-ui-fabric-react';
+import { Callout, DirectionalHint, FontClassNames, Icon, Toggle } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { TimelineData, TimelineScopeCategory } from '../../api/IRinCoreHub';
 import './InspectorDetail.Timeline.css';
+
+export interface InspectorDetailTimelineViewProps {
+  data: TimelineData;
+  isCalloutVisible: boolean;
+  isTraceVisibleInTimeline: boolean;
+  showCallout: (data: TimelineData, target: HTMLElement) => void;
+  dismissCallout: () => void;
+  calloutTimelineData: TimelineData | null;
+  calloutTarget: HTMLElement;
+  toggleTraceVisibility: (visible: boolean) => void;
+}
+
+export class InspectorDetailTimelineView extends React.Component<InspectorDetailTimelineViewProps> {
+  render() {
+    const filter = this.props.isTraceVisibleInTimeline
+      ? (_: TimelineData) => true
+      : (data: TimelineData) => data.Category !== TimelineScopeCategory.Trace;
+
+    return (
+      <div className="inspectorDetailTimelineView">
+        <div className="inspectorDetailTimelineView_Commands">
+          <Toggle
+            label="Show Traces"
+            checked={this.props.isTraceVisibleInTimeline}
+            onChanged={this.props.toggleTraceVisibility}
+          />
+        </div>
+        <Timeline {...this.props} filter={filter} />
+      </div>
+    );
+  }
+}
 
 export interface TimelineProps {
   data: TimelineData;
@@ -10,16 +42,10 @@ export interface TimelineProps {
   dismissCallout: () => void;
   calloutTimelineData: TimelineData | null;
   calloutTarget: HTMLElement;
+  filter: (data: TimelineData) => boolean;
 }
 
-function maxEndTime(data: TimelineData): number {
-  const childrenEndTimeMax = data.Children.reduce((r, v) => Math.max(maxEndTime(v), r), 0);
-
-  const endTime = new Date(data.Timestamp).valueOf() + data.Duration;
-  return Math.max(childrenEndTimeMax, endTime);
-}
-
-export class Timeline extends React.Component<TimelineProps> {
+class Timeline extends React.Component<TimelineProps> {
   render() {
     const beginTime = new Date(this.props.data.Timestamp).valueOf();
     const endTime = maxEndTime(this.props.data);
@@ -49,6 +75,7 @@ export class Timeline extends React.Component<TimelineProps> {
           <TimelineSpans
             data={this.props.data}
             totalDuration={totalDuration}
+            filter={this.props.filter}
             onTimelineSpanClick={this.props.showCallout}
           />
         </div>
@@ -82,22 +109,33 @@ export class Timeline extends React.Component<TimelineProps> {
   }
 }
 
-class TimelineSpans extends React.Component<{
+function maxEndTime(data: TimelineData): number {
+  const childrenEndTimeMax = data.Children.reduce((r, v) => Math.max(maxEndTime(v), r), 0);
+
+  const endTime = new Date(data.Timestamp).valueOf() + data.Duration;
+  return Math.max(childrenEndTimeMax, endTime);
+}
+
+interface TimelineSpansProps {
   data: TimelineData;
   totalDuration: number;
   onTimelineSpanClick: (data: TimelineData, target: HTMLElement) => void;
-}> {
+  filter: (data: TimelineData) => boolean;
+}
+
+class TimelineSpans extends React.Component<TimelineSpansProps> {
   render() {
     const originDate = new Date(this.props.data.Timestamp);
     return (
       <>
-        {this.props.data.Children.map((x, i) => (
+        {this.props.data.Children.filter(this.props.filter).map((x, i) => (
           <TimelineSpan
             key={'timelineSpan-' + i}
             data={x}
             totalDuration={this.props.totalDuration}
             originDate={originDate}
             onTimelineSpanClick={this.props.onTimelineSpanClick}
+            filter={this.props.filter}
           />
         ))}
       </>
@@ -105,12 +143,15 @@ class TimelineSpans extends React.Component<{
   }
 }
 
-class TimelineSpan extends React.Component<{
+interface TimelineSpanProps {
   data: TimelineData;
   totalDuration: number;
   originDate: Date;
   onTimelineSpanClick: (data: TimelineData, target: HTMLElement) => void;
-}> {
+  filter: (data: TimelineData) => boolean;
+}
+
+class TimelineSpan extends React.Component<TimelineSpanProps> {
   private timelineSpanItemRef = React.createRef<HTMLDivElement>();
 
   render() {
@@ -147,13 +188,14 @@ class TimelineSpan extends React.Component<{
             />
           )}
         </div>
-        {this.props.data.Children.map((x, i) => (
+        {this.props.data.Children.filter(this.props.filter).map((x, i) => (
           <TimelineSpan
             key={'timelineSpan-' + i}
             data={x}
             totalDuration={this.props.totalDuration}
             originDate={this.props.originDate}
             onTimelineSpanClick={this.props.onTimelineSpanClick}
+            filter={this.props.filter}
           />
         ))}
       </>

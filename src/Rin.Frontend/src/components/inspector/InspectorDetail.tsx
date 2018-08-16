@@ -9,7 +9,7 @@ import { InspectorDetailCommandBar } from './InspectorDetail.CommandBar';
 import './InspectorDetail.css';
 import { InspectorDetailExceptionView } from './InspectorDetail.ExceptionView';
 import { InspectorDetailRequestResponseView } from './InspectorDetail.RequestResponseView';
-import { Timeline } from './InspectorDetail.Timeline';
+import { InspectorDetailTimelineView } from './InspectorDetail.Timeline';
 import { InspectorDetailTraceView } from './InspectorDetail.TraceView';
 
 // Container Component
@@ -52,13 +52,15 @@ export class InspectorDetail extends React.Component {
               {inspectorStore.currentDetailView === DetailViewType.Request && this.renderRequestView()}
               {inspectorStore.currentDetailView === DetailViewType.Response && this.renderResponseView()}
               {inspectorStore.currentDetailView === DetailViewType.Timeline && (
-                <Timeline
+                <InspectorDetailTimelineView
                   data={selectedRecord.Timeline}
+                  isTraceVisibleInTimeline={inspectorTimelineStore.isTraceVisibleInTimeline}
                   calloutTarget={inspectorTimelineStore.calloutTarget}
                   calloutTimelineData={inspectorTimelineStore.calloutTimelineData}
                   isCalloutVisible={inspectorTimelineStore.isCalloutVisible}
                   dismissCallout={inspectorTimelineStore.dismissCallout}
                   showCallout={inspectorTimelineStore.showCallout}
+                  toggleTraceVisibility={inspectorTimelineStore.toggleTraceVisibility}
                 />
               )}
               {inspectorStore.currentDetailView === DetailViewType.Trace && (

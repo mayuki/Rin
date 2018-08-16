@@ -11,6 +11,9 @@ export class InspectorTimelineStore {
   @observable
   calloutTimelineData: TimelineData | null;
 
+  @observable
+  isTraceVisibleInTimeline = true;
+
   @action.bound
   showCallout(timelineData: TimelineData, target: HTMLElement) {
     this.calloutTimelineData = timelineData;
@@ -21,6 +24,19 @@ export class InspectorTimelineStore {
   @action.bound
   dismissCallout() {
     this.isCalloutVisible = false;
+  }
+
+  @action.bound
+  toggleTraceVisibility(visible: boolean) {
+    this.isTraceVisibleInTimeline = visible;
+    window.localStorage['Rin.Inspector.Timeline.IsTraceVisibleInTimeline'] = JSON.stringify(visible);
+  }
+
+  @action.bound
+  ready() {
+    this.isTraceVisibleInTimeline = JSON.parse(
+      window.localStorage['Rin.Inspector.Timeline.IsTraceVisibleInTimeline'] || 'true'
+    );
   }
 }
 

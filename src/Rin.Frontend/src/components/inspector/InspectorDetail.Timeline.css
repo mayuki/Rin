@@ -1,3 +1,21 @@
+.inspectorDetailTimelineView {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.inspectorDetailTimelineView_Commands {
+  margin: 0 16px;
+}
+.inspectorDetailTimelineView_Commands .ms-Toggle {
+  display: inline-block;
+}
+.inspectorDetailTimelineView_Commands .ms-Toggle label {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 8px;
+}
+
 .timeline {
   width: 100%;
   height: 100%;

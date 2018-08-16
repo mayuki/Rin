@@ -37,6 +37,7 @@ export class AppStore {
     this.hubClient = createHubClient<IRinCoreHub>(`${protocol}//${host}${channelEndPoint}`);
 
     inspectorStore.ready(this.hubClient);
+    inspectorTimelineStore.ready();
 
     this.hubClient.on('connected', () => {
       runInAction(() => (this.connected = true));
