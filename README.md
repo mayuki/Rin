@@ -13,12 +13,20 @@ Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured 
 ### ⚡ Realtime (powered by WebSocket)
 ### ⏲ Timeline view<br>![](docs/images/Screenshot-02.png)
 ### 🔍 Preview a request/response body
-- JSON as tree view<br>![](docs/images/Screenshot-03.png)
-- Image view (PNG, JPEG, SVG, ...)
+- JSON as tree view
+- Image preview (PNG, JPEG, SVG, ...)
 - Syntax highligting (powered by Monaco Editor)
-### 📝 View trace logs
-### 💾 Save and export request/response
+- application/x-www-urlencoded as list view
 
+![](docs/images/Screenshot-03.png)
+
+### 📝 View related trace logs
+- Built-in `Microsoft.Extensions.Logging.ILogger` integration
+- log4net Appender
+
+### 💾 Save and export request/response
+- Save request/response body
+- Copy request as cURL and C#
 
 # Requirements
 - .NET Core 2.0+
