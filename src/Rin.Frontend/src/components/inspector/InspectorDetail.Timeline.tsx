@@ -1,10 +1,10 @@
 import { Callout, DirectionalHint, FontClassNames, Icon, Toggle } from 'office-ui-fabric-react';
 import * as React from 'react';
-import { TimelineData, TimelineScopeCategory } from '../../api/IRinCoreHub';
+import { TimelineData, TimelineDataScope, TimelineEventCategory } from '../../api/IRinCoreHub';
 import './InspectorDetail.Timeline.css';
 
 export interface InspectorDetailTimelineViewProps {
-  data: TimelineData;
+  data: TimelineDataScope;
   isCalloutVisible: boolean;
   isTraceVisibleInTimeline: boolean;
   showCallout: (data: TimelineData, target: HTMLElement) => void;
@@ -18,7 +18,7 @@ export class InspectorDetailTimelineView extends React.Component<InspectorDetail
   render() {
     const filter = this.props.isTraceVisibleInTimeline
       ? (_: TimelineData) => true
-      : (data: TimelineData) => data.Category !== TimelineScopeCategory.Trace;
+      : (data: TimelineData) => data.Category !== TimelineEventCategory.Trace;
 
     return (
       <div className="inspectorDetailTimelineView">
@@ -36,7 +36,7 @@ export class InspectorDetailTimelineView extends React.Component<InspectorDetail
 }
 
 export interface TimelineProps {
-  data: TimelineData;
+  data: TimelineDataScope;
   isCalloutVisible: boolean;
   showCallout: (data: TimelineData, target: HTMLElement) => void;
   dismissCallout: () => void;
@@ -97,10 +97,12 @@ class Timeline extends React.Component<TimelineProps> {
                 {this.props.calloutTimelineData.Data && (
                   <pre className="timelineCalloutContent_data">{this.props.calloutTimelineData.Data}</pre>
                 )}
-                <div>
-                  <Icon iconName="Timer" /> {this.props.calloutTimelineData.Duration}
-                  ms
-                </div>
+                {this.props.calloutTimelineData.EventType === 'TimelineScope' && (
+                  <div>
+                    <Icon iconName="Timer" /> {this.props.calloutTimelineData.Duration}
+                    ms
+                  </div>
+                )}
               </div>
             </Callout>
           )}
@@ -109,15 +111,18 @@ class Timeline extends React.Component<TimelineProps> {
   }
 }
 
-function maxEndTime(data: TimelineData): number {
-  const childrenEndTimeMax = data.Children.reduce((r, v) => Math.max(maxEndTime(v), r), 0);
+function maxEndTime(data: TimelineDataScope): number {
+  const childrenEndTimeMax = data.Children.filter(x => x.EventType === 'TimelineScope').reduce(
+    (r, v: TimelineDataScope) => Math.max(maxEndTime(v), r),
+    0
+  );
 
   const endTime = new Date(data.Timestamp).valueOf() + data.Duration;
   return Math.max(childrenEndTimeMax, endTime);
 }
 
 interface TimelineSpansProps {
-  data: TimelineData;
+  data: TimelineDataScope;
   totalDuration: number;
   onTimelineSpanClick: (data: TimelineData, target: HTMLElement) => void;
   filter: (data: TimelineData) => boolean;
@@ -156,7 +161,8 @@ class TimelineSpan extends React.Component<TimelineSpanProps> {
 
   render() {
     const elapsedMilliSecFromOrigin = new Date(this.props.data.Timestamp).valueOf() - this.props.originDate.valueOf();
-    const width = (this.props.data.Duration / this.props.totalDuration) * 100;
+    const width =
+      this.props.data.EventType === 'TimelineScope' ? (this.props.data.Duration / this.props.totalDuration) * 100 : 0;
     const left = 100 - ((this.props.totalDuration - elapsedMilliSecFromOrigin) / this.props.totalDuration) * 100;
     const label = this.props.data.Category.replace(/^Rin\.Timeline\.(AspNetCore\.)?/, '') + ': ' + this.props.data.Name;
     return (
@@ -173,31 +179,32 @@ class TimelineSpan extends React.Component<TimelineSpanProps> {
           >
             {label}
           </div>
-          {this.props.data.Category === TimelineScopeCategory.Trace ? (
-            <div
-              className="timelineSpan_point"
-              ref={this.timelineSpanItemRef}
-              style={{ marginLeft: 'calc(' + left + '% - 4px)' }}
-            />
-          ) : (
+          {this.props.data.EventType === 'TimelineScope' ? (
             <div
               className="timelineSpan_bar"
               ref={this.timelineSpanItemRef}
               title={this.props.data.Duration + 'ms'}
               style={{ width: width + '%', marginLeft: left + '%' }}
             />
+          ) : (
+            <div
+              className="timelineSpan_point"
+              ref={this.timelineSpanItemRef}
+              style={{ marginLeft: 'calc(' + left + '% - 4px)' }}
+            />
           )}
         </div>
-        {this.props.data.Children.filter(this.props.filter).map((x, i) => (
-          <TimelineSpan
-            key={'timelineSpan-' + i}
-            data={x}
-            totalDuration={this.props.totalDuration}
-            originDate={this.props.originDate}
-            onTimelineSpanClick={this.props.onTimelineSpanClick}
-            filter={this.props.filter}
-          />
-        ))}
+        {this.props.data.EventType === 'TimelineScope' &&
+          this.props.data.Children.filter(this.props.filter).map((x, i) => (
+            <TimelineSpan
+              key={'timelineSpan-' + i}
+              data={x}
+              totalDuration={this.props.totalDuration}
+              originDate={this.props.originDate}
+              onTimelineSpanClick={this.props.onTimelineSpanClick}
+              filter={this.props.filter}
+            />
+          ))}
       </>
     );
   }

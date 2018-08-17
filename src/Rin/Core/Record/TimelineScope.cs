@@ -10,14 +10,15 @@ namespace Rin.Core.Record
     [DebuggerDisplay("TimelineScope: {Name}")]
     public class TimelineScope : ITimelineScope
     {
-        private static readonly AsyncLocal<TimelineScope> CurrentScope = new AsyncLocal<TimelineScope>();
+        internal static readonly AsyncLocal<TimelineScope> CurrentScope = new AsyncLocal<TimelineScope>();
 
-        private Lazy<ConcurrentQueue<TimelineScope>> _children { get; } = new Lazy<ConcurrentQueue<TimelineScope>>(() => new ConcurrentQueue<TimelineScope>(), LazyThreadSafetyMode.PublicationOnly);
+        private Lazy<ConcurrentQueue<ITimelineEvent>> _children { get; } = new Lazy<ConcurrentQueue<ITimelineEvent>>(() => new ConcurrentQueue<ITimelineEvent>(), LazyThreadSafetyMode.PublicationOnly);
         private TimelineScope _parent { get; }
         private bool _completed;
         private string _name;
         private string _category;
 
+        public string EventType => nameof(TimelineScope);
         public DateTimeOffset Timestamp { get; set; }
         public TimeSpan Duration { get; set; }
 
@@ -35,13 +36,8 @@ namespace Rin.Core.Record
 
         public string Data { get; set; }
 
-        public IReadOnlyCollection<TimelineScope> Children => _children.IsValueCreated ? _children.Value : (IReadOnlyCollection<TimelineScope>)Array.Empty<TimelineScope>();
+        public IReadOnlyCollection<ITimelineEvent> Children => _children.IsValueCreated ? _children.Value : (IReadOnlyCollection<ITimelineEvent>)Array.Empty<ITimelineEvent>();
 
-        private void SetValue<T>(ref T field, T value)
-        {
-            if (value == null) throw new ArgumentNullException(nameof(value));
-            field = value;
-        }
 
         /// <summary>
         /// Prepare a TimelineScope for current ExecutionContext (async execution flow).
@@ -49,7 +45,7 @@ namespace Rin.Core.Record
         /// <returns></returns>
         internal static TimelineScope Prepare()
         {
-            CurrentScope.Value = new TimelineScope("Root", TimelineScopeCategory.Root, null);
+            CurrentScope.Value = new TimelineScope("Root", TimelineEventCategory.Root, null);
             return CurrentScope.Value;
         }
 
@@ -76,7 +72,7 @@ namespace Rin.Core.Record
         /// <param name="category"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static ITimelineScope Create([CallerMemberName]string name = "", string category = TimelineScopeCategory.Method, string data = null)
+        public static ITimelineScope Create([CallerMemberName]string name = "", string category = TimelineEventCategory.Method, string data = null)
         {
             if (CurrentScope.Value == null) return NullTimelineScope.Instance;
 
@@ -88,9 +84,15 @@ namespace Rin.Core.Record
             return new TimelineScope(name, category, data);
         }
 
-        private void AddChild(TimelineScope s)
+        private void SetValue<T>(ref T field, T value)
         {
-            _children.Value.Enqueue(s);
+            if (value == null) throw new ArgumentNullException(nameof(value));
+            field = value;
+        }
+
+        internal void AddChild(ITimelineEvent timelineEvent)
+        {
+            _children.Value.Enqueue(timelineEvent);
         }
 
         public void Complete()
@@ -106,48 +108,5 @@ namespace Rin.Core.Record
         {
             Complete();
         }
-    }
-
-    /// <summary>
-    /// Pre-defined TimelineScope categories
-    /// </summary>
-    public static class TimelineScopeCategory
-    {
-        internal const string Root = "Rin.Timeline.Root";
-
-        /// <summary>
-        /// Method Call events.
-        /// </summary>
-        public const string Method = "Rin.Timeline.Method";
-
-        /// <summary>
-        /// Data access events.
-        /// </summary>
-        public const string Data = "Rin.Timeline.Data";
-
-        /// <summary>
-        /// Log/Trace events.
-        /// </summary>
-        public const string Trace = "Rin.Timeline.Trace";
-
-        /// <summary>
-        /// ASP.NET Core common events.
-        /// </summary>
-        public const string AspNetCoreCommon = "Rin.Timeline.AspNetCore.Common";
-
-        /// <summary>
-        /// ASP.NET MVC Core view events.
-        /// </summary>
-        public const string AspNetCoreMvcView = "Rin.Timeline.AspNetCore.Mvc.View";
-
-        /// <summary>
-        /// ASP.NET MVC Core result events.
-        /// </summary>
-        public const string AspNetCoreMvcResult = "Rin.Timeline.AspNetCore.Mvc.Result";
-
-        /// <summary>
-        /// ASP.NET MVC Core action events.
-        /// </summary>
-        public const string AspNetCoreMvcAction = "Rin.Timeline.AspNetCore.Mvc.Action";
     }
 }

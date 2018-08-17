@@ -7,7 +7,12 @@ import {
   SelectionMode
 } from 'office-ui-fabric-react';
 import * as React from 'react';
-import { RequestRecordDetailPayload, TimelineData, TimelineScopeCategory } from '../../api/IRinCoreHub';
+import {
+  RequestRecordDetailPayload,
+  TimelineData,
+  TimelineDataScope,
+  TimelineEventCategory
+} from '../../api/IRinCoreHub';
 
 export interface IInspectorDetailTraceViewProps {
   record: RequestRecordDetailPayload;
@@ -71,14 +76,18 @@ export class InspectorDetailTraceView extends React.Component<IInspectorDetailTr
   }
 }
 
-function collectTraces(data: TimelineData): TimelineData[] {
+function collectTraces(data: TimelineDataScope): TimelineData[] {
   return data.Children.reduce(
     (r, v) => {
-      if (v.Category === TimelineScopeCategory.Trace) {
+      if (v.Category === TimelineEventCategory.Trace) {
         r.push(v);
       }
 
-      return r.concat(collectTraces(v));
+      if (v.EventType === 'TimelineScope') {
+        return r.concat(collectTraces(v));
+      } else {
+        return r;
+      }
     },
     [] as TimelineData[]
   );

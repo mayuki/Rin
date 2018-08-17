@@ -38,19 +38,30 @@ export interface RequestRecordDetailPayload {
   TransferringStartedAt: string;
   TransferringCompletedAt: string;
   Exception: any;
-  Timeline: TimelineData;
+  Timeline: TimelineDataScope;
 }
 
-export interface TimelineData {
+export type TimelineData = TimelineDataScope | TimelineDataStamp;
+
+export interface TimelineDataStamp {
+  EventType: 'TimelineStamp';
   Timestamp: string;
-  Category: TimelineScopeCategory | string;
+  Category: TimelineEventCategory | string;
+  Name: string;
+  Data: string | null;
+}
+
+export interface TimelineDataScope {
+  EventType: 'TimelineScope';
+  Timestamp: string;
+  Category: TimelineEventCategory | string;
   Name: string;
   Data: string | null;
   Duration: number;
   Children: TimelineData[];
 }
 
-export enum TimelineScopeCategory {
+export enum TimelineEventCategory {
   Root = 'Rin.Timeline.Root',
   Method = 'Rin.Timeline.Method',
   Data = 'Rin.Timeline.Data',
