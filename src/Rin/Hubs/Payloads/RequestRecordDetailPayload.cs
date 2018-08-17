@@ -24,11 +24,8 @@ namespace Rin.Hubs.Payloads
 
         public IDictionary<string, StringValues> RequestHeaders { get; private set; }
         public IDictionary<string, StringValues> ResponseHeaders { get; private set; }
-        public DateTime RequestReceivedAt { get; private set; }
-        public DateTime ProcessingStartedAt { get; private set; }
-        public DateTime ProcessingCompletedAt { get; private set; }
-        public DateTime TransferringStartedAt { get; private set; }
-        public DateTime TransferringCompletedAt { get; private set; }
+        public DateTimeOffset RequestReceivedAt { get; private set; }
+        public DateTimeOffset TransferringCompletedAt { get; private set; }
 
         public Exception Exception { get; private set; }
 

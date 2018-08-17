@@ -46,7 +46,7 @@ namespace Rin.Middlewares
                 QueryString = request.QueryString,
                 Path = request.Path,
                 Method = request.Method,
-                RequestReceivedAt = DateTime.Now,
+                RequestReceivedAt = DateTimeOffset.Now,
                 RequestHeaders = request.Headers.ToDictionary(k => k.Key, v => v.Value),
                 RemoteIpAddress = request.HttpContext.Connection.RemoteIpAddress,
                 Timeline = TimelineScope.Prepare(),
@@ -65,6 +65,7 @@ namespace Rin.Middlewares
             response.OnStarting(OnStarting, record);
             response.OnCompleted(OnCompleted, record);
 
+            // Execute pipeline middlewares.
             record.Processing = TimelineScope.Create("Processing", TimelineEventCategory.AspNetCoreCommon);
             try
             {
