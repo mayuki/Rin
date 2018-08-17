@@ -26,7 +26,10 @@ namespace Rin.Hubs.Payloads
             {
                 var result = transformer.Transform(record, body, contentType);
 
-                if (result.ContentType.StartsWith("text/") || result.ContentType.StartsWith("application/json") || result.ContentType.StartsWith("text/json"))
+                if (result.ContentType.StartsWith("text/") ||
+                    result.ContentType.StartsWith("application/json") ||
+                    result.ContentType.StartsWith("text/json") ||
+                    result.ContentType.StartsWith("application/x-www-form-urlencoded"))
                 {
                     return new BodyDataPayload(new UTF8Encoding(false).GetString(result.Body), false, result.TransformedContentType ?? "");
                 }

@@ -16,7 +16,7 @@ Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured 
 - JSON as tree view
 - Image preview (PNG, JPEG, SVG, ...)
 - Syntax highligting (powered by Monaco Editor)
-- application/x-www-urlencoded as list view
+- application/x-www-form-urlencoded as list view
 
 ![](docs/images/Screenshot-03.png)
 
