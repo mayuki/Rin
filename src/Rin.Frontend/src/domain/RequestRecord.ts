@@ -139,7 +139,7 @@ export function createUrl(record: RequestRecordDetailPayload) {
 
 export function createCurlFromDetail(record: RequestRecordDetailPayload, body: BodyDataPayload | null) {
   const url = createUrl(record);
-  const commandParams = ['curl', url];
+  const commandParams = ['curl ' + url];
   const headers = Object.keys(record.RequestHeaders).map(
     x => `-H ${escapeShellLiteral(x + ': ' + record.RequestHeaders[x].join(' '))}`
   );
@@ -149,6 +149,7 @@ export function createCurlFromDetail(record: RequestRecordDetailPayload, body: B
     record.IsCompleted &&
     body != null;
 
+  const optionSeparator = ' \\\n    ';
   if (hasBody && body != null) {
     return commandParams
       .concat(headers)
@@ -156,12 +157,12 @@ export function createCurlFromDetail(record: RequestRecordDetailPayload, body: B
         '--data-binary ' + escapeShellLiteral(body.IsBase64Encoded ? btoa(body.Body) : body.Body),
         '--compressed'
       ])
-      .join(' ');
+      .join(optionSeparator);
   } else {
     return commandParams
       .concat(headers)
       .concat(['--compressed'])
-      .join(' ');
+      .join(optionSeparator);
   }
 }
 function escapeShellLiteral(value: string) {
