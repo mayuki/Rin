@@ -1,7 +1,39 @@
 import { BodyDataPayload, RequestRecordDetailPayload } from '../api/IRinCoreHub';
 import { getContentType, isImage, isText } from '../utilities';
 
-export function createCSharpCodeFromDetail(record: RequestRecordDetailPayload, requestBody: BodyDataPayload | null) {
+/** Create a C# code from detail */
+export function createCSharpCodeFromDetail(
+  record: RequestRecordDetailPayload,
+  requestBody: BodyDataPayload | null,
+  isLinqPad: boolean
+) {
+  return createCSharpCodeFromDetailCore(record, requestBody, isLinqPad);
+}
+
+/** Create .linq file content from detail */
+export function createCSharpLinqPadFileFromDetail(
+  record: RequestRecordDetailPayload,
+  requestBody: BodyDataPayload | null
+) {
+  const code = createCSharpCodeFromDetailCore(record, requestBody, true);
+  const linqPadMeta =
+    [
+      '<Query Kind="Statements">',
+      '  <Reference>&lt;RuntimeDirectory&gt;System.Net.Http.dll</Reference>',
+      '  <Namespace>System.Net</Namespace>',
+      '  <Namespace>System.Net.Http</Namespace>',
+      '</Query>',
+      ''
+    ].join('\r\n') + '\r\n';
+
+  return linqPadMeta + code;
+}
+
+function createCSharpCodeFromDetailCore(
+  record: RequestRecordDetailPayload,
+  requestBody: BodyDataPayload | null,
+  isLinqPad: boolean
+) {
   const requestContentType = getContentType(record.RequestHeaders) || '';
   const responseContentType = record.IsCompleted ? getContentType(record.ResponseHeaders) : null;
   const codeLines: string[] = [];
@@ -69,11 +101,20 @@ export function createCSharpCodeFromDetail(record: RequestRecordDetailPayload, r
   codeLines.push('');
   codeLines.push(`var response = await httpClient.SendAsync(request);`);
   if (responseContentType && isText(responseContentType)) {
-    codeLines.push(`await response.Content.ReadAsStringAsync().Dump();`);
+    codeLines.push(`var responseData = await response.Content.ReadAsStringAsync();`);
+    if (isLinqPad) {
+      codeLines.push('responseData.Dump();');
+    }
   } else if (responseContentType && isImage(responseContentType)) {
-    codeLines.push(`Util.Image(await response.Content.ReadAsByteArrayAsync()).Dump();`);
+    codeLines.push(`var responseData = await response.Content.ReadAsByteArrayAsync();`);
+    if (isLinqPad) {
+      codeLines.push('Util.Image(responseData).Dump();');
+    }
   } else {
-    codeLines.push(`await response.Content.ReadAsByteArrayAsync().Dump();`);
+    codeLines.push(`var responseData = await response.Content.ReadAsByteArrayAsync();`);
+    if (isLinqPad) {
+      codeLines.push('responseData.Dump();');
+    }
   }
 
   return codeLines.join('\r\n');

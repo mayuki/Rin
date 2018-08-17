@@ -1,7 +1,12 @@
+import { saveAs } from 'file-saver';
 import { CommandBar, ContextualMenuItemType, ICommandBarItemProps } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { BodyDataPayload, RequestRecordDetailPayload } from '../../api/IRinCoreHub';
-import { createCSharpCodeFromDetail, createCurlFromDetail } from '../../domain/RequestRecord';
+import {
+  createCSharpCodeFromDetail,
+  createCSharpLinqPadFileFromDetail,
+  createCurlFromDetail
+} from '../../domain/RequestRecord';
 import { copyTextToClipboard } from '../../utilities';
 
 export interface InspectorDetailCommandBarProps {
@@ -42,7 +47,7 @@ export class InspectorDetailCommandBar extends React.Component<InspectorDetailCo
               sectionProps: {
                 topDivider: false,
                 bottomDivider: true,
-                title: 'Export',
+                title: 'Copy',
                 items: [
                   { key: 'CopyAsCSharp', text: 'Copy Request as C# (LINQPad)' },
                   { key: 'CopyAsCurl', text: 'Copy Request as cURL' }
@@ -57,6 +62,7 @@ export class InspectorDetailCommandBar extends React.Component<InspectorDetailCo
                 bottomDivider: true,
                 title: 'Save',
                 items: [
+                  { key: 'SaveRequestAsCSharp', text: 'Save Request as C# (LINQPad)' },
                   { key: 'SaveResponseBody', text: 'Save Response body' },
                   { key: 'SaveRequestBody', text: 'Save Request body', disabled: disableRequestDownload }
                 ]
@@ -77,6 +83,9 @@ export class InspectorDetailCommandBar extends React.Component<InspectorDetailCo
       case 'SaveRequestBody':
         window.open(`${this.props.endpointUrlBase}/download/request?id=${selectedRecord.Id}`);
         break;
+      case 'SaveRequestAsCSharp':
+        this.saveRequestAsCSharp();
+        break;
       case 'CopyAsCSharp':
         this.copyAsCSharp();
         break;
@@ -86,9 +95,15 @@ export class InspectorDetailCommandBar extends React.Component<InspectorDetailCo
     }
   };
 
+  private saveRequestAsCSharp() {
+    const selectedRecord = this.props.currentRecordDetail!;
+    const linqFileContent = createCSharpLinqPadFileFromDetail(selectedRecord, this.props.requestBody);
+    saveAs(new File([linqFileContent], `${selectedRecord.Id}.linq`, { type: 'application/octet-stream' }));
+  }
+
   private copyAsCSharp() {
     const selectedRecord = this.props.currentRecordDetail!;
-    const code = createCSharpCodeFromDetail(selectedRecord, this.props.requestBody);
+    const code = createCSharpCodeFromDetail(selectedRecord, this.props.requestBody, false);
     copyTextToClipboard(code);
   }
 
