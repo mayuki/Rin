@@ -21,6 +21,7 @@
 }
 .inspectorDetail_TraceView {
     overflow: auto;
+    height: 100%;
 }
 
 .inspectorRequestResponseView {
