@@ -6,12 +6,17 @@ Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured 
 ![](docs/images/Demo-01.gif)
 
 # Features
-## 📼 Record requests and responses (+additional metrics)
+## 📼 Record incoming requests and responses (+additional metrics)
 - Traces (`Microsoft.Extensions.Logging.ILogger`, log4net, ...)
 - Unhandled Exception
+
 ## 🌎 Inspect from Web browser
-### ⚡ Realtime (powered by WebSocket)
-### ⏲ Timeline view<br>![](docs/images/Screenshot-02.png)
+
+### ⚡ Stream requests in realtime (powered by WebSocket)
+
+### ⏲ View events timeline
+![](docs/images/Screenshot-02.png)
+
 ### 🔍 Preview a request/response body
 - JSON as tree view
 - Image preview (PNG, JPEG, SVG, ...)
