@@ -24,6 +24,9 @@ export class InspectorStore {
   @observable
   items: RequestEventPayload[] = [];
 
+  @observable
+  enableTraceViewWordWrap: boolean = false;
+
   private hubClient: IHubClient & IRinCoreHub;
   private requestEventQueue: { event: 'RequestBegin' | 'RequestEnd'; args: any }[] = [];
   private triggerRequestEventQueueTimerId?: number;
@@ -102,6 +105,11 @@ export class InspectorStore {
   onUpdateRequestResponsePaneSize(newSize: number) {
     this.requestResponsePaneSize = newSize;
     window.localStorage['Rin.Inspector.RequestResponsePaneSize'] = this.requestResponsePaneSize.toString();
+  }
+
+  @action.bound
+  toggleTraceViewWordWrap(value: boolean) {
+    this.enableTraceViewWordWrap = value;
   }
 
   @action.bound

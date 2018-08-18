@@ -64,7 +64,13 @@ export class InspectorDetail extends React.Component {
                 />
               )}
               {inspectorStore.currentDetailView === DetailViewType.Trace && (
-                <InspectorDetailTraceView record={selectedRecord} />
+                <div className="inspectorDetail_TraceView">
+                  <InspectorDetailTraceView
+                    record={selectedRecord}
+                    enableWordWrap={inspectorStore.enableTraceViewWordWrap}
+                    toggleWordWrap={inspectorStore.toggleTraceViewWordWrap}
+                  />
+                </div>
               )}
               {inspectorStore.currentDetailView === DetailViewType.Exception && (
                 <InspectorDetailExceptionView record={selectedRecord} />

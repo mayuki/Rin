@@ -10,7 +10,10 @@
 .inspectorDetail_DetailView {
     overflow: hidden;
 }
-
+.inspectorDetail_TraceView {
+    overflow: hidden;
+    height: 100%;
+}
 .inspectorDetail_RequestResponseView {
     overflow: auto;
 }
@@ -19,10 +22,7 @@
     padding: 0 12px;
     height: 100%;
 }
-.inspectorDetail_TraceView {
-    overflow: auto;
-    height: 100%;
-}
+
 
 .inspectorRequestResponseView {
     height: 100%;
@@ -93,17 +93,4 @@
     font-size: 0.85rem;
     line-height: 1.6;
     margin: 12px 0 0 0;
-}
-
-.inspectorDetailTraceView_Row.inspectorDetailTraceView_Row-Information .ms-DetailsRow-cell {
-    color: #000;
-}
-.inspectorDetailTraceView_Row.inspectorDetailTraceView_Row-Error .ms-DetailsRow-cell {
-    color: #a80000;
-}
-.inspectorDetailTraceView_Row.inspectorDetailTraceView_Row-Critical .ms-DetailsRow-cell {
-    color: #a80000;
-}
-.inspectorDetailTraceView_Row.inspectorDetailTraceView_Row-Warning .ms-DetailsRow-cell {
-    color: #e0ad06;
 }
