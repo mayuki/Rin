@@ -110,6 +110,7 @@ export class InspectorStore {
   @action.bound
   toggleTraceViewWordWrap(value: boolean) {
     this.enableTraceViewWordWrap = value;
+    window.localStorage['Rin.Inspector.EnableTraceViewWordWrap'] = JSON.stringify(value);
   }
 
   @action.bound
@@ -137,6 +138,7 @@ export class InspectorStore {
 
     this.leftPaneSize = JSON.parse(window.localStorage['Rin.Inspector.LeftPaneSize'] || '300');
     this.requestResponsePaneSize = JSON.parse(window.localStorage['Rin.Inspector.RequestResponsePaneSize'] || 'null');
+    this.enableTraceViewWordWrap = JSON.parse(window.localStorage['Rin.Inspector.EnableTraceViewWordWrap'] || 'false');
   }
 
   private triggerRequestEventQueue() {
