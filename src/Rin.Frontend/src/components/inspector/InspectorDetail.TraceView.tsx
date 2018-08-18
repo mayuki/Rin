@@ -107,10 +107,10 @@ monacoEditor.editor.defineTheme('rin-log', {
   base: 'vs-dark',
   colors: {},
   rules: [
-    { token: 'error-token', foreground: 'a80000' },
+    { token: 'error-token', foreground: 'da0000' },
     { token: 'warn-token', foreground: 'e0ad06' },
-    { token: 'info-token', foreground: 'aaaaaa' },
-    { token: 'debug-token', foreground: 'cccccc' }
+    { token: 'info-token', foreground: 'cccccc' },
+    { token: 'debug-token', foreground: 'aaaaaa' }
   ],
   inherit: true
 });
@@ -122,7 +122,7 @@ monacoEditor.languages.setMonarchTokensProvider('text/x-rin-log', {
   tokenizer: {
     root: [
       {
-        regex: new RegExp(/^\[[^\]]+\] Error:.*/),
+        regex: new RegExp(/^\[[^\]]+\] (Critical|Error):.*/),
         action: { token: 'error-token' }
       },
       {
