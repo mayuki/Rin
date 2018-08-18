@@ -7,6 +7,7 @@ using Rin.Hubs.HubClients;
 using Rin.Hubs.Payloads;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,6 +51,16 @@ namespace Rin.Hubs
             return (_storage.TryGetById(id, out var value))
                 ? BodyDataPayload.CreateFromRecord(value, value.ResponseHeaders, value.ResponseBody, _bodyDataTransformerSet.Response)
                 : null;
+        }
+
+        public RinServerInfoPayload GetServerInfo()
+        {
+            return new RinServerInfoPayload
+            {
+                Version = typeof(RinCoreHub).Assembly.GetName().Version.ToString(),
+                BuildDate = new FileInfo(typeof(RinCoreHub).Assembly.Location).LastWriteTimeUtc,
+                FeatureFlags = Array.Empty<string>(),
+            };
         }
 
         public bool Ping()

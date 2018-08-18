@@ -3,6 +3,7 @@ export interface IRinCoreHub {
   GetDetailById(id: string): Promise<RequestRecordDetailPayload>;
   GetRequestBody(id: string): Promise<BodyDataPayload>;
   GetResponseBody(id: string): Promise<BodyDataPayload>;
+  GetServerInfo(): Promise<RinServerInfoPayload>;
 }
 
 export interface RequestEventPayload {
@@ -39,6 +40,12 @@ export interface RequestRecordDetailPayload {
   TransferringCompletedAt: string;
   Exception: any;
   Timeline: TimelineDataScope;
+}
+
+export interface RinServerInfoPayload {
+  Version: string;
+  BuildDate: string;
+  FeatureFlags: string[];
 }
 
 export type TimelineData = TimelineDataScope | TimelineDataStamp;

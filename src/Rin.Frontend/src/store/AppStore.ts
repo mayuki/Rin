@@ -15,11 +15,42 @@ export class AppStore {
   viewMode: ViewMode = ViewMode.Inspector;
   @observable
   connected: boolean = false;
+  @observable
+  serverInfo = {
+    Version: '',
+    BuildDate: '',
+    FeatureFlags: [] as string[],
+    Host: ''
+  };
 
   endpointUrlBase: string;
 
   inspectorTimelineStore = inspectorTimelineStore;
   inspectorStore = inspectorStore;
+
+  @action.bound
+  async updateServerInfoAsync() {
+    const prevVersion = this.serverInfo.Version;
+    const prevBuildDate = this.serverInfo.BuildDate;
+
+    const payload = await this.hubClient.GetServerInfo();
+    runInAction(() => (this.serverInfo = { ...this.serverInfo, ...payload }));
+
+    console.log(
+      `Rin Server: Version=${this.serverInfo.Version}; BuildDate=${
+        this.serverInfo.BuildDate
+      }; FeatureFlags=${this.serverInfo.FeatureFlags.join(',')}`
+    );
+
+    // Reload when version of the server is changed.
+    if (
+      (prevVersion !== '' && prevVersion !== this.serverInfo.Version) ||
+      (prevBuildDate !== '' && prevBuildDate !== this.serverInfo.BuildDate)
+    ) {
+      console.log(`Rin server was updated. Reloading...`);
+      window.location.reload();
+    }
+  }
 
   @action.bound
   ready() {
@@ -39,11 +70,17 @@ export class AppStore {
     inspectorStore.ready(this.hubClient);
     inspectorTimelineStore.ready();
 
+    this.updateServerInfoAsync();
+    this.serverInfo = { ...this.serverInfo, Host: host };
+
     this.hubClient.on('connected', () => {
       runInAction(() => (this.connected = true));
     });
     this.hubClient.on('disconnected', () => {
       runInAction(() => (this.connected = false));
+    });
+    this.hubClient.on('reconnecting', () => {
+      this.updateServerInfoAsync();
     });
   }
 }
