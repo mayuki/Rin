@@ -59,7 +59,7 @@ export class InspectorDetailRequestResponseView extends React.Component<
           ? atob(this.props.body.Body)
           : this.props.body.Body
         : '';
-    const hasBody = this.props.body != null;
+    const hasBody = this.props.body != null && this.props.body.Body.length > 0;
 
     return (
       <div className={styles.inspectorRequestResponseView}>
