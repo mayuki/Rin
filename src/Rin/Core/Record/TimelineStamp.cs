@@ -50,7 +50,7 @@ namespace Rin.Core.Record
         /// <param name="category"></param>
         /// <param name="data"></param>
         /// <param name="timestamp"></param>
-        public static void Stamp(string name, string category, string data = null, DateTime? timestamp = null)
+        public static void Stamp(string name, string category, string data = null, DateTimeOffset? timestamp = null)
         {
             if (TimelineScope.CurrentScope.Value == null) return;
 
