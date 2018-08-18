@@ -7,10 +7,10 @@
 .inspectorDetailTimelineView_Commands {
   margin: 0 16px;
 }
-.inspectorDetailTimelineView_Commands .ms-Toggle {
+.inspectorDetailTimelineView_Commands :global(.ms-Toggle) {
   display: inline-block;
 }
-.inspectorDetailTimelineView_Commands .ms-Toggle label {
+.inspectorDetailTimelineView_Commands :global(.ms-Toggle) label {
   display: inline-block;
   vertical-align: top;
   margin-right: 8px;
@@ -99,8 +99,6 @@
   height: 8px;
   border-radius: 6px;
 }
-
-
 
 .timelineSpan[data-rin-timeline-category='Rin.Timeline.Data'] .timelineSpan_name::before,
 .timelineSpan[data-rin-timeline-category='Rin.Timeline.Data'] .timelineSpan_bar {

@@ -9,7 +9,7 @@
 
   position: relative;
 }
-.inspectorFrame > .splitter-layout > .layout-pane:nth-child(3) {
+.inspectorFrame > :global(.splitter-layout) > :global(.layout-pane):nth-child(3) {
   overflow: hidden;
 }
 
@@ -20,9 +20,4 @@
 .inspectorFrame .rightPane {
   overflow: hidden;
   height: 100%;
-}
-
-.inspectorEventsItem_ReceivedAt {
-  font-size: 0.7rem;
-  color: #999;
 }

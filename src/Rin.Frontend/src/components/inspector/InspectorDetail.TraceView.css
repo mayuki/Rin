@@ -7,10 +7,10 @@
 .inspectorDetailTraceView_Commands {
   margin: 0 16px;
 }
-.inspectorDetailTraceView_Commands .ms-Toggle {
+.inspectorDetailTraceView_Commands :global(.ms-Toggle) {
   display: inline-block;
 }
-.inspectorDetailTraceView_Commands .ms-Toggle label {
+.inspectorDetailTraceView_Commands :global(.ms-Toggle) label {
   display: inline-block;
   vertical-align: top;
   margin-right: 8px;

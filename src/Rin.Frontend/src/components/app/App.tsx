@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { appStore } from '../../store/AppStore';
 import { Inspector } from '../inspector/Inspector';
-import './App.css';
+import * as styles from './App.css';
 
 mobx.configure({
   enforceActions: true
@@ -24,15 +24,15 @@ class App extends React.Component {
       <>
         <Helmet>{appStore.serverInfo.Host !== '' && <title>Rin: {appStore.serverInfo.Host}</title>}</Helmet>
         <Fabric>
-          <div className="applicationFrame">
+          <div className={styles.applicationFrame}>
             <header>
               <h1 className={FontClassNames.xLarge}>Rin</h1>
             </header>
-            <div className="contentArea">
+            <div className={styles.contentArea}>
               <Inspector />
               {!appStore.connected && (
                 <>
-                  <Overlay className="connectingOverlay">
+                  <Overlay className={styles.connectingOverlay}>
                     <Spinner size={SpinnerSize.large} label="Connecting..." ariaLive="assertive" />
                   </Overlay>
                 </>

@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { inspectorStore } from '../../store/InspectorStore';
-import './Inspector.css';
+import * as styles from './Inspector.css';
 import { InspectorEventsList } from './Inspector.InspectorEventsList';
 import { InspectorDetail } from './InspectorDetail';
 
@@ -13,14 +13,14 @@ export class Inspector extends React.Component {
   public render() {
     return (
       <>
-        <div className="inspectorFrame">
+        <div className={styles.inspectorFrame}>
           <SplitterLayout
             secondaryMinSize={300}
             secondaryInitialSize={inspectorStore.leftPaneSize}
             primaryIndex={1}
             onSecondaryPaneSizeChange={inspectorStore.onUpdateLeftPaneSize}
           >
-            <div className="leftPane">
+            <div className={styles.leftPane}>
               <InspectorEventsList
                 filteredItems={inspectorStore.filteredItems}
                 onActiveItemChanged={inspectorStore.onActiveItemChanged}
@@ -28,7 +28,7 @@ export class Inspector extends React.Component {
                 query={inspectorStore.query}
               />
             </div>
-            <div className="rightPane">
+            <div className={styles.rightPane}>
               <InspectorDetail />
             </div>
           </SplitterLayout>

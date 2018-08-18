@@ -1,6 +1,7 @@
 import { CheckboxVisibility, DetailsList, IColumn, Icon, SearchBox } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { RequestEventPayload } from '../../api/IRinCoreHub';
+import * as styles from './Inspector.InspectorEventsList.css';
 
 export interface InspectorEventsListProps {
   onFilterChange: (newValue: string) => void;
@@ -46,8 +47,10 @@ export class InspectorEventsList extends React.Component<InspectorEventsListProp
           title={item.Path}
           style={{ color: item.ResponseStatusCode >= 400 && item.ResponseStatusCode <= 599 ? '#a80000' : '#000' }}
         >
-          <div className="inspectorEventsItem_Path">{item.Path}</div>
-          <div className="inspectorEventsItem_ReceivedAt">{new Date(item.RequestReceivedAt).toLocaleString()}</div>
+          <div className={styles.inspectorEventsItem_Path}>{item.Path}</div>
+          <div className={styles.inspectorEventsItem_ReceivedAt}>
+            {new Date(item.RequestReceivedAt).toLocaleString()}
+          </div>
         </div>
       )
     },
@@ -62,7 +65,7 @@ export class InspectorEventsList extends React.Component<InspectorEventsListProp
           <span>-</span>
         ) : (
           <span
-            className="inspectorEventsItem_ResponseStatusCode"
+            className={styles.inspectorEventsItem_ResponseStatusCode}
             style={{ color: item.ResponseStatusCode >= 400 && item.ResponseStatusCode <= 599 ? '#a80000' : '' }}
           >
             {item.ResponseStatusCode}

@@ -1,7 +1,7 @@
 import { Callout, DirectionalHint, FontClassNames, Icon, Toggle } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { TimelineData, TimelineDataScope, TimelineEventCategory } from '../../api/IRinCoreHub';
-import './InspectorDetail.Timeline.css';
+import * as styles from './InspectorDetail.Timeline.css';
 
 export interface InspectorDetailTimelineViewProps {
   data: TimelineDataScope;
@@ -21,8 +21,8 @@ export class InspectorDetailTimelineView extends React.Component<InspectorDetail
       : (data: TimelineData) => data.Category !== TimelineEventCategory.Trace;
 
     return (
-      <div className="inspectorDetailTimelineView">
-        <div className="inspectorDetailTimelineView_Commands">
+      <div className={styles.inspectorDetailTimelineView}>
+        <div className={styles.inspectorDetailTimelineView_Commands}>
           <Toggle
             label="Show Traces"
             checked={this.props.isTraceVisibleInTimeline}
@@ -52,14 +52,14 @@ class Timeline extends React.Component<TimelineProps> {
     const totalDuration = endTime - beginTime;
 
     const columns = [
-      <div key="Column-Event" className="timeline_headerColumn">
+      <div key="Column-Event" className={styles.timeline_headerColumn}>
         <span>Event</span>
       </div>
     ];
     for (let i = 0; i < 10; i++) {
       const t = (totalDuration / 10) * i;
       columns.push(
-        <div key={'Column-' + i} className="timeline_headerColumn">
+        <div key={'Column-' + i} className={styles.timeline_headerColumn}>
           <span>
             {t.toFixed(1)}
             ms
@@ -69,9 +69,9 @@ class Timeline extends React.Component<TimelineProps> {
     }
 
     return (
-      <div className="timeline">
-        <div className="timeline_header">{columns}</div>
-        <div className="timeline_spans">
+      <div className={styles.timeline}>
+        <div className={styles.timeline_header}>{columns}</div>
+        <div className={styles.timeline_spans}>
           <TimelineSpans
             data={this.props.data}
             totalDuration={totalDuration}
@@ -89,13 +89,13 @@ class Timeline extends React.Component<TimelineProps> {
               onDismiss={this.props.dismissCallout}
               directionalHint={DirectionalHint.bottomCenter}
             >
-              <div className="timelineCalloutContent">
+              <div className={styles.timelineCalloutContent}>
                 <h2 className={FontClassNames.large}>
                   {this.props.calloutTimelineData.Category.replace(/^Rin\.Timeline\./, '')}:{' '}
                   {this.props.calloutTimelineData.Name}
                 </h2>
                 {this.props.calloutTimelineData.Data && (
-                  <pre className="timelineCalloutContent_data">{this.props.calloutTimelineData.Data}</pre>
+                  <pre className={styles.timelineCalloutContent_data}>{this.props.calloutTimelineData.Data}</pre>
                 )}
                 {this.props.calloutTimelineData.EventType === 'TimelineScope' && (
                   <div>
@@ -168,27 +168,27 @@ class TimelineSpan extends React.Component<TimelineSpanProps> {
     return (
       <>
         <div
-          className="timelineSpan"
+          className={styles.timelineSpan}
           data-rin-timeline-category={this.props.data.Category}
           data-rin-timeline-name={this.props.data.Name}
           onClick={this.onClick}
         >
           <div
-            className="timelineSpan_name"
+            className={styles.timelineSpan_name}
             title={label + (this.props.data.Data != null ? '\n' + this.props.data.Data : '')}
           >
             {label}
           </div>
           {this.props.data.EventType === 'TimelineScope' ? (
             <div
-              className="timelineSpan_bar"
+              className={styles.timelineSpan_bar}
               ref={this.timelineSpanItemRef}
               title={this.props.data.Duration + 'ms'}
               style={{ width: width + '%', marginLeft: left + '%' }}
             />
           ) : (
             <div
-              className="timelineSpan_point"
+              className={styles.timelineSpan_point}
               ref={this.timelineSpanItemRef}
               style={{ marginLeft: 'calc(' + left + '% - 4px)' }}
             />

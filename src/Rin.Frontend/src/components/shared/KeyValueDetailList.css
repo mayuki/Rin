@@ -3,13 +3,13 @@
     height: 100%;
     opacity: 0;
 }
-.keyValueDetailListCell_Command > .ms-Button {
+.keyValueDetailListCell_Command > :global(.ms-Button) {
     margin-top: -6px;
     margin-bottom: -6px;
 }
-.keyValueDetailListCell_Command > .ms-Button .ms-Button-menuIcon {
+.keyValueDetailListCell_Command > :global(.ms-Button) :global(.ms-Button-menuIcon) {
     display: none;
 }
-.ms-DetailsRow:hover .keyValueDetailListCell_Command {
+:global(.ms-DetailsRow):hover .keyValueDetailListCell_Command {
     opacity: 1;
 }

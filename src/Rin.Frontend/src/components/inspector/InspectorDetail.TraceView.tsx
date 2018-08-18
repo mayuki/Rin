@@ -8,7 +8,7 @@ import {
   TimelineDataScope,
   TimelineEventCategory
 } from '../../api/IRinCoreHub';
-import './InspectorDetail.TraceView.css';
+import * as styles from './InspectorDetail.TraceView.css';
 
 export interface IInspectorDetailTraceViewProps {
   record: RequestRecordDetailPayload;
@@ -19,8 +19,8 @@ export interface IInspectorDetailTraceViewProps {
 export class InspectorDetailTraceView extends React.Component<IInspectorDetailTraceViewProps, {}> {
   render() {
     return (
-      <div className="inspectorDetailTraceView">
-        <div className="inspectorDetailTraceView_Commands">
+      <div className={styles.inspectorDetailTraceView}>
+        <div className={styles.inspectorDetailTraceView_Commands}>
           <Toggle label="Enable WordWrap" checked={this.props.enableWordWrap} onChanged={this.props.toggleWordWrap} />
         </div>
         <TraceTextView
