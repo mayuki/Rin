@@ -3,7 +3,10 @@ import { observer } from 'mobx-react';
 import { Fabric, FontClassNames, Overlay, Spinner, SpinnerSize } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
+import { Route, RouteComponentProps, Switch } from 'react-router';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { appStore } from '../../store/AppStore';
+import { inspectorStore } from '../../store/InspectorStore';
 import { Inspector } from '../inspector/Inspector';
 import * as styles from './App.css';
 
@@ -29,7 +32,12 @@ class App extends React.Component {
               <h1 className={FontClassNames.xLarge}>Rin</h1>
             </header>
             <div className={styles.contentArea}>
-              <Inspector />
+              <Router>
+                <Switch>
+                  <Route path="/" exact={true} component={Inspector} />
+                  <Route path="/inspect/:id?/:section?" render={this.onMatchInspector} />
+                </Switch>
+              </Router>
               {!appStore.connected && (
                 <>
                   <Overlay className={styles.connectingOverlay}>
@@ -42,6 +50,15 @@ class App extends React.Component {
         </Fabric>
       </>
     );
+  }
+
+  private onMatchInspector(props: RouteComponentProps<any>) {
+    console.log('onMatchInspector: ' + JSON.stringify(props));
+    if (props.match.params.id != null) {
+      inspectorStore.selectDetail(props.match.params.id, props.match.params.section, true);
+    }
+
+    return <Inspector />;
   }
 }
 

@@ -6,6 +6,7 @@ import { InspectorEventsList } from './Inspector.InspectorEventsList';
 import { InspectorDetail } from './InspectorDetail';
 
 import SplitterLayout from 'react-splitter-layout';
+import { RequestEventPayload } from '../../api/IRinCoreHub';
 
 // Container Component
 @observer
@@ -23,7 +24,7 @@ export class Inspector extends React.Component {
             <div className={styles.leftPane}>
               <InspectorEventsList
                 filteredItems={inspectorStore.filteredItems}
-                onActiveItemChanged={inspectorStore.onActiveItemChanged}
+                onActiveItemChanged={this.onActiveItemChanged}
                 onFilterChange={inspectorStore.onFilterChange}
                 query={inspectorStore.query}
               />
@@ -36,4 +37,8 @@ export class Inspector extends React.Component {
       </>
     );
   }
+
+  private onActiveItemChanged = (item: RequestEventPayload) => {
+    inspectorStore.selectDetail(item.Id);
+  };
 }
