@@ -11,8 +11,7 @@ namespace Rin.Log4NetAppender
     {
         protected override void Append(LoggingEvent loggingEvent)
         {
-            var scope = TimelineScope.Create(ToLogLevelName(loggingEvent.Level), TimelineScopeCategory.Trace, loggingEvent.RenderedMessage);
-            scope.Complete();
+            TimelineStamp.Stamp(ToLogLevelName(loggingEvent.Level), TimelineEventCategory.Trace, loggingEvent.RenderedMessage);
         }
 
         private static string ToLogLevelName(Level level)

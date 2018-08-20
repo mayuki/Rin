@@ -7,6 +7,8 @@ namespace Rin.Core.Record
     {
         public static NullTimelineScope Instance { get; } = new NullTimelineScope();
 
+        public string EventType => nameof(TimelineScope);
+
         public string Name
         {
             get => String.Empty;
@@ -25,7 +27,7 @@ namespace Rin.Core.Record
             set { }
         }
 
-        public IReadOnlyCollection<TimelineScope> Children => Array.Empty<TimelineScope>();
+        public IReadOnlyCollection<ITimelineEvent> Children => Array.Empty<ITimelineEvent>();
 
         public DateTimeOffset Timestamp
         {

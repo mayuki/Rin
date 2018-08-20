@@ -24,11 +24,8 @@ namespace Rin.Hubs.Payloads
 
         public IDictionary<string, StringValues> RequestHeaders { get; private set; }
         public IDictionary<string, StringValues> ResponseHeaders { get; private set; }
-        public DateTime RequestReceivedAt { get; private set; }
-        public DateTime ProcessingStartedAt { get; private set; }
-        public DateTime ProcessingCompletedAt { get; private set; }
-        public DateTime TransferringStartedAt { get; private set; }
-        public DateTime TransferringCompletedAt { get; private set; }
+        public DateTimeOffset RequestReceivedAt { get; private set; }
+        public DateTimeOffset TransferringCompletedAt { get; private set; }
 
         public Exception Exception { get; private set; }
 
@@ -57,6 +54,7 @@ namespace Rin.Hubs.Payloads
 
         public class TimelineData
         {
+            public string EventType { get; }
             public DateTimeOffset Timestamp { get; }
             public long Duration { get; }
             public string Category { get; }
@@ -64,14 +62,19 @@ namespace Rin.Hubs.Payloads
             public string Data { get; }
             public TimelineData[] Children { get; }
 
-            public TimelineData(ITimelineScope scope)
+            public TimelineData(ITimelineEvent timelineEvent)
             {
-                Timestamp = scope.Timestamp;
-                Duration = (long)scope.Duration.TotalMilliseconds;
-                Category = scope.Category;
-                Name = scope.Name;
-                Data = scope.Data;
-                Children = scope.Children.Select(x => new TimelineData(x)).ToArray();
+                EventType = timelineEvent.EventType;
+                Timestamp = timelineEvent.Timestamp;
+                Category = timelineEvent.Category;
+                Name = timelineEvent.Name;
+                Data = timelineEvent.Data;
+
+                if (timelineEvent is ITimelineScope timelineScope)
+                {
+                    Duration = (long)timelineScope.Duration.TotalMilliseconds;
+                    Children = timelineScope.Children.Select(x => new TimelineData(x)).ToArray();
+                }
             }
         }
     }

@@ -15,6 +15,7 @@ import {
   isWwwFormUrlencoded
 } from '../../utilities';
 import { KeyValueDetailList } from '../shared/KeyValueDetailList';
+import * as styles from './InspectorDetail.RequestResponseView.css';
 
 export interface IInspectorRequestResponseViewProps {
   record: RequestRecordDetailPayload;
@@ -58,10 +59,10 @@ export class InspectorDetailRequestResponseView extends React.Component<
           ? atob(this.props.body.Body)
           : this.props.body.Body
         : '';
-    const hasBody = this.props.body != null;
+    const hasBody = this.props.body != null && this.props.body.Body.length > 0;
 
     return (
-      <div className="inspectorRequestResponseView">
+      <div className={styles.inspectorRequestResponseView}>
         <SplitterLayout
           vertical={true}
           percentage={true}
@@ -71,13 +72,13 @@ export class InspectorDetailRequestResponseView extends React.Component<
           secondaryMinSize={10}
         >
           <div>
-            <div className="inspectorRequestResponseView_General">
+            <div className={styles.inspectorRequestResponseView_General}>
               {this.props.generals != null &&
                 this.props.generals.length > 0 && (
                   <KeyValueDetailList keyName="Name" valueName="Value" items={this.props.generals} />
                 )}
             </div>
-            <div className="inspectorRequestResponseView_Headers">
+            <div className={styles.inspectorRequestResponseView_Headers}>
               <KeyValueDetailList
                 keyName="Header"
                 valueName="Value"
@@ -88,7 +89,7 @@ export class InspectorDetailRequestResponseView extends React.Component<
               />
             </div>
           </div>
-          <div className="inspectorRequestResponseView_Body">
+          <div className={styles.inspectorRequestResponseView_Body}>
             {hasBody &&
               contentType &&
               this.canPreview(contentType) && (
@@ -107,7 +108,7 @@ export class InspectorDetailRequestResponseView extends React.Component<
                     />
                   </Pivot>
                   {this.state.bodyView === 'List' && (
-                    <div className="inspectorRequestResponseViewKeyValueDetailList">
+                    <div className={styles.inspectorRequestResponseViewKeyValueDetailList}>
                       <KeyValueDetailList
                         keyName="Key"
                         valueName="Value"
@@ -116,7 +117,7 @@ export class InspectorDetailRequestResponseView extends React.Component<
                     </div>
                   )}
                   {this.state.bodyView === 'Tree' && (
-                    <div className="inspectorRequestResponseViewObjectInspector">
+                    <div className={styles.inspectorRequestResponseViewObjectInspector}>
                       <ObjectInspector data={JSON.parse(body)} />
                     </div>
                   )}
@@ -174,7 +175,7 @@ class EditorPreview extends React.Component<{ contentType: string; body: string 
       <MonacoEditor
         width="100%"
         height="100%"
-        options={{ readOnly: true, automaticLayout: true, wordWrap: 'on' }}
+        options={{ readOnly: true, automaticLayout: true, wordWrap: 'on', theme: 'vs' }}
         language={getMonacoLanguage(this.props.contentType)}
         value={this.props.body}
         editorDidMount={this.editorDidMount}
@@ -213,9 +214,9 @@ class ImagePreview extends React.Component<
 
   render() {
     return (
-      <div className="inspectorRequestResponseViewImagePreview">
+      <div className={styles.inspectorRequestResponseViewImagePreview}>
         <figure>
-          <div className="inspectorRequestResponseViewImagePreview_Image">
+          <div className={styles.inspectorRequestResponseViewImagePreview_Image}>
             <img
               ref={this.imagePreview}
               src={'data:' + this.props.contentType + ';base64,' + this.props.bodyAsBase64}

@@ -64,7 +64,7 @@
   margin-left: 24px;
 }
 
-.connectingOverlay .ms-Spinner {
+.connectingOverlay :global(.ms-Spinner) {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -72,6 +72,6 @@
 }
 
 /* react-splitter-layout */
-.applicationFrame .splitter-layout > .layout-splitter {
+.applicationFrame :global(.splitter-layout) > :global(.layout-splitter) {
   background: rgb(244, 244, 244);
 }

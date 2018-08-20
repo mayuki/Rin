@@ -7,7 +7,7 @@
     <Copyright>Mayuki Sawatari</Copyright>
     <PackageLicenseUrl>https://github.com/mayuki/Rin/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
-    <PackageTags>Rin</PackageTags>
+    <PackageTags>Rin log4net</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

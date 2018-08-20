@@ -3,28 +3,8 @@ using System.Collections.Generic;
 
 namespace Rin.Core.Record
 {
-    public interface ITimelineScope : IDisposable
+    public interface ITimelineScope : ITimelineEvent, IDisposable
     {
-        /// <summary>
-        /// Operation name.
-        /// </summary>
-        string Name { get; set; }
-
-        /// <summary>
-        /// Operation category.
-        /// </summary>
-        string Category { get; set; }
-
-        /// <summary>
-        /// Custom operation data.
-        /// </summary>
-        string Data { get; set; }
-
-        /// <summary>
-        /// Timestamp of operation started at.
-        /// </summary>
-        DateTimeOffset Timestamp { get; set; }
-
         /// <summary>
         /// Duration of operation process.
         /// </summary>
@@ -33,7 +13,7 @@ namespace Rin.Core.Record
         /// <summary>
         /// Child operations.
         /// </summary>
-        IReadOnlyCollection<TimelineScope> Children { get; }
+        IReadOnlyCollection<ITimelineEvent> Children { get; }
 
         /// <summary>
         /// Mark the timeline scope as completed.

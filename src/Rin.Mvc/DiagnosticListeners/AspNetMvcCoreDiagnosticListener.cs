@@ -17,7 +17,7 @@ namespace Rin.Mvc.DiagnosticListeners
         [DiagnosticName("Microsoft.AspNetCore.Mvc.BeforeActionMethod")]
         public void OnBeforeActionMethod(Microsoft.AspNetCore.Mvc.ActionContext actionContext, System.Collections.Generic.IDictionary<string, object> actionArguments, object controller)
         {
-            _onActionMethodScope.Value = TimelineScope.Create("ActionMethod", TimelineScopeCategory.AspNetCoreMvcAction, actionContext.ActionDescriptor.DisplayName);
+            _onActionMethodScope.Value = TimelineScope.Create("ActionMethod", TimelineEventCategory.AspNetCoreMvcAction, actionContext.ActionDescriptor.DisplayName);
         }
 
         [DiagnosticName("Microsoft.AspNetCore.Mvc.AfterActionMethod")]
@@ -32,7 +32,7 @@ namespace Rin.Mvc.DiagnosticListeners
         [DiagnosticName("Microsoft.AspNetCore.Mvc.BeforeActionResult")]
         public void OnBeforeActionResult(Microsoft.AspNetCore.Mvc.ActionContext actionContext, Microsoft.AspNetCore.Mvc.IActionResult result)
         {
-            _onActionResultScope.Value = TimelineScope.Create("ActionResult", TimelineScopeCategory.AspNetCoreMvcResult);
+            _onActionResultScope.Value = TimelineScope.Create("ActionResult", TimelineEventCategory.AspNetCoreMvcResult);
         }
 
         [DiagnosticName("Microsoft.AspNetCore.Mvc.AfterActionResult")]

@@ -24,6 +24,9 @@ export class InspectorStore {
   @observable
   items: RequestEventPayload[] = [];
 
+  @observable
+  enableTraceViewWordWrap: boolean = false;
+
   private hubClient: IHubClient & IRinCoreHub;
   private requestEventQueue: { event: 'RequestBegin' | 'RequestEnd'; args: any }[] = [];
   private triggerRequestEventQueueTimerId?: number;
@@ -105,6 +108,12 @@ export class InspectorStore {
   }
 
   @action.bound
+  toggleTraceViewWordWrap(value: boolean) {
+    this.enableTraceViewWordWrap = value;
+    window.localStorage['Rin.Inspector.EnableTraceViewWordWrap'] = JSON.stringify(value);
+  }
+
+  @action.bound
   ready(hubClient: IHubClient & IRinCoreHub) {
     this.hubClient = hubClient;
     this.hubClient.on('reconnecting', () => {
@@ -129,6 +138,7 @@ export class InspectorStore {
 
     this.leftPaneSize = JSON.parse(window.localStorage['Rin.Inspector.LeftPaneSize'] || '300');
     this.requestResponsePaneSize = JSON.parse(window.localStorage['Rin.Inspector.RequestResponsePaneSize'] || 'null');
+    this.enableTraceViewWordWrap = JSON.parse(window.localStorage['Rin.Inspector.EnableTraceViewWordWrap'] || 'false');
   }
 
   private triggerRequestEventQueue() {

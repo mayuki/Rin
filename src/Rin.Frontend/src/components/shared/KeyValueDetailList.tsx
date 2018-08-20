@@ -1,7 +1,7 @@
 import { CheckboxVisibility, DetailsList, IColumn, IconButton, SelectionMode } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { copyTextToClipboard } from '../../utilities';
-import './KeyValueDetailList.css';
+import * as styles from './KeyValueDetailList.css';
 
 export interface KeyValuePairLike {
   key: string;
@@ -47,7 +47,7 @@ export class KeyValueDetailList extends React.Component<{
         minWidth: 32,
         onRender: (item: any, index, column) => (
           <>
-            <div className="keyValueDetailListCell_Command">
+            <div className={styles.keyValueDetailListCell_Command}>
               <IconButton
                 iconProps={{ iconName: 'MoreVertical' }}
                 menuProps={{

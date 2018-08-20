@@ -146,7 +146,7 @@ WHERE
     Nantoka = 1 AND Kantoka IN (1, 2, 3, 4, 5)
 ORDER BY
     Id DESC";
-                using (TimelineScope.Create("Third", TimelineScopeCategory.Data, sql))
+                using (TimelineScope.Create("Third", TimelineEventCategory.Data, sql))
                 {
                     await Task.Delay(120);
                     await MogeAsync(22);
@@ -157,9 +157,9 @@ ORDER BY
 
             NewThread();
 
-            var scope = TimelineScope.Create("Manual", TimelineScopeCategory.Data);
+            var scope = TimelineScope.Create("Manual", TimelineEventCategory.Data);
             {
-                var scope2 = TimelineScope.Create("Manual.Inner", TimelineScopeCategory.Data);
+                var scope2 = TimelineScope.Create("Manual.Inner", TimelineEventCategory.Data);
                 scope2.Complete();
                 scope2.Duration = TimeSpan.FromMilliseconds(24);
             }
@@ -168,7 +168,7 @@ ORDER BY
 
             for (var i = 0; i < 30; i++)
             {
-                var scope2 = TimelineScope.Create("Manual." + i, TimelineScopeCategory.Data);
+                var scope2 = TimelineScope.Create("Manual." + i, TimelineEventCategory.Data);
                 scope2.Complete();
                 scope2.Duration = TimeSpan.FromMilliseconds(24 + i);
             }

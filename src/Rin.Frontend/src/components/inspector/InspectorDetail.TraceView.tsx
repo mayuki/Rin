@@ -1,85 +1,142 @@
-import {
-  CheckboxVisibility,
-  DetailsList,
-  DetailsRow,
-  IColumn,
-  IDetailsRowProps,
-  SelectionMode
-} from 'office-ui-fabric-react';
+import * as monacoEditor from 'monaco-editor';
+import { Toggle } from 'office-ui-fabric-react';
 import * as React from 'react';
-import { RequestRecordDetailPayload, TimelineData, TimelineScopeCategory } from '../../api/IRinCoreHub';
+import MonacoEditor from 'react-monaco-editor';
+import {
+  RequestRecordDetailPayload,
+  TimelineData,
+  TimelineDataScope,
+  TimelineEventCategory
+} from '../../api/IRinCoreHub';
+import * as styles from './InspectorDetail.TraceView.css';
 
 export interface IInspectorDetailTraceViewProps {
   record: RequestRecordDetailPayload;
+  enableWordWrap: boolean;
+  toggleWordWrap: (value: boolean) => void;
 }
 
 export class InspectorDetailTraceView extends React.Component<IInspectorDetailTraceViewProps, {}> {
-  private readonly traceColumns: IColumn[] = [
-    {
-      key: 'Time',
-      name: 'Time',
-      fieldName: 'Timestamp',
-      minWidth: 200,
-      maxWidth: 200,
-      isResizable: true
-    },
-    {
-      key: 'LogLevel',
-      name: 'LogLevel',
-      fieldName: 'LogLevel',
-      minWidth: 64,
-      maxWidth: 72,
-      isResizable: true,
-      onRender: (item: TimelineData) => (
-        <>
-          <span>{item.Name}</span>
-        </>
-      )
-    },
-    {
-      key: 'Message',
-      name: 'Message',
-      fieldName: 'Data',
-      minWidth: 100,
-      isResizable: true
-    }
-  ];
-
   render() {
     return (
-      <div className="inspectorDetail_TraceView">
-        <DetailsList
-          compact={true}
-          checkboxVisibility={CheckboxVisibility.hidden}
-          selectionMode={SelectionMode.none}
-          columns={this.traceColumns}
-          items={collectTraces(this.props.record.Timeline)}
-          onRenderRow={this.onRenderRow}
+      <div className={styles.inspectorDetailTraceView}>
+        <div className={styles.inspectorDetailTraceView_Commands}>
+          <Toggle label="Enable WordWrap" checked={this.props.enableWordWrap} onChanged={this.props.toggleWordWrap} />
+        </div>
+        <TraceTextView
+          body={traceAsText(collectTraces(this.props.record.Timeline))}
+          enableWordWrap={this.props.enableWordWrap}
         />
       </div>
     );
   }
+}
 
-  private onRenderRow(props: IDetailsRowProps) {
-    const timelineData = props.item as TimelineData;
-    const className = `inspectorDetailTraceView_Row inspectorDetailTraceView_Row-${timelineData.Name}`;
+class TraceTextView extends React.Component<{ body: string; enableWordWrap: boolean }, {}> {
+  private unsubscribe: () => void;
+  private editor: monacoEditor.editor.IStandaloneCodeEditor;
+
+  componentDidMount() {
+    const listener = () => {
+      this.editor.layout({ width: 0, height: 0 });
+    };
+
+    window.addEventListener('resize', listener);
+    this.unsubscribe = () => window.removeEventListener('resize', listener);
+
+    // force re-layout
+    this.editor.layout({ width: 0, height: 0 });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  componentDidUpdate() {
+    this.editor.updateOptions(this.monacoOptions);
+  }
+
+  editorDidMount = (editor: monacoEditor.editor.IStandaloneCodeEditor) => {
+    this.editor = editor;
+  };
+
+  render() {
     return (
-      <div className={className}>
-        <DetailsRow {...props} />
-      </div>
+      <MonacoEditor
+        width="100%"
+        height="100%"
+        options={{ ...this.monacoOptions, theme: 'rin-log' }}
+        language={'text/x-rin-log'}
+        value={this.props.body}
+        editorDidMount={this.editorDidMount}
+      />
     );
+  }
+
+  private get monacoOptions(): monacoEditor.editor.IEditorOptions {
+    return {
+      readOnly: true,
+      automaticLayout: true,
+      wordWrap: this.props.enableWordWrap ? 'on' : 'off'
+    };
   }
 }
 
-function collectTraces(data: TimelineData): TimelineData[] {
+function traceAsText(timelineDataArray: TimelineData[]) {
+  return timelineDataArray.map(x => `[${x.Timestamp}] ${x.Name}: ${x.Data}`).join('\r\n');
+}
+
+function collectTraces(data: TimelineDataScope): TimelineData[] {
   return data.Children.reduce(
     (r, v) => {
-      if (v.Category === TimelineScopeCategory.Trace) {
+      if (v.Category === TimelineEventCategory.Trace) {
         r.push(v);
       }
 
-      return r.concat(collectTraces(v));
+      if (v.EventType === 'TimelineScope') {
+        return r.concat(collectTraces(v));
+      } else {
+        return r;
+      }
     },
     [] as TimelineData[]
   );
 }
+
+monacoEditor.editor.defineTheme('rin-log', {
+  base: 'vs-dark',
+  colors: {},
+  rules: [
+    { token: 'error-token', foreground: 'da0000' },
+    { token: 'warn-token', foreground: 'e0ad06' },
+    { token: 'info-token', foreground: 'cccccc' },
+    { token: 'debug-token', foreground: 'aaaaaa' }
+  ],
+  inherit: true
+});
+monacoEditor.languages.register({ id: 'text/x-rin-log' });
+monacoEditor.languages.setMonarchTokensProvider('text/x-rin-log', {
+  defaultToken: '',
+  tokenPostfix: '',
+
+  tokenizer: {
+    root: [
+      {
+        regex: new RegExp(/^\[[^\]]+\] (Critical|Error):.*/),
+        action: { token: 'error-token' }
+      },
+      {
+        regex: new RegExp(/^\[[^\]]+\] Warning:.*/),
+        action: { token: 'warn-token' }
+      },
+      {
+        regex: new RegExp(/^\[[^\]]+\] Information:.*/),
+        action: { token: 'info-token' }
+      },
+      {
+        regex: new RegExp(/^\[[^\]]+\] (Debug|Trace):.*/),
+        action: { token: 'debug-token' }
+      }
+    ]
+  }
+});

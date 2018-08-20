@@ -6,7 +6,7 @@ import { appStore } from '../../store/AppStore';
 import { DetailViewType, inspectorStore } from '../../store/InspectorStore';
 import { inspectorTimelineStore } from '../../store/InspectorTimelineStore';
 import { InspectorDetailCommandBar } from './InspectorDetail.CommandBar';
-import './InspectorDetail.css';
+import * as styles from './InspectorDetail.css';
 import { InspectorDetailExceptionView } from './InspectorDetail.ExceptionView';
 import { InspectorDetailRequestResponseView } from './InspectorDetail.RequestResponseView';
 import { InspectorDetailTimelineView } from './InspectorDetail.Timeline';
@@ -21,8 +21,8 @@ export class InspectorDetail extends React.Component {
     const whenCompleted = (c: () => any) => (selectedRecord != null && selectedRecord.IsCompleted ? c() : <></>);
 
     return (
-      <div className="inspectorDetail">
-        <div className="inspectorDetail_CommandBar">
+      <div className={styles.inspectorDetail}>
+        <div className={styles.inspectorDetail_CommandBar}>
           <InspectorDetailCommandBar
             endpointUrlBase={appStore.endpointUrlBase}
             currentRecordDetail={inspectorStore.currentRecordDetail}
@@ -31,7 +31,7 @@ export class InspectorDetail extends React.Component {
         </div>
         {selectedRecord != null && (
           <>
-            <div className="inspectorDetail_Pivot">
+            <div className={styles.inspectorDetail_Pivot}>
               <Pivot selectedKey={inspectorStore.currentDetailView} onLinkClick={this.onPivotItemClicked}>
                 <PivotItem itemKey={DetailViewType.Request} headerText="Request" itemIcon="CloudUpload" />
                 {whenCompleted(() => (
@@ -48,7 +48,7 @@ export class InspectorDetail extends React.Component {
                 )}
               </Pivot>
             </div>
-            <div className="inspectorDetail_DetailView">
+            <div className={styles.inspectorDetail_DetailView}>
               {inspectorStore.currentDetailView === DetailViewType.Request && this.renderRequestView()}
               {inspectorStore.currentDetailView === DetailViewType.Response && this.renderResponseView()}
               {inspectorStore.currentDetailView === DetailViewType.Timeline && (
@@ -64,7 +64,13 @@ export class InspectorDetail extends React.Component {
                 />
               )}
               {inspectorStore.currentDetailView === DetailViewType.Trace && (
-                <InspectorDetailTraceView record={selectedRecord} />
+                <div className={styles.inspectorDetail_TraceView}>
+                  <InspectorDetailTraceView
+                    record={selectedRecord}
+                    enableWordWrap={inspectorStore.enableTraceViewWordWrap}
+                    toggleWordWrap={inspectorStore.toggleTraceViewWordWrap}
+                  />
+                </div>
               )}
               {inspectorStore.currentDetailView === DetailViewType.Exception && (
                 <InspectorDetailExceptionView record={selectedRecord} />

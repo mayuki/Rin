@@ -46,7 +46,7 @@ namespace Rin.Middlewares
                 QueryString = request.QueryString,
                 Path = request.Path,
                 Method = request.Method,
-                RequestReceivedAt = DateTime.Now,
+                RequestReceivedAt = DateTimeOffset.Now,
                 RequestHeaders = request.Headers.ToDictionary(k => k.Key, v => v.Value),
                 RemoteIpAddress = request.HttpContext.Connection.RemoteIpAddress,
                 Timeline = TimelineScope.Prepare(),
@@ -65,7 +65,8 @@ namespace Rin.Middlewares
             response.OnStarting(OnStarting, record);
             response.OnCompleted(OnCompleted, record);
 
-            record.Processing = TimelineScope.Create("Processing", TimelineScopeCategory.AspNetCoreCommon);
+            // Execute pipeline middlewares.
+            record.Processing = TimelineScope.Create("Processing", TimelineEventCategory.AspNetCoreCommon);
             try
             {
                 await _next(context);
@@ -102,7 +103,7 @@ namespace Rin.Middlewares
         private Task OnStarting(object state)
         {
             var record = ((HttpRequestRecord)state);
-            record.Transferring = TimelineScope.Create("Transferring", TimelineScopeCategory.AspNetCoreCommon);
+            record.Transferring = TimelineScope.Create("Transferring", TimelineEventCategory.AspNetCoreCommon);
             return Task.CompletedTask;
         }
 

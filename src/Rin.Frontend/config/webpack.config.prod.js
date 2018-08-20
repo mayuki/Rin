@@ -175,12 +175,14 @@ module.exports = {
 
           {
             test: /\.css$/,
+            exclude: [/node_modules/],
             use: [
               MiniCssExtractPlugin.loader,
               {
                 loader: require.resolve('css-loader'),
                 options: {
                   importLoaders: 1,
+                  modules: true,
                   minimize: true,
                   sourceMap: shouldUseSourceMap,
                 },
@@ -203,6 +205,21 @@ module.exports = {
                       flexbox: 'no-2009',
                     }),
                   ],
+                },
+              },
+            ],
+          },
+          {
+            test: /\.css$/,
+            include: [/node_modules/],
+            use: [
+              MiniCssExtractPlugin.loader,
+              {
+                loader: require.resolve('css-loader'),
+                options: {
+                  importLoaders: 1,
+                  minimize: true,
+                  sourceMap: shouldUseSourceMap,
                 },
               },
             ],

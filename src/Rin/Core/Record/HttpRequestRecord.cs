@@ -23,8 +23,8 @@ namespace Rin.Core.Record
         public byte[] ResponseBody { get; internal set; }
         public IDictionary<string, StringValues> ResponseHeaders { get; internal set; }
 
-        public DateTime RequestReceivedAt { get; internal set; }
-        public DateTime TransferringCompletedAt { get; internal set; }
+        public DateTimeOffset RequestReceivedAt { get; internal set; }
+        public DateTimeOffset TransferringCompletedAt { get; internal set; }
 
         public Exception Exception { get; internal set; }
 
@@ -33,6 +33,6 @@ namespace Rin.Core.Record
         internal ITimelineScope Processing { get; set; }
         internal ITimelineScope Transferring { get; set; }
 
-        public bool IsCompleted => TransferringCompletedAt != default(DateTime);
+        public bool IsCompleted => TransferringCompletedAt != default(DateTimeOffset);
     }
 }

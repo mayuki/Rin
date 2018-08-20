@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/react-helmet": "^5.0.7",
     "autoprefixer": "^9.1.0",
     "babel-jest": "^23.4.2",
     "babel-loader": "^7.1.2",
@@ -28,6 +29,7 @@
     "react": "^16.4.2",
     "react-dev-utils": "^5.0.1",
     "react-dom": "^16.4.2",
+    "react-helmet": "^5.2.0",
     "react-inspector": "^2.3.0",
     "react-monaco-editor": "^0.17.2",
     "react-splitter-layout": "^3.0.1",
