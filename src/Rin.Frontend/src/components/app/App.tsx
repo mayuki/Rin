@@ -53,7 +53,6 @@ class App extends React.Component {
   }
 
   private onMatchInspector(props: RouteComponentProps<any>) {
-    console.log('onMatchInspector: ' + JSON.stringify(props));
     if (props.match.params.id != null) {
       inspectorStore.selectDetail(props.match.params.id, props.match.params.section, true);
     }
