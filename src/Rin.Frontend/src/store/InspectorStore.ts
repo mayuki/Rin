@@ -31,6 +31,7 @@ export class InspectorStore {
   private hubClient: IHubClient & IRinCoreHub;
   private requestEventQueue: { event: 'RequestBegin' | 'RequestEnd'; args: any }[] = [];
   private triggerRequestEventQueueTimerId?: number;
+  private history = createBrowserHistory();
 
   @computed
   get selectedItem() {
@@ -61,7 +62,7 @@ export class InspectorStore {
     }
 
     if (!withoutNavigate) {
-      createBrowserHistory().push(`/Inspect/${this.selectedId}/${this.currentDetailView}`);
+      this.history.push(`/Inspect/${this.selectedId}/${this.currentDetailView}`);
     }
 
     await this.updateCurrentRecordAsync(itemId);
@@ -70,7 +71,7 @@ export class InspectorStore {
   @action.bound
   selectDetailView(view: DetailViewType) {
     this.currentDetailView = view;
-    createBrowserHistory().push(`/Inspect/${this.selectedId}/${this.currentDetailView}`);
+    this.history.push(`/Inspect/${this.selectedId}/${this.currentDetailView}`);
   }
 
   @action.bound
@@ -94,8 +95,7 @@ export class InspectorStore {
         this.responseBody = null;
         this.currentRecordDetail = null;
         this.selectedId = null;
-        console.log(`/Inspect/`);
-        createBrowserHistory().push(`/Inspect/`);
+        this.history.push(`/Inspect/`);
       });
       return;
     }

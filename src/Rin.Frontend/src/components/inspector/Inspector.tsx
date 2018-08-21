@@ -27,6 +27,7 @@ export class Inspector extends React.Component {
                 onActiveItemChanged={this.onActiveItemChanged}
                 onFilterChange={inspectorStore.onFilterChange}
                 query={inspectorStore.query}
+                selectedId={inspectorStore.selectedId || undefined}
               />
             </div>
             <div className={styles.rightPane}>

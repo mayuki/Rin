@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { Fabric, FontClassNames, Overlay, Spinner, SpinnerSize } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Route, RouteComponentProps, Switch } from 'react-router';
+import { match as Match, Route, RouteComponentProps, Switch } from 'react-router';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { appStore } from '../../store/AppStore';
 import { inspectorStore } from '../../store/InspectorStore';
@@ -34,8 +34,8 @@ class App extends React.Component {
             <div className={styles.contentArea}>
               <Router>
                 <Switch>
-                  <Route path="/" exact={true} component={Inspector} />
-                  <Route path="/inspect/:id?/:section?" render={this.onMatchInspector} />
+                  <Route path="/" exact={true} component={InspectorWithRouteMatch} />
+                  <Route path="/inspect/:id?/:section?" component={InspectorWithRouteMatch} />
                 </Switch>
               </Router>
               {!appStore.connected && (
@@ -51,14 +51,26 @@ class App extends React.Component {
       </>
     );
   }
-
-  private onMatchInspector(props: RouteComponentProps<any>) {
-    if (props.match.params.id != null) {
-      inspectorStore.selectDetail(props.match.params.id, props.match.params.section, true);
-    }
-
-    return <Inspector />;
-  }
 }
+
+function syncWithRoute<P>(WrappedComponent: React.ComponentType<P>, onMatched: ((match: Match<any>) => void)) {
+  return class extends React.Component<RouteComponentProps<any> & P> {
+    componentDidMount() {
+      onMatched(this.props.match);
+    }
+    componentDidUpdate() {
+      onMatched(this.props.match);
+    }
+    render() {
+      return <WrappedComponent {...this.props} />;
+    }
+  };
+}
+
+const InspectorWithRouteMatch = syncWithRoute(Inspector, match => {
+  if (match.params.id != null) {
+    inspectorStore.selectDetail(match.params.id, match.params.section, true);
+  }
+});
 
 export default App;
