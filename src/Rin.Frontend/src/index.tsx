@@ -1,3 +1,7 @@
+// tslint:disable orderd-imports
+import './configurePublicPath';
+// tslint:enable orderd-imports
+
 import { loadTheme } from '@uifabric/styling';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import * as React from 'react';
