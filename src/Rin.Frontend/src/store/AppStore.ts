@@ -1,3 +1,4 @@
+import { createBrowserHistory } from 'history';
 import { action, observable, runInAction } from 'mobx';
 import { createHubClient, IHubClient } from '../api/hubClient';
 import { IRinCoreHub } from '../api/IRinCoreHub';
@@ -20,7 +21,9 @@ export class AppStore {
     Version: '',
     BuildDate: '',
     FeatureFlags: [] as string[],
-    Host: ''
+    Host: '',
+    EndPointBase: '/rin',
+    PathBase: '/rin'
   };
 
   endpointUrlBase: string;
@@ -61,17 +64,18 @@ export class AppStore {
         : 'localhost:5000'
       : location.host;
     const protocol = location.protocol === 'http:' ? 'ws:' : 'wss:';
-    const pathBase = document.querySelector('html')!.dataset.rinConfigPathBase || '/rin';
-    const channelEndPoint = pathBase + '/chan';
+    const pathBase = isDevelopment ? '/' : document.querySelector('html')!.dataset.rinConfigPathBase || '/rin';
+    const endPointBase = document.querySelector('html')!.dataset.rinConfigPathBase || '/rin';
+    const channelEndPoint = endPointBase + '/chan';
 
-    this.endpointUrlBase = `${location.protocol}//${host}${pathBase}`;
+    this.endpointUrlBase = `${location.protocol}//${host}${endPointBase}`;
     this.hubClient = createHubClient<IRinCoreHub>(`${protocol}//${host}${channelEndPoint}`);
 
-    inspectorStore.ready(this.hubClient);
+    inspectorStore.ready(this.hubClient, createBrowserHistory({ basename: pathBase }));
     inspectorTimelineStore.ready();
 
     this.updateServerInfoAsync();
-    this.serverInfo = { ...this.serverInfo, Host: host };
+    this.serverInfo = { ...this.serverInfo, Host: host, PathBase: pathBase, EndPointBase: endPointBase };
 
     this.hubClient.on('connected', () => {
       runInAction(() => (this.connected = true));

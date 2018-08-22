@@ -32,7 +32,7 @@ class App extends React.Component {
               <h1 className={FontClassNames.xLarge}>Rin</h1>
             </header>
             <div className={styles.contentArea}>
-              <Router>
+              <Router basename={appStore.serverInfo.PathBase}>
                 <Switch>
                   <Route path="/" exact={true} component={InspectorWithRouteMatch} />
                   <Route path="/inspect/:id?/:section?" component={InspectorWithRouteMatch} />

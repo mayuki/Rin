@@ -1,4 +1,4 @@
-import createBrowserHistory from 'history/createBrowserHistory';
+import { History } from 'history';
 import { action, computed, observable, runInAction } from 'mobx';
 import { IHubClient } from '../api/hubClient';
 import { BodyDataPayload, IRinCoreHub, RequestEventPayload, RequestRecordDetailPayload } from '../api/IRinCoreHub';
@@ -31,7 +31,7 @@ export class InspectorStore {
   private hubClient: IHubClient & IRinCoreHub;
   private requestEventQueue: { event: 'RequestBegin' | 'RequestEnd'; args: any }[] = [];
   private triggerRequestEventQueueTimerId?: number;
-  private history = createBrowserHistory();
+  private history: History;
 
   @computed
   get selectedItem() {
@@ -136,7 +136,8 @@ export class InspectorStore {
   }
 
   @action.bound
-  ready(hubClient: IHubClient & IRinCoreHub) {
+  ready(hubClient: IHubClient & IRinCoreHub, history: History) {
+    this.history = history;
     this.hubClient = hubClient;
     this.hubClient.on('reconnecting', () => {
       runInAction(() => {
