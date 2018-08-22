@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@types/react-helmet": "^5.0.7",
+    "@types/react-router": "^4.0.30",
+    "@types/react-router-dom": "^4.3.0",
     "autoprefixer": "^9.1.0",
     "babel-jest": "^23.4.2",
     "babel-loader": "^7.1.2",
@@ -32,6 +34,8 @@
     "react-helmet": "^5.2.0",
     "react-inspector": "^2.3.0",
     "react-monaco-editor": "^0.17.2",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
     "react-splitter-layout": "^3.0.1",
     "resolve": "^1.8.1",
     "source-map-loader": "^0.2.1",
@@ -67,7 +71,6 @@
     "tslint-config-prettier": "^1.14.0",
     "typescript": "^3.0.1"
   },
-  "proxy": "http://localhost:5000/",
   "homepage": "./",
   "jest": {
     "collectCoverageFrom": [

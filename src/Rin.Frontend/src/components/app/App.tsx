@@ -3,7 +3,10 @@ import { observer } from 'mobx-react';
 import { Fabric, FontClassNames, Overlay, Spinner, SpinnerSize } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
+import { match as Match, Route, RouteComponentProps, Switch } from 'react-router';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { appStore } from '../../store/AppStore';
+import { inspectorStore } from '../../store/InspectorStore';
 import { Inspector } from '../inspector/Inspector';
 import * as styles from './App.css';
 
@@ -29,7 +32,12 @@ class App extends React.Component {
               <h1 className={FontClassNames.xLarge}>Rin</h1>
             </header>
             <div className={styles.contentArea}>
-              <Inspector />
+              <Router>
+                <Switch>
+                  <Route path="/" exact={true} component={InspectorWithRouteMatch} />
+                  <Route path="/inspect/:id?/:section?" component={InspectorWithRouteMatch} />
+                </Switch>
+              </Router>
               {!appStore.connected && (
                 <>
                   <Overlay className={styles.connectingOverlay}>
@@ -44,5 +52,25 @@ class App extends React.Component {
     );
   }
 }
+
+function syncWithRoute<P>(WrappedComponent: React.ComponentType<P>, onMatched: ((match: Match<any>) => void)) {
+  return class extends React.Component<RouteComponentProps<any> & P> {
+    componentDidMount() {
+      onMatched(this.props.match);
+    }
+    componentDidUpdate() {
+      onMatched(this.props.match);
+    }
+    render() {
+      return <WrappedComponent {...this.props} />;
+    }
+  };
+}
+
+const InspectorWithRouteMatch = syncWithRoute(Inspector, match => {
+  if (match.params.id != null) {
+    inspectorStore.selectDetail(match.params.id, match.params.section, true);
+  }
+});
 
 export default App;

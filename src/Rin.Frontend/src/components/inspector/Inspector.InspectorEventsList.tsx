@@ -1,4 +1,5 @@
 import { CheckboxVisibility, DetailsList, IColumn, Icon, SearchBox } from 'office-ui-fabric-react';
+import { Selection, SelectionMode } from 'office-ui-fabric-react/lib/Selection';
 import * as React from 'react';
 import { RequestEventPayload } from '../../api/IRinCoreHub';
 import * as styles from './Inspector.InspectorEventsList.css';
@@ -6,6 +7,7 @@ import * as styles from './Inspector.InspectorEventsList.css';
 export interface InspectorEventsListProps {
   onFilterChange: (newValue: string) => void;
   query: string;
+  selectedId: string | undefined;
   filteredItems: RequestEventPayload[];
   onActiveItemChanged: (item: RequestEventPayload) => void;
 }
@@ -74,6 +76,21 @@ export class InspectorEventsList extends React.Component<InspectorEventsListProp
     }
   ];
 
+  private readonly selection = new Selection({
+    getKey: (item: any, index: number) => item.Id
+  });
+
+  componentDidUpdate() {
+    if (this.props.selectedId != null) {
+      const selections = this.selection.getSelection();
+      if (selections.length > 0 && (selections[0] as any).Id === this.props.selectedId) {
+        return;
+      }
+      this.selection.setAllSelected(false);
+      this.selection.setKeySelected(this.props.selectedId, true, false);
+    }
+  }
+
   render() {
     return (
       <>
@@ -87,6 +104,8 @@ export class InspectorEventsList extends React.Component<InspectorEventsListProp
           compact={true}
           checkboxVisibility={CheckboxVisibility.hidden}
           columns={this.columns}
+          selection={this.selection}
+          selectionMode={SelectionMode.single}
           items={this.props.filteredItems}
           onActiveItemChanged={this.props.onActiveItemChanged}
           selectionPreservedOnEmptyClick={true}

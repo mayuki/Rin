@@ -1,3 +1,4 @@
+import createBrowserHistory from 'history/createBrowserHistory';
 import { action, computed, observable, runInAction } from 'mobx';
 import { IHubClient } from '../api/hubClient';
 import { BodyDataPayload, IRinCoreHub, RequestEventPayload, RequestRecordDetailPayload } from '../api/IRinCoreHub';
@@ -30,6 +31,7 @@ export class InspectorStore {
   private hubClient: IHubClient & IRinCoreHub;
   private requestEventQueue: { event: 'RequestBegin' | 'RequestEnd'; args: any }[] = [];
   private triggerRequestEventQueueTimerId?: number;
+  private history = createBrowserHistory();
 
   @computed
   get selectedItem() {
@@ -52,15 +54,24 @@ export class InspectorStore {
   }
 
   @action.bound
-  async onActiveItemChanged(item: RequestEventPayload) {
-    this.selectedId = item.Id;
+  async selectDetail(itemId: string, view?: DetailViewType, withoutNavigate: boolean = false) {
+    this.selectedId = itemId;
 
-    await this.updateCurrentRecordAsync(item.Id);
+    if (view != null) {
+      this.currentDetailView = view;
+    }
+
+    if (!withoutNavigate) {
+      this.history.push(`/Inspect/${this.selectedId}/${this.currentDetailView}`);
+    }
+
+    await this.updateCurrentRecordAsync(itemId);
   }
 
   @action.bound
   selectDetailView(view: DetailViewType) {
     this.currentDetailView = view;
+    this.history.push(`/Inspect/${this.selectedId}/${this.currentDetailView}`);
   }
 
   @action.bound
@@ -77,6 +88,17 @@ export class InspectorStore {
   @action.bound
   async updateCurrentRecordAsync(itemId: string) {
     const record = await this.hubClient.GetDetailById(itemId);
+
+    if (record == null) {
+      runInAction(() => {
+        this.requestBody = null;
+        this.responseBody = null;
+        this.currentRecordDetail = null;
+        this.selectedId = null;
+        this.history.push(`/Inspect/`);
+      });
+      return;
+    }
 
     if (this.currentDetailView === DetailViewType.Exception && record.Exception === null) {
       this.selectDetailView(DetailViewType.Request);
