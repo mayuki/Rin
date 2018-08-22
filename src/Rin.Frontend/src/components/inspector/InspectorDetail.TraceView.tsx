@@ -121,22 +121,27 @@ monacoEditor.languages.setMonarchTokensProvider('text/x-rin-log', {
 
   tokenizer: {
     root: [
-      {
-        regex: new RegExp(/^\[[^\]]+\] (Critical|Error):.*/),
-        action: { token: 'error-token' }
-      },
-      {
-        regex: new RegExp(/^\[[^\]]+\] Warning:.*/),
-        action: { token: 'warn-token' }
-      },
-      {
-        regex: new RegExp(/^\[[^\]]+\] Information:.*/),
-        action: { token: 'info-token' }
-      },
-      {
-        regex: new RegExp(/^\[[^\]]+\] (Debug|Trace):.*/),
-        action: { token: 'debug-token' }
-      }
+      { regex: /^\[[^\]]+\] (Critical|Error):/, action: { token: 'error-token', next: '@errorToken' } },
+      { regex: /^\[[^\]]+\] (Warning):/, action: { token: 'warn-token', next: '@warnToken' } },
+      { regex: /^\[[^\]]+\] (Information):/, action: { token: 'info-token', next: '@infoToken' } },
+      { regex: /^\[[^\]]+\] (Debug|Trace):/, action: { token: 'debug-token', next: '@debugToken' } }
+    ],
+
+    errorToken: [
+      { regex: /^\[/, action: { token: '', next: '@pop', goBack: 1 } },
+      { regex: /.+/, action: { token: 'error-token' } }
+    ],
+    warnToken: [
+      { regex: /^\[/, action: { token: '', next: '@pop', goBack: 1 } },
+      { regex: /.+/, action: { token: 'warn-token' } }
+    ],
+    infoToken: [
+      { regex: /^\[/, action: { token: '', next: '@pop', goBack: 1 } },
+      { regex: /.+/, action: { token: 'info-token' } }
+    ],
+    debugToken: [
+      { regex: /^\[/, action: { token: '', next: '@pop', goBack: 1 } },
+      { regex: /.+/, action: { token: 'debug-token' } }
     ]
   }
 });

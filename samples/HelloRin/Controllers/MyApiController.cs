@@ -123,7 +123,7 @@ namespace HelloRin.Controllers
 
         public async Task<IActionResult> Timeline()
         {
-            _loggerLog4Net.Warn("Begin Timeline (logging via log4net)");
+            _loggerLog4Net.Warn("Begin Timeline \r\n(logging via log4net)");
 
             using (TimelineScope.Create("First"))
             {
