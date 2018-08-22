@@ -116,6 +116,7 @@ function createCSharpCodeFromDetailCore(
       codeLines.push('responseData.Dump();');
     }
   }
+  codeLines.push('response.EnsureSuccessStatusCode();');
 
   return codeLines.join('\r\n');
 }
