@@ -9,6 +9,7 @@
     <PackageLicenseUrl>https://github.com/mayuki/Rin/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
     <PackageTags>Rin MVC</PackageTags>
+    <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.svg</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

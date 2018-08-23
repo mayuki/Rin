@@ -7,10 +7,11 @@
     <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/mayuki/Rin/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>Rin ASP.NET Request Inspector</PackageTags>
-    <Description>Request/response Inspector for ASP.NET Core</Description>
+    <Description>Request/response Inspector middleware for ASP.NET Core</Description>
     <VersionPrefix>1.0.0</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <LangVersion>latest</LangVersion>
+    <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.svg</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
