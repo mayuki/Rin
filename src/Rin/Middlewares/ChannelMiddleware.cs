@@ -39,7 +39,21 @@ namespace Rin.Middlewares
             {
                 var conn = await context.WebSockets.AcceptWebSocketAsync();
 
-                var hub = new RinCoreHub(_storage, _rinChannel, _bodyDataTransformerSet);
+                var hubName = default(string);
+                if (context.Request.Query.TryGetValue("hub", out var hubName_))
+                {
+                    hubName = hubName_.ToString();
+                }
+
+                IHub hub;
+                switch (hubName)
+                {
+                    case nameof(RinCoreHub):
+                    default:
+                        hub = new RinCoreHub(_storage, _rinChannel, _bodyDataTransformerSet);
+                        break;
+                }
+
                 await _rinChannel.ManageAsync(conn, hub);
             }
             else
