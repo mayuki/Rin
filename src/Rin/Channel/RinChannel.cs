@@ -32,26 +32,28 @@ namespace Rin.Channel
             }
         }
 
-        public async Task ManageAsync<THub>(WebSocket socket, THub hub)
-            where THub : IHub
+        public async Task ManageAsync(WebSocket socket, IHub hub)
         {
+            var typeOfHub = hub.GetType();
             var connectionId = Guid.NewGuid().ToString();
 
             lock (ConnectionsByHub)
             {
-                if (!ConnectionsByHub.TryGetValue(typeof(THub), out var connectionsByHub))
+                if (!ConnectionsByHub.TryGetValue(hub.GetType(), out var connectionsByHub))
                 {
                     connectionsByHub = new ConcurrentDictionary<string, WebSocket>();
-                    ConnectionsByHub[typeof(THub)] = connectionsByHub;
+                    ConnectionsByHub[typeOfHub] = connectionsByHub;
                 }
                 connectionsByHub[connectionId] = socket;
             }
-            Connections[connectionId] = Tuple.Create(typeof(THub), socket);
+            Connections[connectionId] = Tuple.Create(typeOfHub, socket);
 
             var buffer = ArrayPool<byte>.Shared.Rent(1024);
             try
             {
-                await EstablishConnectionAsync<THub>(socket, hub, connectionId, buffer);
+                var establishConnectionAsync = typeof(RinChannel).GetMethod(nameof(EstablishConnectionAsync), BindingFlags.Instance | BindingFlags.NonPublic);
+                var task = establishConnectionAsync.MakeGenericMethod(typeOfHub).Invoke(this, new object[] { socket, hub, connectionId, buffer }) as Task;
+                await task;
             }
             catch (TaskCanceledException) { }
             catch (WebSocketException) { }
