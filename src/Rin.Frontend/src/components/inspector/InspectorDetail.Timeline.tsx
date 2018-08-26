@@ -1,6 +1,7 @@
 import { Callout, DirectionalHint, FontClassNames, Icon, Toggle } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { TimelineData, TimelineDataScope, TimelineEventCategory } from '../../api/IRinCoreHub';
+import { calculateChildrenDuration } from '../../domain/RequestRecord';
 import * as styles from './InspectorDetail.Timeline.css';
 
 export interface InspectorDetailTimelineViewProps {
@@ -79,34 +80,44 @@ class Timeline extends React.Component<TimelineProps> {
             onTimelineSpanClick={this.props.showCallout}
           />
         </div>
-        {this.props.isCalloutVisible &&
-          this.props.calloutTimelineData != null && (
-            <Callout
-              gapSpace={0}
-              target={this.props.calloutTarget}
-              setInitialFocus={true}
-              hidden={!this.props.isCalloutVisible}
-              onDismiss={this.props.dismissCallout}
-              directionalHint={DirectionalHint.bottomCenter}
-            >
-              <div className={styles.timelineCalloutContent}>
-                <h2 className={FontClassNames.large}>
-                  {this.props.calloutTimelineData.Category.replace(/^Rin\.Timeline\./, '')}:{' '}
-                  {this.props.calloutTimelineData.Name}
-                </h2>
-                {this.props.calloutTimelineData.Data && (
-                  <pre className={styles.timelineCalloutContent_data}>{this.props.calloutTimelineData.Data}</pre>
-                )}
-                {this.props.calloutTimelineData.EventType === 'TimelineScope' && (
-                  <div>
-                    <Icon iconName="Timer" /> {this.props.calloutTimelineData.Duration}
-                    ms
-                  </div>
-                )}
-              </div>
-            </Callout>
-          )}
+        {this.props.isCalloutVisible && this.props.calloutTimelineData != null && this.renderCallout()}
       </div>
+    );
+  }
+
+  private renderCallout() {
+    const data = this.props.calloutTimelineData!;
+    const hasChildren = data.EventType === 'TimelineScope' && data.Children.length > 0;
+    const childrenDuration = data.EventType === 'TimelineScope' ? calculateChildrenDuration(data) : 0;
+    // TODO: a child scope may be longer than the scope. (e.g. ActionResult < Transferring)
+    const selfDuration = data.EventType === 'TimelineScope' ? Math.max(0, data.Duration - childrenDuration) : 0;
+
+    return (
+      <>
+        <Callout
+          gapSpace={0}
+          target={this.props.calloutTarget}
+          setInitialFocus={true}
+          hidden={!this.props.isCalloutVisible}
+          onDismiss={this.props.dismissCallout}
+          directionalHint={DirectionalHint.bottomCenter}
+        >
+          <div className={styles.timelineCalloutContent}>
+            <h2 className={FontClassNames.large}>
+              {data.Category.replace(/^Rin\.Timeline\./, '')}: {data.Name}
+            </h2>
+            {data.Data && <pre className={styles.timelineCalloutContent_data}>{data.Data}</pre>}
+            {data.EventType === 'TimelineScope' && (
+              <div>
+                <Icon iconName="Timer" />{' '}
+                {hasChildren
+                  ? `${data.Duration}ms (Self ${selfDuration}ms + Children ${childrenDuration}ms)`
+                  : `${data.Duration}ms`}
+              </div>
+            )}
+          </div>
+        </Callout>
+      </>
     );
   }
 }

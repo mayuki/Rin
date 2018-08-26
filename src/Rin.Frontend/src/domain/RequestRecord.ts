@@ -1,5 +1,24 @@
-import { BodyDataPayload, RequestRecordDetailPayload } from '../api/IRinCoreHub';
+import { BodyDataPayload, RequestRecordDetailPayload, TimelineDataScope } from '../api/IRinCoreHub';
 import { getContentType, isImage, isText } from '../utilities';
+
+/** Calculate total duration of children. */
+export function calculateChildrenDuration(data: TimelineDataScope) {
+  const ranges: { start: Date; end: Date }[] = [];
+
+  for (const child of data.Children.filter(x => x.EventType === 'TimelineScope') as TimelineDataScope[]) {
+    const childTimestamp = new Date(child.Timestamp);
+    const childEndTimestamp = new Date(childTimestamp.valueOf() + child.Duration);
+    const overlapped = ranges.find(x => x.start <= childTimestamp && x.end >= childTimestamp);
+
+    if (overlapped == null) {
+      ranges.push({ start: childTimestamp, end: childEndTimestamp });
+    } else if (overlapped.end < childEndTimestamp) {
+      overlapped.end = childEndTimestamp;
+    }
+  }
+
+  return ranges.map(x => x.end.valueOf() - x.start.valueOf()).reduce((r, v) => r + v, 0);
+}
 
 /** Create a C# code from detail */
 export function createCSharpCodeFromDetail(
