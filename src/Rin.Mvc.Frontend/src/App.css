@@ -1,28 +1,76 @@
-.App {
-  text-align: center;
+.rinOnViewInspector {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 65535;
+  font-size: 16px;
+}
+.rinOnViewInspector[data-rin-on-view-inspector='bottom'] {
+  top: initial;
+  bottom: 0;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+.hud {
+  background-color: #4e5584;
+  background-image: linear-gradient(to bottom, #79a7c9 0%,#79a7c9 25%,#9ec7be 26%,#9ec7be 50%,#f3e2cd 51%,#f3e2cd 75%,#c55056 76%);
+  background-size: 4px 100%;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  
+  padding: 0 0 0 4px;
+
+  color: #eee;
+  font-size: 0.9em;
+  font-weight: normal;
+  font-family: 'Segoe UI', sans-serif;
+}
+.hud label {
+  display: block;
+  padding: 0.5em 0.5em;
+  cursor: pointer;
+  font-weight: normal;
+  color: #eee;
 }
 
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+.hud input.isVisible { display: none; }
+.hud input.isVisible + .detail { display: none; }
+.hud input.isVisible:checked + .detail { display: block; }
+
+.detail {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  box-sizing: border-box;
+  min-width: 50vh;
+  max-height: 50vh;
+  overflow: auto;
+  padding: 0.5em 1em;
+  background-color: #4e5584;
+  color: #eee;
+}
+.rinOnViewInspector[data-rin-on-view-inspector='bottom'] .detail {
+  top: initial;
+  bottom: 0;
 }
 
-.App-title {
-  font-size: 1.5em;
+.detail_timestamp {
+  font-size: 0.75em;
+  color: #ccc;
 }
 
-.App-intro {
-  font-size: large;
+.timeline {
+  margin-top: 1em;
+  font-size: 0.75em;
 }
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.timeline table {
+  width: 100%;
+  color: #eee;
+}
+.timeline table tr th {
+  color: #ccc;
+  font-weight: normal;
+  text-align: right;
+}
+.timeline table tr td:not(:first-child) {
+  text-align: right;
 }
