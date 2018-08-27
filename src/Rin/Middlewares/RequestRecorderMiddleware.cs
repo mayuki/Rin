@@ -54,8 +54,12 @@ namespace Rin.Middlewares
 
             await _eventBus.PostAsync(new RequestEventMessage(record, RequestEvent.BeginRequest));
 
+            // Set Rin recorder feature.
             var feature = new RinRequestRecordingFeature(record);
             context.Features.Set<IRinRequestRecordingFeature>(feature);
+
+            // Set a current Rin request ID to response header.
+            context.Response.Headers.Add("X-Rin-Request-Id", record.Id);
 
             if (options.RequestRecorder.EnableBodyCapturing)
             {
