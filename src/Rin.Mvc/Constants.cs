@@ -6,6 +6,6 @@ namespace Rin.Mvc
 {
     internal class Constants
     {
-        public const string CookieName = "Rin.RequestId";
+        public const string RequestIdHeaderName = "X-Rin-RequestId";
     }
 }
