@@ -11,6 +11,8 @@ namespace Rin.Core.Record
     public class HttpRequestRecord
     {
         public string Id { get; internal set; }
+        public string ParentId { get; set; }
+
         public bool IsHttps { get; internal set; }
         public HostString Host { get; internal set; }
         public QueryString QueryString { get; internal set; }

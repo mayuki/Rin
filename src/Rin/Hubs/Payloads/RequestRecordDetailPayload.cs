@@ -13,6 +13,7 @@ namespace Rin.Hubs.Payloads
     public class RequestRecordDetailPayload
     {
         public string Id { get; private set; }
+        public string ParentId { get; private set; }
         public bool IsCompleted { get; private set; }
         public string Method { get; private set; }
         public bool IsHttps { get; private set; }
@@ -34,6 +35,7 @@ namespace Rin.Hubs.Payloads
         public RequestRecordDetailPayload(HttpRequestRecord record)
         {
             Id = record.Id;
+            ParentId = record.ParentId;
             IsCompleted = record.IsCompleted;
             IsHttps = record.IsHttps;
             Host = record.Host.Value;
