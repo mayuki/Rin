@@ -2,6 +2,7 @@
 using Rin.Core;
 using Rin.Core.Event;
 using Rin.Core.Record;
+using Rin.Core.Resource;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IMessageEventBus<RequestEventMessage>>(eventBus);
             services.AddSingleton<RinOptions>(options);
             services.AddSingleton<RinChannel>(channel);
+
+            services.AddTransient<IResourceProvider, EmbeddedZipResourceProvider>();
         }
     }
 }
