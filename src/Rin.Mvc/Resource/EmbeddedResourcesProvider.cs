@@ -19,7 +19,7 @@ namespace Rin.Mvc.Resource
             var asm = typeof(EmbeddedResourcesProvider).Assembly;
             _resourceNameByPath = asm.GetManifestResourceNames()
                 .ToDictionary(
-                    k => "/mvc-static/" + k.Replace(asm.GetName().Name + ".EmbeddedResources.", ""),
+                    k => Constants.MvcStaticResourcesRoot + k.Replace(asm.GetName().Name + ".EmbeddedResources.", ""),
                     v =>
                     {
                         using (var reader = new StreamReader(asm.GetManifestResourceStream(v)))

@@ -13,7 +13,13 @@ class App extends React.Component {
     return (
       <>
         {data != null && (
-          <div className={styles.rinOnViewInspector}>
+          <div
+            className={
+              styles.rinOnViewInspector +
+              ' ' +
+              (rinOnPageInspectorStore.position === 'Bottom' ? styles.positionBottom : '')
+            }
+          >
             <div className={styles.hud}>
               <label className={styles.summary} htmlFor="rinOnViewInspectorDetailIsVisible">
                 {data.Timeline.Duration}

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -13,15 +13,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="EmbeddedResources\main.css" />
-    <None Remove="EmbeddedResources\main.css.map" />
     <None Remove="EmbeddedResources\main.js" />
     <None Remove="EmbeddedResources\main.js.map" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="EmbeddedResources\main.css" />
-    <EmbeddedResource Include="EmbeddedResources\main.css.map" />
     <EmbeddedResource Include="EmbeddedResources\main.js" />
     <EmbeddedResource Include="EmbeddedResources\main.js.map" />
   </ItemGroup>

@@ -15,7 +15,7 @@
   background: initial;
 }
 
-.rinOnViewInspector[data-rin-on-view-inspector='bottom'] {
+.rinOnViewInspector.positionBottom {
   top: initial;
   bottom: 0;
 }
@@ -59,7 +59,7 @@
   background-color: #4e5584;
   color: #eee;
 }
-.rinOnViewInspector[data-rin-on-view-inspector='bottom'] .detail {
+.rinOnViewInspector.positionBottom .detail {
   top: initial;
   bottom: 0;
 }

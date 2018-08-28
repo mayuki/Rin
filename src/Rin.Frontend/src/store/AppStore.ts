@@ -65,17 +65,17 @@ export class AppStore {
       : location.host;
     const protocol = location.protocol === 'http:' ? 'ws:' : 'wss:';
     const pathBase = isDevelopment ? '/' : document.querySelector('html')!.dataset.rinConfigPathBase || '/rin';
-    const endPointBase = document.querySelector('html')!.dataset.rinConfigPathBase || '/rin';
-    const channelEndPoint = endPointBase + '/chan';
+    const endPointBasePath = document.querySelector('html')!.dataset.rinConfigPathBase || '/rin';
+    const channelEndPoint = endPointBasePath + '/chan';
 
-    this.endpointUrlBase = `${location.protocol}//${host}${endPointBase}`;
+    this.endpointUrlBase = `${location.protocol}//${host}${endPointBasePath}`;
     this.hubClient = createHubClient<IRinCoreHub>(`${protocol}//${host}${channelEndPoint}`);
 
     inspectorStore.ready(this.hubClient, createBrowserHistory({ basename: pathBase }));
     inspectorTimelineStore.ready();
 
     this.updateServerInfoAsync();
-    this.serverInfo = { ...this.serverInfo, Host: host, PathBase: pathBase, EndPointBase: endPointBase };
+    this.serverInfo = { ...this.serverInfo, Host: host, PathBase: pathBase, EndPointBase: endPointBasePath };
 
     this.hubClient.on('connected', () => {
       runInAction(() => (this.connected = true));

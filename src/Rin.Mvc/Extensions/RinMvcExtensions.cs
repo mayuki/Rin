@@ -4,6 +4,7 @@ using Rin.Features;
 using Rin.Mvc;
 using Rin.Mvc.DiagnosticListeners;
 using Rin.Mvc.Resource;
+using Rin.Mvc.View;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,6 +19,7 @@ namespace Microsoft.AspNetCore.Builder
         public static IMvcBuilder AddRinMvcSupport(this IMvcBuilder builder)
         {
             builder.Services.AddTransient<IResourceProvider, EmbeddedResourcesProvider>();
+            builder.Services.AddTransient<RinHelperService>();
 
             return builder;
         }
