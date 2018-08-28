@@ -13,6 +13,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="EmbeddedResources\main.css" />
+    <None Remove="EmbeddedResources\main.css.map" />
+    <None Remove="EmbeddedResources\main.js" />
+    <None Remove="EmbeddedResources\main.js.map" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="EmbeddedResources\main.css" />
+    <EmbeddedResource Include="EmbeddedResources\main.css.map" />
+    <EmbeddedResource Include="EmbeddedResources\main.js" />
+    <EmbeddedResource Include="EmbeddedResources\main.js.map" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.DiagnosticAdapter" Version="2.1.0" />
   </ItemGroup>

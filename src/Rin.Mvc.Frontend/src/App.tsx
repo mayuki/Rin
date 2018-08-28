@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { Fragment } from 'react';
 import { TimelineData, TimelineDataScope } from './api/IRinCoreHub';
-import './App.css';
+import * as styles from './App.css';
 import { rinOnPageInspectorStore } from './Store';
 
 @observer
@@ -13,16 +13,16 @@ class App extends React.Component {
     return (
       <>
         {data != null && (
-          <div className="rinOnViewInspector">
-            <div className="hud">
-              <label className="summary" htmlFor="rinOnViewInspectorDetailIsVisible">
+          <div className={styles.rinOnViewInspector}>
+            <div className={styles.hud}>
+              <label className={styles.summary} htmlFor="rinOnViewInspectorDetailIsVisible">
                 {data.Timeline.Duration}
                 ms
               </label>
-              <input className="isVisible" type="checkbox" id="rinOnViewInspectorDetailIsVisible" />
-              <div className="detail">
-                <div className="detail_path">{data.Path}</div>
-                <div className="detail_timestamp">{new Date(data.Timeline.Timestamp).toString()}</div>
+              <input className={styles.isVisible} type="checkbox" id="rinOnViewInspectorDetailIsVisible" />
+              <div className={styles.detail}>
+                <div className={styles.detail_path}>{data.Path}</div>
+                <div className={styles.detail_timestamp}>{new Date(data.Timeline.Timestamp).toString()}</div>
                 <Timeline timelineData={data.Timeline} />
               </div>
             </div>
@@ -37,7 +37,7 @@ class Timeline extends React.Component<{ timelineData: TimelineDataScope }> {
   render() {
     return (
       <>
-        <div className="timeline">
+        <div className={styles.timeline}>
           <table>
             <thead>
               <tr>

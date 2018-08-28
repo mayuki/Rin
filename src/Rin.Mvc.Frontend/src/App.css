@@ -5,6 +5,16 @@
   z-index: 65535;
   font-size: 16px;
 }
+.rinOnViewInspector table,
+.rinOnViewInspector table tr,
+.rinOnViewInspector table tr td,
+.rinOnViewInspector table tr th {
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: initial;
+}
+
 .rinOnViewInspector[data-rin-on-view-inspector='bottom'] {
   top: initial;
   bottom: 0;

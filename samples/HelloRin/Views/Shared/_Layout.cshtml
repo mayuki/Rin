@@ -72,7 +72,8 @@
     @RenderSection("Scripts", required: false)
 
 
-    <script async src="http://localhost:3000/static/js/bundle.js"></script>
+    <script async src="/rin/mvc-static/main.js"></script>
+    <style>@@import '/rin/mvc-static/main.css';</style>
     <div id="rinOnViewInspectorRoot" data-rin-on-view-inspector-config='{ "Position": "Bottom", "HubEndPoint": "ws://localhost:5000/rin/chan", "RequestId": "@(Context.Features.Get<Rin.Features.IRinRequestRecordingFeature>().Record.Id)" }'></div>
 
 </body>
