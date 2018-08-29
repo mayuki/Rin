@@ -72,7 +72,10 @@
 
     @RenderSection("Scripts", required: false)
 
-    @RinHelper.Render(Rin.Mvc.View.OnViewInspectorPosition.Bottom)
+    @*
+    @RinHelper.Render(Rin.Mvc.View.OnViewInspectorPosition.Bottom, "http://localhost:3000/static/js/bundle.js")
+    *@
+    @RinHelper.Render()
 
 </body>
 </html>

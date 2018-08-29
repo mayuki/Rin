@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { Fragment } from 'react';
-import { TimelineData, TimelineDataScope } from './api/IRinCoreHub';
+import { RequestRecordDetailPayload, TimelineData, TimelineDataScope } from './api/IRinCoreHub';
 import * as styles from './App.css';
 import { rinOnPageInspectorStore } from './Store';
 
@@ -9,7 +9,7 @@ import { rinOnPageInspectorStore } from './Store';
 class App extends React.Component {
   public render() {
     const data = rinOnPageInspectorStore.data;
-
+    const subRequests = rinOnPageInspectorStore.subRequests;
     return (
       <>
         {data != null && (
@@ -24,17 +24,53 @@ class App extends React.Component {
               <label className={styles.summary} htmlFor="rinOnViewInspectorDetailIsVisible">
                 {data.Timeline.Duration}
                 ms
+                {subRequests.length > 0 && ` + ${subRequests.length}`}
               </label>
               <input className={styles.isVisible} type="checkbox" id="rinOnViewInspectorDetailIsVisible" />
               <div className={styles.detail}>
-                <div className={styles.detail_path}>{data.Path}</div>
+                <h1 className={styles.detail_path}>{data.Path}</h1>
                 <div className={styles.detail_timestamp}>{new Date(data.Timeline.Timestamp).toString()}</div>
                 <Timeline timelineData={data.Timeline} />
+                <div className={styles.openInRin}>
+                  <a href={`${rinOnPageInspectorStore.config.PathBase}/Inspect/${data.Id}`} target="_blank">
+                    Open in Rin
+                  </a>
+                </div>
+                {subRequests.length > 0 && <SubRequests subRequests={subRequests} />}
               </div>
             </div>
           </div>
         )}
       </>
+    );
+  }
+}
+
+class SubRequests extends React.Component<{ subRequests: RequestRecordDetailPayload[] }> {
+  render() {
+    return (
+      <div className={styles.subRequests}>
+        <h2>SubRequests</h2>
+        <table>
+          <tbody>
+            {this.props.subRequests.map(x => (
+              <tr key={`s-${x.Id}`}>
+                <td>
+                  <a href={`${rinOnPageInspectorStore.config.PathBase}/Inspect/${x.Id}`} target="_blank">
+                    {x.Path}
+                  </a>
+                </td>
+                <td>
+                  <a href={`${rinOnPageInspectorStore.config.PathBase}/Inspect/${x.Id}`} target="_blank">
+                    {x.Timeline.Duration}
+                    ms
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     );
   }
 }

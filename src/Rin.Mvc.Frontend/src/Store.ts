@@ -15,18 +15,32 @@ export class RinOnPageInspectorStore {
   @observable
   position: 'Bottom' | 'Top';
 
+  @observable
+  subRequests: RequestRecordDetailPayload[] = [];
+
+  @observable
+  config: RinOnPageInspectorConfig;
+
   private hubClient: IRinCoreHub & IHubClient;
 
   @action.bound
   async ready(config: RinOnPageInspectorConfig) {
+    this.config = config;
     this.hubClient = createHubClient<IRinCoreHub>(getChannelEndPoint(config));
     this.position = config.Position || 'Bottom';
 
     const detail = await this.hubClient.GetDetailById(config.RequestId);
 
     runInAction(() => (this.data = detail));
+  }
 
-    this.hubClient.dispose();
+  @action.bound
+  async fetchSubRequestById(id: string) {
+    const detail = await this.hubClient.GetDetailById(id);
+
+    runInAction(() => {
+      this.subRequests = this.subRequests.concat([detail]);
+    });
   }
 }
 

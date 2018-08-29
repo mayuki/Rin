@@ -18,7 +18,13 @@ namespace Rin.Mvc.View
             _rinOptions = options;
         }
 
-        public HtmlString Render(OnViewInspectorPosition position = OnViewInspectorPosition.Top)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="scriptPath"></param>
+        /// <returns></returns>
+        public HtmlString Render(OnViewInspectorPosition position = OnViewInspectorPosition.Top, string scriptPath = null)
         {
             var feature = _httpContextAccessor.HttpContext.Features.Get<Rin.Features.IRinRequestRecordingFeature>();
             if (feature == null) return HtmlString.Empty;
@@ -27,8 +33,9 @@ namespace Rin.Mvc.View
             var requestId = feature.Record.Id;
 
             return new HtmlString(
-                $"<script async src=\"{pathBase + Constants.MvcStaticResourcesRoot + "main.js"}\"></script>" +
-                $"<div id=\"rinOnViewInspectorRoot\" data-rin-on-view-inspector-config='{{ \"Position\": \"{position.ToString()}\", \"PathBase\": \"{pathBase}\", \"RequestId\": \"{requestId}\" }}'></div>");
+                $"<div id=\"rinOnViewInspectorRoot\" data-rin-on-view-inspector-config='{{ \"Position\": \"{position.ToString()}\", \"PathBase\": \"{pathBase}\", \"RequestId\": \"{requestId}\" }}'></div>" +
+                $"<script src=\"{(scriptPath ?? (pathBase + Constants.MvcStaticResourcesRoot + "main.js"))}\"></script>"
+            );
         }
     }
 

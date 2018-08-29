@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom';
 import App from './App';
 import './index.css';
 import { rinOnPageInspectorStore } from './Store';
+import './utilities/hooks';
 
 const rootElement = document.getElementById('rinOnViewInspectorRoot') as HTMLElement;
 const config = JSON.parse(rootElement.dataset.rinOnViewInspectorConfig || 'null');

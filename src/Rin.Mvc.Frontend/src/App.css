@@ -4,6 +4,9 @@
   left: 0;
   z-index: 65535;
   font-size: 16px;
+
+  color: #fff;
+  background: none;
 }
 .rinOnViewInspector table,
 .rinOnViewInspector table tr,
@@ -15,9 +18,22 @@
   background: initial;
 }
 
+.rinOnViewInspector a {
+  color: #fff;
+  text-decoration: none;
+  border: none;
+}
+
 .rinOnViewInspector.positionBottom {
   top: initial;
   bottom: 0;
+}
+
+.rinOnViewInspector h1 {
+  margin: 0.5em 0;
+  padding: 0;
+  font-size: 1em;
+  font-weight: bold;
 }
 
 .hud {
@@ -69,6 +85,17 @@
   color: #ccc;
 }
 
+.openInRin {
+  text-align: right;
+  margin-top: 0.25em;
+}
+.openInRin a {
+  color: #fff;
+}
+.openInRin a::after {
+  content: '»';
+}
+
 .timeline {
   margin-top: 1em;
   font-size: 0.75em;
@@ -76,6 +103,8 @@
 .timeline table {
   width: 100%;
   color: #eee;
+  background: transparent;
+  border: none;
 }
 .timeline table tr th {
   color: #ccc;
@@ -84,4 +113,26 @@
 }
 .timeline table tr td:not(:first-child) {
   text-align: right;
+}
+
+.subRequests {
+}
+.subRequests h2 {
+  font-weight: bold;
+  font-size: 1em;
+  margin: 0.5em 0 0.25em 0;
+  padding: 0.25em 0 0 0;
+  border-top: 1px solid #fff;
+}
+.subRequests table {
+  font-size: 0.75em;
+  width: 100%;
+  background: transparent;
+  border: none;
+}
+.subRequests table td:nth-child(2) {
+  text-align: right;
+}
+.subRequests table td a {
+  display: block;
 }
