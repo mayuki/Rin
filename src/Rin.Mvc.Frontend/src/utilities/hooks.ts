@@ -1,4 +1,4 @@
-import { rinOnPageInspectorStore } from '../Store';
+import { rinInViewInspectorStore } from '../Store';
 
 // tslint:disable:only-arrow-functions
 function installHook_fetch() {
@@ -7,7 +7,7 @@ function installHook_fetch() {
     return (fetchOriginal.apply(window, args) as Promise<Response>).then(x => {
       const requestId = x.headers.get('X-Rin-Request-Id');
       if (requestId != null && requestId !== '') {
-        rinOnPageInspectorStore.fetchSubRequestById(requestId);
+        rinInViewInspectorStore.fetchSubRequestById(requestId);
       }
       return x;
     });
@@ -20,7 +20,7 @@ function installHook_XHR() {
     this.addEventListener('loadend', () => {
       const requestId = this.getResponseHeader('X-Rin-Request-Id');
       if (requestId != null && requestId !== '') {
-        rinOnPageInspectorStore.fetchSubRequestById(requestId);
+        rinInViewInspectorStore.fetchSubRequestById(requestId);
       }
     });
     xhrSend.apply(this, args);
@@ -28,7 +28,7 @@ function installHook_XHR() {
 }
 
 let hookInstalled = false;
-function installHooks() {
+export function installHooks() {
   if (hookInstalled) {
     return;
   }

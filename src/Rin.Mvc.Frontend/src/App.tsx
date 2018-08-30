@@ -3,40 +3,37 @@ import * as React from 'react';
 import { Fragment } from 'react';
 import { RequestRecordDetailPayload, TimelineData, TimelineDataScope } from './api/IRinCoreHub';
 import * as styles from './App.css';
-import { rinOnPageInspectorStore } from './Store';
+import { RinInViewInspectorStore } from './Store';
 
 @observer
-class App extends React.Component {
+class App extends React.Component<{ inspectorStore: RinInViewInspectorStore }> {
   public render() {
-    const data = rinOnPageInspectorStore.data;
-    const subRequests = rinOnPageInspectorStore.subRequests;
+    const position = this.props.inspectorStore.position;
+    const data = this.props.inspectorStore.data;
+    const subRequests = this.props.inspectorStore.subRequests;
+    const pathBase = this.props.inspectorStore.config.PathBase;
+
     return (
       <>
         {data != null && (
-          <div
-            className={
-              styles.rinOnViewInspector +
-              ' ' +
-              (rinOnPageInspectorStore.position === 'Bottom' ? styles.positionBottom : '')
-            }
-          >
+          <div className={styles.rinInViewInspector + ' ' + (position === 'Bottom' ? styles.positionBottom : '')}>
             <div className={styles.hud}>
-              <label className={styles.summary} htmlFor="rinOnViewInspectorDetailIsVisible">
+              <label className={styles.summary} htmlFor="rinInViewInspectorDetailIsVisible">
                 {data.Timeline.Duration}
                 ms
                 {subRequests.length > 0 && ` + ${subRequests.length}`}
               </label>
-              <input className={styles.isVisible} type="checkbox" id="rinOnViewInspectorDetailIsVisible" />
+              <input className={styles.isVisible} type="checkbox" id="rinInViewInspectorDetailIsVisible" />
               <div className={styles.detail}>
                 <h1 className={styles.detail_path}>{data.Path}</h1>
                 <div className={styles.detail_timestamp}>{new Date(data.Timeline.Timestamp).toString()}</div>
                 <Timeline timelineData={data.Timeline} />
                 <div className={styles.openInRin}>
-                  <a href={`${rinOnPageInspectorStore.config.PathBase}/Inspect/${data.Id}`} target="_blank">
+                  <a href={`${pathBase}/Inspect/${data.Id}`} target="_blank">
                     Open in Rin
                   </a>
                 </div>
-                {subRequests.length > 0 && <SubRequests subRequests={subRequests} />}
+                {subRequests.length > 0 && <SubRequests subRequests={subRequests} pathBase={pathBase} />}
               </div>
             </div>
           </div>
@@ -46,7 +43,7 @@ class App extends React.Component {
   }
 }
 
-class SubRequests extends React.Component<{ subRequests: RequestRecordDetailPayload[] }> {
+class SubRequests extends React.Component<{ subRequests: RequestRecordDetailPayload[]; pathBase: string }> {
   render() {
     return (
       <div className={styles.subRequests}>
@@ -56,12 +53,12 @@ class SubRequests extends React.Component<{ subRequests: RequestRecordDetailPayl
             {this.props.subRequests.map(x => (
               <tr key={`s-${x.Id}`}>
                 <td>
-                  <a href={`${rinOnPageInspectorStore.config.PathBase}/Inspect/${x.Id}`} target="_blank">
+                  <a href={`${this.props.pathBase}/Inspect/${x.Id}`} target="_blank">
                     {x.Path}
                   </a>
                 </td>
                 <td>
-                  <a href={`${rinOnPageInspectorStore.config.PathBase}/Inspect/${x.Id}`} target="_blank">
+                  <a href={`${this.props.pathBase}/Inspect/${x.Id}`} target="_blank">
                     {x.Timeline.Duration}
                     ms
                   </a>

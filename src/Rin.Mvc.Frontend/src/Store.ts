@@ -1,14 +1,13 @@
 import { action, observable, runInAction } from 'mobx';
-import { createHubClient, IHubClient } from './api/hubClient';
-import { IRinCoreHub, RequestRecordDetailPayload } from './api/IRinCoreHub';
+import { RequestRecordDetailPayload } from './api/IRinCoreHub';
 
-export interface RinOnPageInspectorConfig {
+export interface RinInViewInspectorConfig {
   Position?: 'Bottom' | 'Top';
   PathBase: string;
   RequestId: string;
 }
 
-export class RinOnPageInspectorStore {
+export class RinInViewInspectorStore {
   @observable
   data: RequestRecordDetailPayload;
 
@@ -19,45 +18,49 @@ export class RinOnPageInspectorStore {
   subRequests: RequestRecordDetailPayload[] = [];
 
   @observable
-  config: RinOnPageInspectorConfig;
+  config: RinInViewInspectorConfig;
 
-  private hubClient: IRinCoreHub & IHubClient;
+  private apiEndPointBase: string;
 
   @action.bound
-  async ready(config: RinOnPageInspectorConfig) {
+  async ready(config: RinInViewInspectorConfig) {
     this.config = config;
-    this.hubClient = createHubClient<IRinCoreHub>(getChannelEndPoint(config));
+    this.apiEndPointBase = getApiEndPointBase(config);
     this.position = config.Position || 'Bottom';
 
-    const detail = await this.hubClient.GetDetailById(config.RequestId);
+    const detail = await this.getDetailByIdAsync(config.RequestId);
 
     runInAction(() => (this.data = detail));
   }
 
   @action.bound
   async fetchSubRequestById(id: string) {
-    const detail = await this.hubClient.GetDetailById(id);
+    const detail = await this.getDetailByIdAsync(id);
 
     runInAction(() => {
       this.subRequests = this.subRequests.concat([detail]);
     });
   }
+
+  private async getDetailByIdAsync(id: string): Promise<RequestRecordDetailPayload> {
+    return fetch(`${this.apiEndPointBase}/GetDetailById?id=${id}`).then(x => x.json());
+  }
 }
 
-function getChannelEndPoint(config: RinOnPageInspectorConfig) {
+function getApiEndPointBase(config: RinInViewInspectorConfig) {
   const isDevelopment = process.env.NODE_ENV === 'development';
   const host = isDevelopment
     ? location.search.match(/__rin__dev__host=([^&]+)/)
       ? location.search.match(/__rin__dev__host=([^&]+)/)![1]
       : 'localhost:5000'
     : location.host;
-  const protocol = location.protocol === 'http:' ? 'ws:' : 'wss:';
+  // const protocol = location.protocol === 'http:' ? 'ws:' : 'wss:';
   // const pathBase = isDevelopment ? '/' : config.PathBase || '/rin';
   const endPointBasePath = config.PathBase || '/rin';
-  const channelEndPoint = `${protocol}//${host}${endPointBasePath}/chan`;
-  // const urlBase = `${location.protocol}//${host}${endPointBasePath}`;
+  // const channelEndPoint = `${protocol}//${host}${endPointBasePath}/chan`;
+  const urlBase = `${location.protocol}//${host}${endPointBasePath}/api`;
 
-  return channelEndPoint;
+  return urlBase;
 }
 
-export const rinOnPageInspectorStore = new RinOnPageInspectorStore();
+export const rinInViewInspectorStore = new RinInViewInspectorStore();

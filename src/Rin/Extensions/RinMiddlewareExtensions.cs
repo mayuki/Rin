@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Rin.Core;
 using Rin.Middlewares;
+using Rin.Middlewares.Api;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -32,6 +33,7 @@ namespace Microsoft.AspNetCore.Builder
             app.Map(options.Inspector.MountPath, branch =>
             {
                 branch.UseWebSockets();
+                branch.UseRinApi();
                 branch.UseRinInspectorApi();
                 branch.UseRinDownloadEndpoints();
 
@@ -54,6 +56,11 @@ namespace Microsoft.AspNetCore.Builder
         private static void UseRinInspectorApi(this IApplicationBuilder app)
         {
             app.Map("/chan", x => x.UseMiddleware<ChannelMiddleware>());
+        }
+
+        private static void UseRinApi(this IApplicationBuilder app)
+        {
+            app.Map("/api/GetDetailById", x => x.UseMiddleware<GetDetailByIdMiddleware>());
         }
 
         private static void UseRinRecorder(this IApplicationBuilder app)

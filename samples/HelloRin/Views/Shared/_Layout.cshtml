@@ -6,9 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - HelloRin</title>
 
+
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+
+        @RinHelper.RenderInViewInspector()
+        @*
+        @RinHelper.RenderInViewInspector(Rin.Mvc.View.InViewInspectorPosition.Bottom, "http://localhost:3000/static/js/bundle.js")
+        *@
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -72,10 +78,6 @@
 
     @RenderSection("Scripts", required: false)
 
-    @*
-    @RinHelper.Render(Rin.Mvc.View.OnViewInspectorPosition.Bottom, "http://localhost:3000/static/js/bundle.js")
-    *@
-    @RinHelper.Render()
 
 </body>
 </html>

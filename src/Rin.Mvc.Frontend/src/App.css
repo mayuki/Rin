@@ -1,4 +1,4 @@
-.rinOnViewInspector {
+.rinInViewInspector {
   position: fixed;
   top: 0;
   left: 0;
@@ -8,28 +8,28 @@
   color: #fff;
   background: none;
 }
-.rinOnViewInspector table,
-.rinOnViewInspector table tr,
-.rinOnViewInspector table tr td,
-.rinOnViewInspector table tr th {
+.rinInViewInspector table,
+.rinInViewInspector table tr,
+.rinInViewInspector table tr td,
+.rinInViewInspector table tr th {
   border: none;
   margin: 0;
   padding: 0;
   background: initial;
 }
 
-.rinOnViewInspector a {
+.rinInViewInspector a {
   color: #fff;
   text-decoration: none;
   border: none;
 }
 
-.rinOnViewInspector.positionBottom {
+.rinInViewInspector.positionBottom {
   top: initial;
   bottom: 0;
 }
 
-.rinOnViewInspector h1 {
+.rinInViewInspector h1 {
   margin: 0.5em 0;
   padding: 0;
   font-size: 1em;
@@ -75,7 +75,7 @@
   background-color: #4e5584;
   color: #eee;
 }
-.rinOnViewInspector.positionBottom .detail {
+.rinInViewInspector.positionBottom .detail {
   top: initial;
   bottom: 0;
 }
