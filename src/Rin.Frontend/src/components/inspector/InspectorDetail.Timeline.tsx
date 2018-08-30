@@ -175,7 +175,7 @@ class TimelineSpan extends React.Component<TimelineSpanProps> {
     const width =
       this.props.data.EventType === 'TimelineScope' ? (this.props.data.Duration / this.props.totalDuration) * 100 : 0;
     const left = 100 - ((this.props.totalDuration - elapsedMilliSecFromOrigin) / this.props.totalDuration) * 100;
-    const label = this.props.data.Category.replace(/^Rin\.Timeline\.(AspNetCore\.)?/, '') + ': ' + this.props.data.Name;
+    const label = asLabel(this.props.data);
     return (
       <>
         <div
@@ -186,7 +186,10 @@ class TimelineSpan extends React.Component<TimelineSpanProps> {
         >
           <div
             className={styles.timelineSpan_name}
-            title={label + (this.props.data.Data != null ? '\n' + this.props.data.Data : '')}
+            title={
+              `${this.props.data.Category}: ${this.props.data.Name}` +
+              (this.props.data.Data != null ? '\n' + this.props.data.Data : '')
+            }
           >
             {label}
           </div>
@@ -223,4 +226,11 @@ class TimelineSpan extends React.Component<TimelineSpanProps> {
   private onClick = () => {
     this.props.onTimelineSpanClick(this.props.data, this.timelineSpanItemRef.current!);
   };
+}
+
+function asLabel(data: TimelineData): string {
+  const category = data.Category.replace(/^.*\./, '');
+  return data.Category === TimelineEventCategory.AspNetCoreMvcView
+    ? `${category}: ${data.Data}`
+    : `${category}: ${data.Name}`;
 }
