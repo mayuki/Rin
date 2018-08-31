@@ -33,6 +33,7 @@ namespace HelloRin
 
 
             services.AddMvc()
+                .AddRinMvcSupport()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddRin(options =>

@@ -1,13 +1,20 @@
-﻿<!DOCTYPE html>
+﻿@inject Rin.Mvc.View.RinHelperService RinHelper
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - HelloRin</title>
 
+
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+
+        @RinHelper.RenderInViewInspector()
+        @*
+        @RinHelper.RenderInViewInspector(Rin.Mvc.View.InViewInspectorPosition.Bottom, "http://localhost:3000/static/js/bundle.js")
+        *@
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -70,5 +77,7 @@
     </environment>
 
     @RenderSection("Scripts", required: false)
+
+
 </body>
 </html>
