@@ -1,0 +1,7 @@
+src/Rin.Frontend/build/* linguist-detectable=false
+src/Rin.Frontend/scripts/* linguist-detectable=false
+src/Rin.Frontend/config/* linguist-detectable=false
+src/Rin.Mvc.Frontend/build/* linguist-detectable=false
+src/Rin.Mvc.Frontend/scripts/* linguist-detectable=false
+src/Rin.Mvc.Frontend/config/* linguist-detectable=false
+samples/HelloRin/wwwroot/js/lib/* linguist-vendored
