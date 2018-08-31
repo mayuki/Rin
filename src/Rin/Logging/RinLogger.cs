@@ -29,8 +29,8 @@ namespace Rin.Logging
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            var recording = httpContext?.Features.Get<IRinRequestRecordingFeature>();
+            var httpContext = _httpContextAccessor?.HttpContext;
+            var recording = httpContext?.Features?.Get<IRinRequestRecordingFeature>();
             if (recording == null) return;
 
             TimelineStamp.Stamp(logLevel.ToString(), TimelineEventCategory.Trace, formatter(state, exception));

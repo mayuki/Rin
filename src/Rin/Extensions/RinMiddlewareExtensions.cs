@@ -16,6 +16,11 @@ namespace Microsoft.AspNetCore.Builder
         public static void UseRin(this IApplicationBuilder app)
         {
             var options = app.ApplicationServices.GetService(typeof(RinOptions)) as RinOptions;
+            if (options == null)
+            {
+                throw new InvalidOperationException("Rin Services are not registered. Please call 'services.AddRin()' in a Startup class");
+            }
+
             var env = app.ApplicationServices.GetService(typeof(IHostingEnvironment)) as IHostingEnvironment;
             if (env.IsProduction() && !options.RequestRecorder.AllowRunningOnProduction)
             {
