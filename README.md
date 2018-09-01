@@ -33,7 +33,8 @@ Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured 
 - Save request/response body
 - Copy request as cURL and C#
 
-### 🔌 ASP.NET Core MVC Integration
+### 🔌 Integrate with ASP.NET Core MVC
+- Record timings of view rendering and action execution
 - In-View Inspector (like MiniProfiler)
 
 ![](docs/images/Screenshot-04.png)
@@ -112,6 +113,18 @@ public class Startup
         ...
     }
 }
+```
+
+### _Layout.cshtml (for ASP.NET Core MVC)
+```cshtml
+...
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+        @* Add: Enable In-View Inspector for ASP.NET MVC Core *@
+        @RinHelper.RenderInViewInspector()
+    </environment>
+...
 ```
 
 ## Start the application and open Inspector on the web
