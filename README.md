@@ -33,6 +33,9 @@ Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured 
 - Save request/response body
 - Copy request as cURL and C#
 
+### ASP.NET Core MVC Integration
+- In-View Inspector
+
 # Requirements
 - .NET Core 2.0+
 - ASP.NET Core 2.1+
