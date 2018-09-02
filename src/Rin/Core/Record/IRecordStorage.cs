@@ -7,8 +7,21 @@ namespace Rin.Core.Record
 {
     public interface IRecordStorage : IMessageSubscriber<RequestEventMessage>
     {
-        void Add(HttpRequestRecord entry);
-        HttpRequestRecord[] GetAll();
-        bool TryGetById(string id, out HttpRequestRecord value);
+        Task AddAsync(HttpRequestRecord entry);
+        Task UpdateAsync(HttpRequestRecord entry);
+        Task<HttpRequestRecord[]> GetAllAsync();
+        Task<RecordStorageTryGetResult> TryGetByIdAsync(string id);
+    }
+
+    public struct RecordStorageTryGetResult
+    {
+        public bool Succeed { get; }
+        public HttpRequestRecord Value { get; }
+
+        public RecordStorageTryGetResult(bool succeed, HttpRequestRecord value)
+        {
+            Succeed = succeed;
+            Value = value;
+        }
     }
 }

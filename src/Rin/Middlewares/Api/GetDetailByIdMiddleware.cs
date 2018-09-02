@@ -27,7 +27,8 @@ namespace Rin.Middlewares.Api
                 return;
             }
 
-            if (!_storage.TryGetById(id, out var entry))
+            var result = await _storage.TryGetByIdAsync(id);
+            if (!result.Succeed)
             {
                 context.Response.StatusCode = 404;
                 return;
@@ -35,7 +36,7 @@ namespace Rin.Middlewares.Api
 
             context.Response.StatusCode = 200;
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(new RequestRecordDetailPayload(entry)));
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(new RequestRecordDetailPayload(result.Value)));
         }
     }
 }

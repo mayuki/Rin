@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Rin.Core.Record
 {
@@ -17,7 +18,7 @@ namespace Rin.Core.Record
             _retentionMaxRequests = retentionMaxRequests;
         }
 
-        public void Add(HttpRequestRecord record)
+        public Task AddAsync(HttpRequestRecord record)
         {
             _lock.EnterWriteLock();
             try
@@ -35,9 +36,10 @@ namespace Rin.Core.Record
             {
                 _lock.ExitWriteLock();
             }
+            return Task.CompletedTask;
         }
 
-        public void Update(HttpRequestRecord record)
+        public Task UpdateAsync(HttpRequestRecord record)
         {
             _lock.EnterWriteLock();
             try
@@ -48,14 +50,15 @@ namespace Rin.Core.Record
             {
                 _lock.ExitWriteLock();
             }
+            return Task.CompletedTask;
         }
 
-        public HttpRequestRecord[] GetAll()
+        public Task<HttpRequestRecord[]> GetAllAsync()
         {
             _lock.EnterReadLock();
             try
             {
-                return _entryIds.Select(x => _entries[x]).ToArray();
+                return Task.FromResult(_entryIds.Select(x => _entries[x]).ToArray());
             }
             finally
             {
@@ -68,20 +71,21 @@ namespace Rin.Core.Record
             switch (message.Event)
             {
                 case RequestEvent.BeginRequest:
-                    Add(message.Value);
+                    AddAsync(message.Value);
                     break;
                 case RequestEvent.CompleteRequest:
-                    Update(message.Value);
+                    UpdateAsync(message.Value);
                     break;
             }
         }
 
-        public bool TryGetById(string id, out HttpRequestRecord value)
+        public async Task<RecordStorageTryGetResult> TryGetByIdAsync(string id)
         {
             _lock.EnterReadLock();
             try
             {
-                return _entries.TryGetValue(id, out value);
+                var succeed = _entries.TryGetValue(id, out var value);
+                return new RecordStorageTryGetResult(succeed, value);
             }
             finally
             {

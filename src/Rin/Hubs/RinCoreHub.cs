@@ -27,29 +27,35 @@ namespace Rin.Hubs
             _bodyDataTransformerSet = bodyDataTransformerSet;
         }
 
-        public RequestEventPayload[] GetRecordingList()
+        public async Task<RequestEventPayload[]> GetRecordingList()
         {
-            return _storage.GetAll().Select(x => new RequestEventPayload(x)).Reverse().ToArray();
+            return (await _storage.GetAllAsync()).Select(x => new RequestEventPayload(x)).Reverse().ToArray();
         }
 
-        public RequestRecordDetailPayload GetDetailById(string id)
+        public async Task<RequestRecordDetailPayload> GetDetailById(string id)
         {
-            return (_storage.TryGetById(id, out var value))
-                ? new RequestRecordDetailPayload(value)
+            var result = await _storage.TryGetByIdAsync(id);
+
+            return (result.Succeed)
+                ? new RequestRecordDetailPayload(result.Value)
                 : null;
         }
 
-        public BodyDataPayload GetRequestBody(string id)
+        public async Task<BodyDataPayload> GetRequestBody(string id)
         {
-            return (_storage.TryGetById(id, out var value))
-                ? BodyDataPayload.CreateFromRecord(value, value.RequestHeaders, value.RequestBody, _bodyDataTransformerSet.Request)
+            var result = await _storage.TryGetByIdAsync(id);
+
+            return (result.Succeed)
+                ? BodyDataPayload.CreateFromRecord(result.Value, result.Value.RequestHeaders, result.Value.RequestBody, _bodyDataTransformerSet.Request)
                 : null;
         }
 
-        public BodyDataPayload GetResponseBody(string id)
+        public async Task<BodyDataPayload> GetResponseBody(string id)
         {
-            return (_storage.TryGetById(id, out var value))
-                ? BodyDataPayload.CreateFromRecord(value, value.ResponseHeaders, value.ResponseBody, _bodyDataTransformerSet.Response)
+            var result = await _storage.TryGetByIdAsync(id);
+
+            return (result.Succeed)
+                ? BodyDataPayload.CreateFromRecord(result.Value, result.Value.ResponseHeaders, result.Value.ResponseBody, _bodyDataTransformerSet.Response)
                 : null;
         }
 

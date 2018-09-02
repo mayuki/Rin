@@ -25,12 +25,15 @@ namespace Rin.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (!_storage.TryGetById(context.Request.Query["id"], out var entry))
+            var result = await _storage.TryGetByIdAsync(context.Request.Query["id"]);
+
+            if (!result.Succeed)
             {
                 context.Response.StatusCode = 404;
                 return;
             }
 
+            var entry = result.Value;
             var contentType = entry.RequestHeaders["Content-Type"].FirstOrDefault();
             context.Response.ContentType = "application/octet-stream";
             context.Response.StatusCode = 200;
@@ -54,12 +57,14 @@ namespace Rin.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (!_storage.TryGetById(context.Request.Query["id"], out var entry))
+            var result = await _storage.TryGetByIdAsync(context.Request.Query["id"]);
+            if (!result.Succeed)
             {
                 context.Response.StatusCode = 404;
                 return;
             }
 
+            var entry = result.Value;
             var contentType = entry.ResponseHeaders["Content-Type"].FirstOrDefault();
             context.Response.ContentType = "application/octet-stream";
             context.Response.StatusCode = 200;
