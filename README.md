@@ -117,6 +117,7 @@ public class Startup
 
 ### _Layout.cshtml (for ASP.NET Core MVC)
 ```cshtml
+@inject Rin.Mvc.View.RinHelperService RinHelper
 ...
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
