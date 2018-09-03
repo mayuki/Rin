@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Rin.Core.Record;
+using Rin.Core.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +18,10 @@ namespace Rin.Core
         public bool EnableBodyCapturing { get; set; } = true;
 
         public bool AllowRunningOnProduction { get; set; } = false;
+
+        public Func<IServiceProvider, IRecordStorage> StorageFactory { get; set; } = (services) =>
+        {
+            return new InMemoryRecordStorage(services.GetService<RinOptions>().RequestRecorder.RetentionMaxRequests);
+        };
     }
 }

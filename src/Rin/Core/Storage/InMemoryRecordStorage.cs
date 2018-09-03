@@ -1,10 +1,11 @@
 ﻿using Rin.Core.Event;
+using Rin.Core.Record;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Rin.Core.Record
+namespace Rin.Core.Storage
 {
     public class InMemoryRecordStorage : IRecordStorage
     {
@@ -66,7 +67,21 @@ namespace Rin.Core.Record
             }
         }
 
-        public void Publish(RequestEventMessage message)
+        public Task<RecordStorageTryGetResult> TryGetByIdAsync(string id)
+        {
+            _lock.EnterReadLock();
+            try
+            {
+                var succeed = _entries.TryGetValue(id, out var value);
+                return Task.FromResult(new RecordStorageTryGetResult(succeed, value));
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
+        }
+
+        void IMessageSubscriber<RequestEventMessage>.Publish(RequestEventMessage message)
         {
             switch (message.Event)
             {
@@ -76,20 +91,6 @@ namespace Rin.Core.Record
                 case RequestEvent.CompleteRequest:
                     UpdateAsync(message.Value);
                     break;
-            }
-        }
-
-        public async Task<RecordStorageTryGetResult> TryGetByIdAsync(string id)
-        {
-            _lock.EnterReadLock();
-            try
-            {
-                var succeed = _entries.TryGetValue(id, out var value);
-                return new RecordStorageTryGetResult(succeed, value);
-            }
-            finally
-            {
-                _lock.ExitReadLock();
             }
         }
     }

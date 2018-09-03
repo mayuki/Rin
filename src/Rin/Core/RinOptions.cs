@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Rin.Core.Record;
+using Rin.Core.Storage;
+using System;
 using System.Collections.Generic;
 using System.Text;
 

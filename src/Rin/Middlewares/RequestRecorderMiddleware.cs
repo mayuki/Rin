@@ -52,7 +52,7 @@ namespace Rin.Middlewares
                 Timeline = TimelineScope.Prepare(),
             };
 
-            await _eventBus.PostAsync(new RequestEventMessage(record, RequestEvent.BeginRequest));
+            await _eventBus.PostAsync(new RequestEventMessage("Internal", record, RequestEvent.BeginRequest));
 
             // Set Rin recorder feature.
             var feature = new RinRequestRecordingFeature(record);
@@ -119,7 +119,7 @@ namespace Rin.Middlewares
             record.Transferring.Complete();
             record.Timeline.Complete();
 
-            return _eventBus.PostAsync(new RequestEventMessage(record, RequestEvent.CompleteRequest)).AsTask();
+            return _eventBus.PostAsync(new RequestEventMessage("Internal", record, RequestEvent.CompleteRequest)).AsTask();
         }
     }
 }

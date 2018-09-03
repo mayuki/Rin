@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Rin.Core;
+using Rin.Core.Event;
+using Rin.Core.Record;
 using Rin.Middlewares;
 using Rin.Middlewares.Api;
 using System;
@@ -27,8 +30,19 @@ namespace Microsoft.AspNetCore.Builder
                 throw new InvalidOperationException("Rin requires non-Production environment to run. If you want to run in Production environment, configure AllowRunningOnProduction option.");
             }
 
+            app.UseRinMessageBus();
+
             app.UseRinInspector();
             app.UseRinRecorder();
+        }
+
+        private static void UseRinMessageBus(this IApplicationBuilder app)
+        {
+            var eventBus = app.ApplicationServices.GetService<IMessageEventBus<RequestEventMessage>>();
+            var subscribers = app.ApplicationServices.GetServices<IMessageSubscriber<RequestEventMessage>>();
+            var recoder = app.ApplicationServices.GetService<IRecordStorage>();
+
+            eventBus.Subscribe(subscribers.Concat(new[] { recoder }));
         }
 
         private static void UseRinInspector(this IApplicationBuilder app)

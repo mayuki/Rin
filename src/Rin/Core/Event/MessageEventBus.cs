@@ -1,5 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,21 +10,31 @@ namespace Rin.Core.Event
 {
     public class MessageEventBus<T> : IMessageEventBus<T>
     {
-        private IMessageSubscriber<T>[] _subscribers;
+        private IMessageSubscriber<T>[] _subscribers = Array.Empty<IMessageSubscriber<T>>();
         private System.Threading.Channels.Channel<T> _channel;
         private Task _readerTask;
         private bool _disposed;
         private CancellationTokenSource _cancellationTokenSource;
 
-        public MessageEventBus(IMessageSubscriber<T>[] subscribers)
+        public MessageEventBus()
         {
-            _subscribers = subscribers;
             _channel = System.Threading.Channels.Channel.CreateUnbounded<T>(new System.Threading.Channels.UnboundedChannelOptions()
             {
                 SingleReader = true,
             });
-            _readerTask = Task.Run(RunLoopAsync);
+            _readerTask = Task.CompletedTask;
             _cancellationTokenSource = new CancellationTokenSource();
+        }
+
+        public void Subscribe(IEnumerable<IMessageSubscriber<T>> subscribers)
+        {
+            if (_readerTask != Task.CompletedTask)
+            {
+                throw new InvalidOperationException("MessageEventBus was already started.");
+            }
+
+            _subscribers = subscribers.ToArray();
+            _readerTask = Task.Run(RunLoopAsync);
         }
 
         private async Task RunLoopAsync()
