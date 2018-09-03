@@ -11,7 +11,7 @@ namespace Rin.Core
 {
     public class RequestRecorderOptions
     {
-        public Func<HttpRequest, bool> Excludes { get; set; }
+        public List<Func<HttpRequest, bool>> Excludes { get; set; } = new List<Func<HttpRequest, bool>>();
 
         public int RetentionMaxRequests { get; set; } = 100;
 

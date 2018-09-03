@@ -32,7 +32,7 @@ namespace Rin.Middlewares
             var request = context.Request;
             var response = context.Response;
 
-            if (request.Path.StartsWithSegments(options.Inspector.MountPath) || (options.RequestRecorder.Excludes?.Invoke(request) ?? false))
+            if (request.Path.StartsWithSegments(options.Inspector.MountPath) || (options.RequestRecorder.Excludes.Any(x => x.Invoke(request))))
             {
                 await _next(context);
                 return;
