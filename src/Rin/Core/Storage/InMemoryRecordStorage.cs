@@ -1,5 +1,7 @@
-﻿using Rin.Core.Event;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Rin.Core.Event;
 using Rin.Core.Record;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -7,12 +9,20 @@ using System.Threading.Tasks;
 
 namespace Rin.Core.Storage
 {
+    /// <summary>
+    /// In-Memory record storage. This storage doesn't persist/share any records.
+    /// </summary>
     public class InMemoryRecordStorage : IRecordStorage
     {
         private Dictionary<string, HttpRequestRecord> _entries = new Dictionary<string, HttpRequestRecord>();
         private Queue<string> _entryIds = new Queue<string>();
         private int _retentionMaxRequests = 100;
         private ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
+
+        public static readonly Func<IServiceProvider, IRecordStorage> Factory = (services) =>
+        {
+            return new InMemoryRecordStorage(services.GetService<RinOptions>().RequestRecorder.RetentionMaxRequests);
+        };
 
         public InMemoryRecordStorage(int retentionMaxRequests)
         {
