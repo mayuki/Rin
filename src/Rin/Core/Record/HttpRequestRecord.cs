@@ -8,33 +8,54 @@ using System.Net;
 
 namespace Rin.Core.Record
 {
-    public class HttpRequestRecord
+    public class HttpRequestRecordInfo
     {
-        public string Id { get; internal set; }
+        public string Id { get; set; }
         public string ParentId { get; set; }
 
-        public bool IsHttps { get; internal set; }
-        public HostString Host { get; internal set; }
-        public QueryString QueryString { get; internal set; }
-        public PathString Path { get; internal set; }
-        public string Method { get; internal set; }
-        public int ResponseStatusCode { get; internal set; }
-        public IPAddress RemoteIpAddress { get; internal set; }
-        public byte[] RequestBody { get; internal set; }
-        public IDictionary<string, StringValues> RequestHeaders { get; internal set; }
-        public byte[] ResponseBody { get; internal set; }
-        public IDictionary<string, StringValues> ResponseHeaders { get; internal set; }
+        public bool IsHttps { get; set; }
+        public HostString Host { get; set; }
+        public QueryString QueryString { get; set; }
+        public PathString Path { get; set; }
+        public string Method { get; set; }
+        public int ResponseStatusCode { get; set; }
+        public IPAddress RemoteIpAddress { get; set; }
 
-        public DateTimeOffset RequestReceivedAt { get; internal set; }
-        public DateTimeOffset TransferringCompletedAt { get; internal set; }
+        public DateTimeOffset RequestReceivedAt { get; set; }
+        public DateTimeOffset TransferringCompletedAt { get; set; }
 
-        public Exception Exception { get; internal set; }
+        public bool IsCompleted => TransferringCompletedAt != default(DateTimeOffset);
 
-        public ITimelineScope Timeline { get; internal set; }
+        public static HttpRequestRecordInfo CreateFromRecord(HttpRequestRecordInfo record)
+        {
+            return new HttpRequestRecordInfo
+            {
+                Id = record.Id,
+                ParentId = record.Id,
+                IsHttps = record.IsHttps,
+                Host = record.Host,
+                QueryString = record.QueryString,
+                Path = record.Path,
+                Method = record.Method,
+                ResponseStatusCode = record.ResponseStatusCode,
+                RemoteIpAddress = record.RemoteIpAddress,
+                RequestReceivedAt = record.RequestReceivedAt,
+                TransferringCompletedAt = record.TransferringCompletedAt,
+            };
+        }
+    }
+
+    public class HttpRequestRecord : HttpRequestRecordInfo
+    {
+        public byte[] RequestBody { get; set; }
+        public IDictionary<string, StringValues> RequestHeaders { get; set; }
+        public byte[] ResponseBody { get; set; }
+        public IDictionary<string, StringValues> ResponseHeaders { get; set; }
+
+        public Exception Exception { get; set; }
+        public ITimelineScope Timeline { get; set; }
 
         internal ITimelineScope Processing { get; set; }
         internal ITimelineScope Transferring { get; set; }
-
-        public bool IsCompleted => TransferringCompletedAt != default(DateTimeOffset);
     }
 }

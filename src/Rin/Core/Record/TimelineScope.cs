@@ -8,7 +8,7 @@ using System.Threading;
 namespace Rin.Core.Record
 {
     [DebuggerDisplay("TimelineScope: {Name}")]
-    public class TimelineScope : ITimelineScope
+    public class TimelineScope : ITimelineScopeCreatable
     {
         internal static readonly AsyncLocal<TimelineScope> CurrentScope = new AsyncLocal<TimelineScope>();
 
@@ -37,7 +37,6 @@ namespace Rin.Core.Record
         public string Data { get; set; }
 
         public IReadOnlyCollection<ITimelineEvent> Children => _children.IsValueCreated ? _children.Value : (IReadOnlyCollection<ITimelineEvent>)Array.Empty<ITimelineEvent>();
-
 
         /// <summary>
         /// Prepare a TimelineScope for current ExecutionContext (async execution flow).
@@ -76,10 +75,10 @@ namespace Rin.Core.Record
         {
             if (CurrentScope.Value == null) return NullTimelineScope.Instance;
 
-            return ((ITimelineScope)CurrentScope.Value).Create(name, category, data);
+            return ((ITimelineScopeCreatable)CurrentScope.Value).Create(name, category, data);
         }
 
-        ITimelineScope ITimelineScope.Create(string name, string category, string data)
+        ITimelineScope ITimelineScopeCreatable.Create(string name, string category, string data)
         {
             return new TimelineScope(name, category, data);
         }

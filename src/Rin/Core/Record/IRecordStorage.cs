@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace Rin.Core.Record
 {
-    public interface IRecordStorage : IMessageSubscriber<RequestEventMessage>
+    public interface IRecordStorage : IMessageSubscriber<RequestEventMessage>, IDisposable
     {
         Task AddAsync(HttpRequestRecord entry);
         Task UpdateAsync(HttpRequestRecord entry);
-        Task<HttpRequestRecord[]> GetAllAsync();
+        Task<HttpRequestRecordInfo[]> GetAllAsync();
         Task<RecordStorageTryGetResult> TryGetByIdAsync(string id);
     }
 

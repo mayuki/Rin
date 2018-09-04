@@ -64,12 +64,12 @@ namespace Rin.Core.Storage
             return Task.CompletedTask;
         }
 
-        public Task<HttpRequestRecord[]> GetAllAsync()
+        public Task<HttpRequestRecordInfo[]> GetAllAsync()
         {
             _lock.EnterReadLock();
             try
             {
-                return Task.FromResult(_entryIds.Select(x => _entries[x]).ToArray());
+                return Task.FromResult(_entryIds.Select(x => _entries[x]).ToArray() as HttpRequestRecordInfo[]);
             }
             finally
             {
@@ -102,6 +102,10 @@ namespace Rin.Core.Storage
                     UpdateAsync(message.Value);
                     break;
             }
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

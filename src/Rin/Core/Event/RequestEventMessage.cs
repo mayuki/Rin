@@ -7,9 +7,9 @@ namespace Rin.Core.Event
 {
     public struct RequestEventMessage
     {
-        public string EventSource { get; }
-        public HttpRequestRecord Value { get; }
-        public RequestEvent Event { get; }
+        public string EventSource { get; set; }
+        public HttpRequestRecord Value { get; set; }
+        public RequestEvent Event { get; set; }
 
         public RequestEventMessage(string eventSource, HttpRequestRecord value, RequestEvent requestEvent)
         {

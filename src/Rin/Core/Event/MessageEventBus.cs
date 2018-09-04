@@ -46,7 +46,16 @@ namespace Rin.Core.Event
 
                 foreach (var subscriber in _subscribers)
                 {
-                    subscriber.Publish(item);
+                    try
+                    {
+                        subscriber.Publish(item);
+                    }
+                    catch (Exception ex)
+                    {
+#if DEBUG
+                        Console.WriteLine(ex);
+#endif
+                    }
                 }
             }
         }

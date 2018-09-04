@@ -21,6 +21,8 @@ namespace Rin.Middlewares
         private readonly RequestDelegate _next;
         private readonly IMessageEventBus<RequestEventMessage> _eventBus;
 
+        public const string EventSourceName = "Rin.Middlewares.RequestRecorderMiddleware";
+
         public RequestRecorderMiddleware(RequestDelegate next, IMessageEventBus<RequestEventMessage> eventBus, RinChannel rinChannel)
         {
             _next = next;
@@ -52,7 +54,7 @@ namespace Rin.Middlewares
                 Timeline = TimelineScope.Prepare(),
             };
 
-            await _eventBus.PostAsync(new RequestEventMessage("Internal", record, RequestEvent.BeginRequest));
+            await _eventBus.PostAsync(new RequestEventMessage(EventSourceName, record, RequestEvent.BeginRequest));
 
             // Set Rin recorder feature.
             var feature = new RinRequestRecordingFeature(record);
@@ -119,7 +121,7 @@ namespace Rin.Middlewares
             record.Transferring.Complete();
             record.Timeline.Complete();
 
-            return _eventBus.PostAsync(new RequestEventMessage("Internal", record, RequestEvent.CompleteRequest)).AsTask();
+            return _eventBus.PostAsync(new RequestEventMessage(EventSourceName, record, RequestEvent.CompleteRequest)).AsTask();
         }
     }
 }

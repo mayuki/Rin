@@ -14,7 +14,7 @@ namespace Rin.Hubs.Payloads
         public string Path { get; private set; }
         public int ResponseStatusCode { get; private set; }
 
-        public RequestEventPayload(HttpRequestRecord record)
+        public RequestEventPayload(HttpRequestRecordInfo record)
         {
             Id = record.Id;
             ParentId = record.ParentId;

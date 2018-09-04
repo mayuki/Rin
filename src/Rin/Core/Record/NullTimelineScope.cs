@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Rin.Core.Record
 {
-    public sealed class NullTimelineScope : ITimelineScope
+    public sealed class NullTimelineScope : ITimelineScopeCreatable
     {
         public static NullTimelineScope Instance { get; } = new NullTimelineScope();
 
@@ -49,6 +49,6 @@ namespace Rin.Core.Record
         {
         }
 
-        ITimelineScope ITimelineScope.Create(string name, string category, string data) => this;
+        ITimelineScope ITimelineScopeCreatable.Create(string name, string category, string data) => this;
     }
 }
