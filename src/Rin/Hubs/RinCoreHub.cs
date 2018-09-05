@@ -29,12 +29,12 @@ namespace Rin.Hubs
 
         public async Task<RequestEventPayload[]> GetRecordingList()
         {
-            return (await _storage.GetAllAsync()).Select(x => new RequestEventPayload(x)).Reverse().ToArray();
+            return (await _storage.GetAllAsync()).Select(x => new RequestEventPayload(x)).ToArray();
         }
 
         public async Task<RequestRecordDetailPayload> GetDetailById(string id)
         {
-            var result = await _storage.TryGetByIdAsync(id);
+            var result = await _storage.TryGetDetailByIdAsync(id);
 
             return (result.Succeed)
                 ? new RequestRecordDetailPayload(result.Value)
@@ -43,19 +43,21 @@ namespace Rin.Hubs
 
         public async Task<BodyDataPayload> GetRequestBody(string id)
         {
-            var result = await _storage.TryGetByIdAsync(id);
+            var result = await _storage.TryGetDetailByIdAsync(id);
+            var resultBody = await _storage.TryGetRequestBodyByIdAsync(id);
 
-            return (result.Succeed)
-                ? BodyDataPayload.CreateFromRecord(result.Value, result.Value.RequestHeaders, result.Value.RequestBody, _bodyDataTransformerSet.Request)
+            return (result.Succeed && resultBody.Succeed)
+                ? BodyDataPayload.CreateFromRecord(result.Value, result.Value.RequestHeaders, resultBody.Value, _bodyDataTransformerSet.Request)
                 : null;
         }
 
         public async Task<BodyDataPayload> GetResponseBody(string id)
         {
-            var result = await _storage.TryGetByIdAsync(id);
+            var result = await _storage.TryGetDetailByIdAsync(id);
+            var resultBody = await _storage.TryGetResponseBodyByIdAsync(id);
 
-            return (result.Succeed)
-                ? BodyDataPayload.CreateFromRecord(result.Value, result.Value.ResponseHeaders, result.Value.ResponseBody, _bodyDataTransformerSet.Response)
+            return (result.Succeed && resultBody.Succeed)
+                ? BodyDataPayload.CreateFromRecord(result.Value, result.Value.ResponseHeaders, resultBody.Value, _bodyDataTransformerSet.Response)
                 : null;
         }
 
@@ -82,15 +84,15 @@ namespace Rin.Hubs
                 _client = channel.GetClient<RinCoreHub, IRinCoreHubClient>();
             }
 
-            public void Publish(RequestEventMessage message)
+            public async Task Publish(RequestEventMessage message)
             {
                 switch (message.Event)
                 {
                     case RequestEvent.BeginRequest:
-                        _client.RequestBegin(new RequestEventPayload(message.Value));
+                        await _client.RequestBegin(new RequestEventPayload(message.Value));
                         break;
                     case RequestEvent.CompleteRequest:
-                        _client.RequestEnd(new RequestEventPayload(message.Value));
+                        await _client.RequestEnd(new RequestEventPayload(message.Value));
                         break;
                 }
             }

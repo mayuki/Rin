@@ -22,6 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var channel = new RinChannel();
             var eventBus = new MessageEventBus<RequestEventMessage>();
+            var eventBusStoreBody = new MessageEventBus<StoreBodyEventMessage>();
             var transformerSet = new BodyDataTransformerSet(
                 new BodyDataTransformerPipeline(options.Inspector.RequestBodyDataTransformers),
                 new BodyDataTransformerPipeline(options.Inspector.ResponseBodyDataTransformers)
@@ -34,6 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<BodyDataTransformerSet>(transformerSet);
             services.AddSingleton<IRecordStorage>(options.RequestRecorder.StorageFactory);
             services.AddSingleton<IMessageEventBus<RequestEventMessage>>(eventBus);
+            services.AddSingleton<IMessageEventBus<StoreBodyEventMessage>>(eventBusStoreBody);
             services.AddSingleton<RinOptions>(options);
             services.AddSingleton<RinChannel>(channel);
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Rin.Core;
 using Rin.Core.Event;
 using Rin.Core.Record;
 using Rin.Middlewares;
@@ -10,21 +11,39 @@ using System.Threading.Tasks;
 
 namespace Rin.Storage.Redis
 {
+    public class RedisRecordStorageOptions
+    {
+        public TimeSpan Expiry { get; set; } = TimeSpan.FromMinutes(30);
+        public string KeyPrefix { get; set; } = "Rin.Storage.";
+        public int RetentionMaxRequests { get; set; } = 100;
+        public int Database { get; set; } = -1;
+        public string ConnectionConfiguration { get; set; } = "localhost";
+    }
+
     public class RedisRecordStorage : IRecordStorage
     {
         private const string RedisSubscriptionKey = "Rin.Storage.Redis.RedisRecordStorage-Subscription";
         private static readonly JsonSerializerSettings _jsonSerializerSettings;
+        private static readonly string _serializeVersion;
 
+        private readonly RedisRecordStorageOptions _options;
         private readonly string _eventSourceKey = Guid.NewGuid().ToString();
         private readonly IMessageEventBus<RequestEventMessage> _eventBus;
         private readonly ConnectionMultiplexer _redisConnection;
         private readonly IDatabase _redis;
         private ISubscriber _redisSubscriber;
 
-        public static readonly Func<IServiceProvider, IRecordStorage> DefaultFactory = (services) =>
+        public static Func<IServiceProvider, IRecordStorage> DefaultFactoryWithOptions(Action<RedisRecordStorageOptions> configure)
         {
-            return new RedisRecordStorage(services.GetService<IMessageEventBus<RequestEventMessage>>());
-        };
+            return (services) =>
+            {
+                var retentionMaxRequests = services.GetService<RinOptions>().RequestRecorder.RetentionMaxRequests;
+                var options = new RedisRecordStorageOptions() { RetentionMaxRequests = retentionMaxRequests };
+                configure?.Invoke(options);
+
+                return new RedisRecordStorage(options, services.GetService<IMessageEventBus<RequestEventMessage>>());
+            };
+        }
 
         static RedisRecordStorage()
         {
@@ -35,13 +54,16 @@ namespace Rin.Storage.Redis
             _jsonSerializerSettings.Converters.Add(new PathStringJsonConverter());
             _jsonSerializerSettings.Converters.Add(new HostStringJsonConverter());
             _jsonSerializerSettings.Converters.Add(new TimelineEventJsonConverter());
+
+            _serializeVersion = typeof(Rin.Core.Record.HttpRequestRecord).Assembly.GetName().Version.ToString();
         }
 
-        public RedisRecordStorage(IMessageEventBus<RequestEventMessage> eventBus)
+        public RedisRecordStorage(RedisRecordStorageOptions options, IMessageEventBus<RequestEventMessage> eventBus)
         {
+            _options = options;
             _eventBus = eventBus;
-            _redisConnection = ConnectionMultiplexer.Connect("localhost");
-            _redis = _redisConnection.GetDatabase();
+            _redisConnection = ConnectionMultiplexer.Connect(_options.ConnectionConfiguration);
+            _redis = _redisConnection.GetDatabase(_options.Database);
 
             _redisSubscriber = _redisConnection.GetSubscriber();
             _redisSubscriber.Subscribe(RedisSubscriptionKey, (channel, value) =>
@@ -55,51 +77,95 @@ namespace Rin.Storage.Redis
             });
         }
 
+        private string GetRedisKey(string key)
+        {
+            return $"{_options.KeyPrefix}[{_serializeVersion}].{key}";
+        }
+
         public async Task AddAsync(HttpRequestRecord entry)
         {
             await Task.WhenAll(
-                _redis.ListLeftPushAsync("Rin.Storage.Records", entry.Id),
-                _redis.StringSetAsync($"Rin.Storage.RecordEntry?{entry.Id}", Serialize(entry)),
-                _redis.StringSetAsync($"Rin.Storage.RecordEntryInfo?{entry.Id}", Serialize(HttpRequestRecordInfo.CreateFromRecord(entry)))
+                _redis.ListLeftPushAsync(GetRedisKey($"Records"), entry.Id),
+                _redis.StringSetAsync(GetRedisKey($"RecordEntry?{entry.Id}"), Serialize(entry)),
+                _redis.StringSetAsync(GetRedisKey($"RecordEntryInfo?{entry.Id}"), Serialize(HttpRequestRecordInfo.CreateFromRecord(entry)))
             );
             await Task.WhenAll(
-                _redis.ListTrimAsync("Rin.Storage.Records", 0, 99),
-                _redis.KeyExpireAsync("Rin.Storage.Records", TimeSpan.FromMinutes(30)),
-                _redis.KeyExpireAsync($"Rin.Storage.RecordEntry?{entry.Id}", TimeSpan.FromMinutes(30)),
-                _redis.KeyExpireAsync($"Rin.Storage.RecordEntryInfo?{entry.Id}", TimeSpan.FromMinutes(30))
+                _redis.ListTrimAsync(GetRedisKey($"Records"), 0, _options.RetentionMaxRequests),
+                _redis.KeyExpireAsync(GetRedisKey($"Records"), _options.Expiry),
+                _redis.KeyExpireAsync(GetRedisKey($"RecordEntry?{entry.Id}"), _options.Expiry),
+                _redis.KeyExpireAsync(GetRedisKey($"RecordEntryInfo?{entry.Id}"), _options.Expiry)
             );
         }
 
         public async Task<HttpRequestRecordInfo[]> GetAllAsync()
         {
-            var ids = (await _redis.ListRangeAsync("Rin.Storage.Records")).ToStringArray();
-            return (await Task.WhenAll(ids.Select(async x => Deserialize<HttpRequestRecordInfo>(await _redis.StringGetAsync($"Rin.Storage.RecordEntryInfo?{x}")))))
+            var ids = (await _redis.ListRangeAsync(GetRedisKey($"Records"))).ToStringArray();
+            return (await Task.WhenAll(ids.Select(async x => Deserialize<HttpRequestRecordInfo>(await _redis.StringGetAsync(GetRedisKey($"RecordEntryInfo?{x}"))))))
                 .Where(x => x != null)
                 .ToArray();
         }
 
-        public async Task<RecordStorageTryGetResult> TryGetByIdAsync(string id)
+        public async Task<RecordStorageTryGetResult<HttpRequestRecord>> TryGetDetailByIdAsync(string id)
         {
-            var result = await _redis.StringGetAsync($"Rin.Storage.RecordEntry?{id}");
+            var result = await _redis.StringGetAsync(GetRedisKey($"RecordEntry?{id}"));
             if (result.HasValue)
             {
-                return new RecordStorageTryGetResult(true, Deserialize<HttpRequestRecord>(result));
+                return RecordStorageTryGetResult.Create(true, Deserialize<HttpRequestRecord>(result));
             }
             else
             {
-                return new RecordStorageTryGetResult(false, null);
+                return RecordStorageTryGetResult.Create(false, default(HttpRequestRecord));
             }
         }
 
         public async Task UpdateAsync(HttpRequestRecord entry)
         {
             await Task.WhenAll(
-                _redis.StringSetAsync($"Rin.Storage.RecordEntry?{entry.Id}", Serialize(entry)),
-                _redis.StringSetAsync($"Rin.Storage.RecordEntryInfo?{entry.Id}", Serialize(HttpRequestRecordInfo.CreateFromRecord(entry)))
+                _redis.StringSetAsync(GetRedisKey($"RecordEntry?{entry.Id}"), Serialize(entry)),
+                _redis.StringSetAsync(GetRedisKey($"RecordEntryInfo?{entry.Id}"), Serialize(HttpRequestRecordInfo.CreateFromRecord(entry)))
             );
         }
 
-        async void IMessageSubscriber<RequestEventMessage>.Publish(RequestEventMessage message)
+        public async Task<RecordStorageTryGetResult<byte[]>> TryGetResponseBodyByIdAsync(string id)
+        {
+            var result = await _redis.StringGetAsync(GetRedisKey($"RecordEntry.ResponseBody?{id}"));
+            if (result.HasValue)
+            {
+                return RecordStorageTryGetResult.Create(true, (byte[])result);
+            }
+            else
+            {
+                return RecordStorageTryGetResult.Create(false, default(byte[]));
+            }
+        }
+
+        public async Task<RecordStorageTryGetResult<byte[]>> TryGetRequestBodyByIdAsync(string id)
+        {
+            var result = await _redis.StringGetAsync(GetRedisKey($"RecordEntry.RequestBody?{id}"));
+            if (result.HasValue)
+            {
+                return RecordStorageTryGetResult.Create(true, (byte[])result);
+            }
+            else
+            {
+                return RecordStorageTryGetResult.Create(false, default(byte[]));
+            }
+        }
+
+        async Task IMessageSubscriber<StoreBodyEventMessage>.Publish(StoreBodyEventMessage message)
+        {
+            switch (message.Event)
+            {
+                case StoreBodyEvent.Request:
+                    await _redis.StringSetAsync(GetRedisKey($"RecordEntry.RequestBody?{message.Id}"), message.Body, expiry: _options.Expiry);
+                    break;
+                case StoreBodyEvent.Response:
+                    await _redis.StringSetAsync(GetRedisKey($"RecordEntry.ResponseBody?{message.Id}"), message.Body, expiry: _options.Expiry);
+                    break;
+            }
+        }
+
+        async Task IMessageSubscriber<RequestEventMessage>.Publish(RequestEventMessage message)
         {
             // Accept messages from Middleware. Drop if the message was published from other sources.
             if (message.EventSource != RequestRecorderMiddleware.EventSourceName) return;

@@ -14,7 +14,7 @@ namespace Rin.Core.Storage
     /// </summary>
     public class InMemoryRecordStorage : IRecordStorage
     {
-        private Dictionary<string, HttpRequestRecord> _entries = new Dictionary<string, HttpRequestRecord>();
+        private Dictionary<string, RecordEntry> _entries = new Dictionary<string, RecordEntry>();
         private Queue<string> _entryIds = new Queue<string>();
         private int _retentionMaxRequests = 100;
         private ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
@@ -34,7 +34,7 @@ namespace Rin.Core.Storage
             _lock.EnterWriteLock();
             try
             {
-                _entries[record.Id] = record;
+                _entries[record.Id] = new RecordEntry { Record = record };
                 _entryIds.Enqueue(record.Id);
 
                 if (_entryIds.Count > _retentionMaxRequests)
@@ -55,7 +55,10 @@ namespace Rin.Core.Storage
             _lock.EnterWriteLock();
             try
             {
-                _entries[record.Id] = record;
+                if (_entries.TryGetValue(record.Id, out var entry))
+                {
+                    entry.Record = record;
+                }
             }
             finally
             {
@@ -69,7 +72,7 @@ namespace Rin.Core.Storage
             _lock.EnterReadLock();
             try
             {
-                return Task.FromResult(_entryIds.Select(x => _entries[x]).ToArray() as HttpRequestRecordInfo[]);
+                return Task.FromResult(_entryIds.Reverse().Select(x => _entries[x].Record).ToArray() as HttpRequestRecordInfo[]);
             }
             finally
             {
@@ -77,13 +80,13 @@ namespace Rin.Core.Storage
             }
         }
 
-        public Task<RecordStorageTryGetResult> TryGetByIdAsync(string id)
+        public Task<RecordStorageTryGetResult<HttpRequestRecord>> TryGetDetailByIdAsync(string id)
         {
             _lock.EnterReadLock();
             try
             {
                 var succeed = _entries.TryGetValue(id, out var value);
-                return Task.FromResult(new RecordStorageTryGetResult(succeed, value));
+                return Task.FromResult(RecordStorageTryGetResult.Create(succeed, value?.Record));
             }
             finally
             {
@@ -91,7 +94,35 @@ namespace Rin.Core.Storage
             }
         }
 
-        void IMessageSubscriber<RequestEventMessage>.Publish(RequestEventMessage message)
+        public Task<RecordStorageTryGetResult<byte[]>> TryGetResponseBodyByIdAsync(string id)
+        {
+            _lock.EnterReadLock();
+            try
+            {
+                var succeed = _entries.TryGetValue(id, out var value);
+                return Task.FromResult(RecordStorageTryGetResult.Create(succeed, value?.ResponseBody));
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
+        }
+
+        public Task<RecordStorageTryGetResult<byte[]>> TryGetRequestBodyByIdAsync(string id)
+        {
+            _lock.EnterReadLock();
+            try
+            {
+                var succeed = _entries.TryGetValue(id, out var value);
+                return Task.FromResult(RecordStorageTryGetResult.Create(succeed, value?.RequestBody));
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
+        }
+
+        Task IMessageSubscriber<RequestEventMessage>.Publish(RequestEventMessage message)
         {
             switch (message.Event)
             {
@@ -102,10 +133,46 @@ namespace Rin.Core.Storage
                     UpdateAsync(message.Value);
                     break;
             }
+
+            return Task.CompletedTask;
+        }
+
+        Task IMessageSubscriber<StoreBodyEventMessage>.Publish(StoreBodyEventMessage message)
+        {
+            _lock.EnterWriteLock();
+            try
+            {
+                if (_entries.TryGetValue(message.Id, out var entry))
+                {
+                    switch (message.Event)
+                    {
+                        case StoreBodyEvent.Request:
+                            entry.RequestBody = message.Body;
+                            break;
+                        case StoreBodyEvent.Response:
+                            entry.ResponseBody = message.Body;
+                            break;
+                    }
+                }
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
+
+            return Task.CompletedTask;
         }
 
         public void Dispose()
         {
+        }
+
+
+        private class RecordEntry
+        {
+            public HttpRequestRecord Record { get; set; }
+            public byte[] RequestBody { get; set; }
+            public byte[] ResponseBody { get; set; }
         }
     }
 }

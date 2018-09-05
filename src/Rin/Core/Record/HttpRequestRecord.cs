@@ -47,9 +47,7 @@ namespace Rin.Core.Record
 
     public class HttpRequestRecord : HttpRequestRecordInfo
     {
-        public byte[] RequestBody { get; set; }
         public IDictionary<string, StringValues> RequestHeaders { get; set; }
-        public byte[] ResponseBody { get; set; }
         public IDictionary<string, StringValues> ResponseHeaders { get; set; }
 
         public Exception Exception { get; set; }
