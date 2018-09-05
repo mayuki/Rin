@@ -22,9 +22,9 @@ namespace Rin.Storage.Redis
 
     public class RedisRecordStorage : IRecordStorage
     {
-        private const string RedisSubscriptionKey = "Rin.Storage.Redis.RedisRecordStorage-Subscription";
         private static readonly JsonSerializerSettings _jsonSerializerSettings;
         private static readonly string _serializeVersion;
+        private const string RedisSubscriptionKey = "RedisRecordStorage-Subscription";
 
         private readonly RedisRecordStorageOptions _options;
         private readonly string _eventSourceKey = Guid.NewGuid().ToString();
@@ -66,7 +66,7 @@ namespace Rin.Storage.Redis
             _redis = _redisConnection.GetDatabase(_options.Database);
 
             _redisSubscriber = _redisConnection.GetSubscriber();
-            _redisSubscriber.Subscribe(RedisSubscriptionKey, (channel, value) =>
+            _redisSubscriber.Subscribe(GetRedisKey(RedisSubscriptionKey), (channel, value) =>
             {
                 var message = Deserialize<RequestEventMessage>(value);
 
@@ -175,11 +175,11 @@ namespace Rin.Storage.Redis
             {
                 case RequestEvent.BeginRequest:
                     await AddAsync(message.Value);
-                    await _redis.PublishAsync(RedisSubscriptionKey, Serialize(new RequestEventMessage(_eventSourceKey, message.Value, RequestEvent.BeginRequest)));
+                    await _redis.PublishAsync(GetRedisKey(RedisSubscriptionKey), Serialize(new RequestEventMessage(_eventSourceKey, message.Value, RequestEvent.BeginRequest)));
                     break;
                 case RequestEvent.CompleteRequest:
                     await UpdateAsync(message.Value);
-                    await _redis.PublishAsync(RedisSubscriptionKey, Serialize(new RequestEventMessage(_eventSourceKey, message.Value, RequestEvent.CompleteRequest)));
+                    await _redis.PublishAsync(GetRedisKey(RedisSubscriptionKey), Serialize(new RequestEventMessage(_eventSourceKey, message.Value, RequestEvent.CompleteRequest)));
                     break;
             }
         }
