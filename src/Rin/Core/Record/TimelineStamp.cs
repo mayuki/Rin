@@ -6,7 +6,7 @@ using System.Text;
 namespace Rin.Core.Record
 {
     [DebuggerDisplay("TimelineStamp: {Name}")]
-    public class TimelineStamp : ITimelineEvent
+    public class TimelineStamp : ITimelineStamp
     {
         private string _name;
         private string _category;

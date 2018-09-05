@@ -1,7 +1,9 @@
-﻿namespace Rin.Core.Event
+﻿using System.Threading.Tasks;
+
+namespace Rin.Core.Event
 {
     public interface IMessageSubscriber<T>
     {
-        void Publish(T message);
+        Task Publish(T message);
     }
 }

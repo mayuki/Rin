@@ -25,9 +25,10 @@ namespace Rin.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var result = await _storage.TryGetByIdAsync(context.Request.Query["id"]);
+            var result = await _storage.TryGetDetailByIdAsync(context.Request.Query["id"]);
+            var resultBody = await _storage.TryGetRequestBodyByIdAsync(context.Request.Query["id"]);
 
-            if (!result.Succeed)
+            if (!result.Succeed || !resultBody.Succeed)
             {
                 context.Response.StatusCode = 404;
                 return;
@@ -40,7 +41,7 @@ namespace Rin.Middlewares
             var contentDisposition = new ContentDispositionHeaderValue("attachment");
             contentDisposition.SetHttpFileName(entry.Id + FileNameHelper.GetExtension(entry.Path, contentType));
             context.Response.GetTypedHeaders().ContentDisposition = contentDisposition;
-            await context.Response.Body.WriteAsync(entry.RequestBody, 0, entry.RequestBody.Length);
+            await context.Response.Body.WriteAsync(resultBody.Value, 0, resultBody.Value.Length);
         }
     }
 
@@ -57,8 +58,10 @@ namespace Rin.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var result = await _storage.TryGetByIdAsync(context.Request.Query["id"]);
-            if (!result.Succeed)
+            var result = await _storage.TryGetDetailByIdAsync(context.Request.Query["id"]);
+            var resultBody = await _storage.TryGetRequestBodyByIdAsync(context.Request.Query["id"]);
+
+            if (!result.Succeed || !resultBody.Succeed)
             {
                 context.Response.StatusCode = 404;
                 return;
@@ -71,7 +74,7 @@ namespace Rin.Middlewares
             var contentDisposition = new ContentDispositionHeaderValue("attachment");
             contentDisposition.SetHttpFileName(entry.Id + FileNameHelper.GetExtension(entry.Path, contentType));
             context.Response.GetTypedHeaders().ContentDisposition = contentDisposition;
-            await context.Response.Body.WriteAsync(entry.ResponseBody, 0, entry.ResponseBody.Length);
+            await context.Response.Body.WriteAsync(resultBody.Value, 0, resultBody.Value.Length);
         }
     }
 

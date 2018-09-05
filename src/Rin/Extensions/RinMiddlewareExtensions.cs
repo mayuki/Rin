@@ -39,10 +39,14 @@ namespace Microsoft.AspNetCore.Builder
         private static void UseRinMessageBus(this IApplicationBuilder app)
         {
             var eventBus = app.ApplicationServices.GetService<IMessageEventBus<RequestEventMessage>>();
+            var eventBusStoreBody = app.ApplicationServices.GetService<IMessageEventBus<StoreBodyEventMessage>>();
+
             var subscribers = app.ApplicationServices.GetServices<IMessageSubscriber<RequestEventMessage>>();
+            var subscribersStoreBody = app.ApplicationServices.GetServices<IMessageSubscriber<StoreBodyEventMessage>>();
             var recoder = app.ApplicationServices.GetService<IRecordStorage>();
 
             eventBus.Subscribe(subscribers.Concat(new[] { recoder }));
+            eventBusStoreBody.Subscribe(subscribersStoreBody.Concat(new[] { recoder }));
         }
 
         private static void UseRinInspector(this IApplicationBuilder app)

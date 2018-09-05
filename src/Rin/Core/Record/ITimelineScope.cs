@@ -19,7 +19,10 @@ namespace Rin.Core.Record
         /// Mark the timeline scope as completed.
         /// </summary>
         void Complete();
+    }
 
+    public interface ITimelineScopeCreatable : ITimelineScope
+    {
         /// <summary>
         /// Create a new TimelineScope as a child.
         /// </summary>
