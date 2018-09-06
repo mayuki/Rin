@@ -11,15 +11,9 @@ using System.Threading.Tasks;
 
 namespace Rin.Storage.Redis
 {
-    public class RedisRecordStorageOptions
-    {
-        public TimeSpan Expiry { get; set; } = TimeSpan.FromMinutes(30);
-        public string KeyPrefix { get; set; } = "Rin.Storage.";
-        public int RetentionMaxRequests { get; set; } = 100;
-        public int Database { get; set; } = -1;
-        public string ConnectionConfiguration { get; set; } = "localhost";
-    }
-
+    /// <summary>
+    /// This storage persists a request records and provides pub/sub. It is backed by Redis.
+    /// </summary>
     public class RedisRecordStorage : IRecordStorage
     {
         private static readonly JsonSerializerSettings _jsonSerializerSettings;
