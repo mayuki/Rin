@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <Authors>Mayuki Sawatari</Authors>
-    <Description>This package adds support for ASP.NET MVC Core to Rin</Description>
+    <Description>This package adds support for ASP.NET Core MVC to Rin</Description>
     <Company>Mayuki Sawatari</Company>
     <Copyright>Mayuki Sawatari</Copyright>
     <PackageLicenseUrl>https://github.com/mayuki/Rin/blob/master/LICENSE</PackageLicenseUrl>

@@ -42,7 +42,7 @@ Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured 
 # Requirements
 - .NET Core 2.0+
 - ASP.NET Core 2.1+
-- ASP.NET MVC Core 2.1+
+- ASP.NET Core MVC 2.1+
 - Modern browser (e.g. Microsoft Edge, Google Chrome, Firefox, Safari...)
     - WebSocket connectivity
 
