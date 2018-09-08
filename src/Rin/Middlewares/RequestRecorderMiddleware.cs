@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Rin.Channel;
 using Rin.Core;
 using Rin.Core.Event;
@@ -21,14 +22,16 @@ namespace Rin.Middlewares
         private readonly RequestDelegate _next;
         private readonly IMessageEventBus<RequestEventMessage> _eventBus;
         private readonly IMessageEventBus<StoreBodyEventMessage> _eventBusStoreBody;
+        private readonly ILogger _logger;
 
         public const string EventSourceName = "Rin.Middlewares.RequestRecorderMiddleware";
 
-        public RequestRecorderMiddleware(RequestDelegate next, IMessageEventBus<RequestEventMessage> eventBus, IMessageEventBus<StoreBodyEventMessage> eventBusStoreBody, RinChannel rinChannel)
+        public RequestRecorderMiddleware(RequestDelegate next, IMessageEventBus<RequestEventMessage> eventBus, IMessageEventBus<StoreBodyEventMessage> eventBusStoreBody, RinChannel rinChannel, ILoggerFactory loggerFactory)
         {
             _next = next;
             _eventBus = eventBus;
             _eventBusStoreBody = eventBusStoreBody;
+            _logger = loggerFactory.CreateLogger<RequestRecorderMiddleware>();
         }
 
         public async Task InvokeAsync(HttpContext context, RinOptions options)
@@ -41,6 +44,46 @@ namespace Rin.Middlewares
                 await _next(context);
                 return;
             }
+
+            HttpRequestRecord record = default;
+            try
+            {
+                record = await PreprocessAsync(context, options);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unhandled Exception was thrown until pre-processing");
+            }
+            
+            try
+            {
+                await _next(context);
+            }
+            catch (Exception ex)
+            {
+                if (record != null)
+                {
+                    record.Exception = ex;
+                }
+                throw;
+            }
+            finally
+            {
+                try
+                {
+                    await PostprocessAsync(context, options, record);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unhandled Exception was thrown until post-processing");
+                }
+            }
+        }
+
+        private async Task<HttpRequestRecord> PreprocessAsync(HttpContext context, RinOptions options)
+        {
+            var request = context.Request;
+            var response = context.Response;
 
             var record = new HttpRequestRecord()
             {
@@ -75,37 +118,37 @@ namespace Rin.Middlewares
 
             // Execute pipeline middlewares.
             record.Processing = TimelineScope.Create("Processing", TimelineEventCategory.AspNetCoreCommon);
-            try
+
+            return record;
+        }
+
+        private async Task PostprocessAsync(HttpContext context, RinOptions options, HttpRequestRecord record)
+        {
+            var request = context.Request;
+            var response = context.Response;
+
+            record.Processing.Complete();
+
+            record.ResponseStatusCode = response.StatusCode;
+            record.ResponseHeaders = response.Headers.ToDictionary(k => k.Key, v => v.Value);
+
+            if (options.RequestRecorder.EnableBodyCapturing)
             {
-                await _next(context);
+                var memoryStreamRequestBody = new MemoryStream();
+                request.Body.Position = 0; // rewind the stream to head
+                await request.Body.CopyToAsync(memoryStreamRequestBody);
+
+                // Set Rin recorder feature.
+                var feature = context.Features.Get<IRinRequestRecordingFeature>();
+
+                await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Request, record.Id, memoryStreamRequestBody.ToArray()));
+                await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Response, record.Id, feature.ResponseDataStream.GetCapturedData()));
             }
-            catch (Exception ex)
+
+            var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
+            if (exceptionFeature != null)
             {
-                record.Exception = ex;
-                throw;
-            }
-            finally
-            {
-                record.Processing.Complete();
-
-                record.ResponseStatusCode = response.StatusCode;
-                record.ResponseHeaders = response.Headers.ToDictionary(k => k.Key, v => v.Value);
-
-                if (options.RequestRecorder.EnableBodyCapturing)
-                {
-                    var memoryStreamRequestBody = new MemoryStream();
-                    request.Body.Position = 0; // rewind the stream to head
-                    await request.Body.CopyToAsync(memoryStreamRequestBody);
-
-                    await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Request, record.Id, memoryStreamRequestBody.ToArray()));
-                    await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Response, record.Id, feature.ResponseDataStream.GetCapturedData()));
-                }
-
-                var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
-                if (exceptionFeature != null)
-                {
-                    record.Exception = exceptionFeature.Error;
-                }
+                record.Exception = exceptionFeature.Error;
             }
         }
 

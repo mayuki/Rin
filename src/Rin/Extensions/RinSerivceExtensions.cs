@@ -20,7 +20,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddHttpContextAccessor();
 
-            var channel = new RinChannel();
             var eventBus = new MessageEventBus<RequestEventMessage>();
             var eventBusStoreBody = new MessageEventBus<StoreBodyEventMessage>();
             var transformerSet = new BodyDataTransformerSet(
@@ -28,16 +27,16 @@ namespace Microsoft.Extensions.DependencyInjection
                 new BodyDataTransformerPipeline(options.Inspector.ResponseBodyDataTransformers)
             );
 
-            // IMessageSubscriber<RequestEventMessage> services
-            services.AddSingleton<IMessageSubscriber<RequestEventMessage>>(new Rin.Hubs.RinCoreHub.MessageSubscriber(channel));
-
             // Other services
             services.AddSingleton<BodyDataTransformerSet>(transformerSet);
             services.AddSingleton<IRecordStorage>(options.RequestRecorder.StorageFactory);
             services.AddSingleton<IMessageEventBus<RequestEventMessage>>(eventBus);
             services.AddSingleton<IMessageEventBus<StoreBodyEventMessage>>(eventBusStoreBody);
             services.AddSingleton<RinOptions>(options);
-            services.AddSingleton<RinChannel>(channel);
+            services.AddSingleton<RinChannel>();
+
+            // IMessageSubscriber<RequestEventMessage> services
+            services.AddSingleton<IMessageSubscriber<RequestEventMessage>>(x => new Rin.Hubs.RinCoreHub.MessageSubscriber(x.GetRequiredService<RinChannel>()));
 
             services.AddTransient<IResourceProvider, EmbeddedZipResourceProvider>();
         }

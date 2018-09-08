@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rin.Core;
 using System;
@@ -20,9 +21,15 @@ namespace Rin.Channel
     {
         private static readonly Encoding _encoding = new UTF8Encoding(false);
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private readonly ILogger _logger;
 
         public Dictionary<Type, ConcurrentDictionary<string, WebSocket>> ConnectionsByHub { get; } = new Dictionary<Type, ConcurrentDictionary<string, WebSocket>>();
         public ConcurrentDictionary<string, Tuple<Type, WebSocket>> Connections { get; } = new ConcurrentDictionary<string, Tuple<Type, WebSocket>>();
+
+        public RinChannel(ILoggerFactory loggerFactory)
+        {
+            _logger = loggerFactory.CreateLogger<RinChannel>();
+        }
 
         public void Dispose()
         {
@@ -93,11 +100,13 @@ namespace Rin.Channel
                             catch (Exception ex)
                             {
                                 await SendResponseAsync(connectionId, operation.O, new { E = ex.GetType().Name, Detail = ex });
+                                _logger.LogError(ex, "Exception was thrown until invoking a hub method: Method = {0}; Hub = {1}", operation.M, typeof(THub));
                             }
                         }
                         else
                         {
                             await SendResponseAsync(connectionId, operation.O, new { E = "MethodNotFound" });
+                            _logger.LogWarning("Method not found: Method = {0}; Hub = {1}", operation.M, typeof(THub));
                         }
                     }
                     catch (TaskCanceledException)
