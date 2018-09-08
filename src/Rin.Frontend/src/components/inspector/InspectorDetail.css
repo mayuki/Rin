@@ -38,5 +38,12 @@
     color: #eee;
 }
 .inspectorDetailDeleted_Content {
-
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.inspectorDetailDeleted_Content .inspectorDetailDeletedContent_Icon {
+    width: 32px;
+    height: 32px;
+    font-size: 32px;
 }

@@ -26,7 +26,8 @@ export class InspectorDetail extends React.Component {
         {inspectorStore.isRecordDeleted && (
           <div className={styles.inspectorDetailDeleted}>
             <div className={styles.inspectorDetailDeleted_Content}>
-              <Icon iconName="PageRemove" /> The record is already deleted/expired.
+              <Icon iconName="PageRemove" className={styles.inspectorDetailDeletedContent_Icon} />
+              <p>The record has been deleted or expired.</p>
             </div>
           </div>
         )}
