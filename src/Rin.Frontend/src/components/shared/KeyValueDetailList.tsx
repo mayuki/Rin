@@ -19,8 +19,8 @@ export class KeyValueDetailList extends React.Component<{
         key: 'Column-Key',
         name: this.props.keyName,
         fieldName: 'key',
-        minWidth: 0,
-        maxWidth: 100,
+        minWidth: 100,
+        maxWidth: 150,
         isResizable: true,
         onRender: (item: KeyValuePairLike) => (
           <span title={item.key} style={{ color: '#000' }}>
