@@ -45,10 +45,12 @@ namespace Rin.Middlewares
                 return;
             }
 
+            var timelineRoot = TimelineScope.Prepare();
+
             HttpRequestRecord record = default;
             try
             {
-                record = await PreprocessAsync(context, options);
+                record = await PreprocessAsync(context, options, timelineRoot);
             }
             catch (Exception ex)
             {
@@ -80,7 +82,7 @@ namespace Rin.Middlewares
             }
         }
 
-        private async Task<HttpRequestRecord> PreprocessAsync(HttpContext context, RinOptions options)
+        private async Task<HttpRequestRecord> PreprocessAsync(HttpContext context, RinOptions options, ITimelineScope timelineRoot)
         {
             var request = context.Request;
             var response = context.Response;
@@ -96,14 +98,13 @@ namespace Rin.Middlewares
                 RequestReceivedAt = DateTimeOffset.Now,
                 RequestHeaders = request.Headers.ToDictionary(k => k.Key, v => v.Value),
                 RemoteIpAddress = request.HttpContext.Connection.RemoteIpAddress,
-                Timeline = TimelineScope.Prepare(),
+                Timeline = timelineRoot,
             };
 
-            await _eventBus.PostAsync(new RequestEventMessage(EventSourceName, record, RequestEvent.BeginRequest));
-
             // Set Rin recorder feature.
-            var feature = new RinRequestRecordingFeature(record);
-            context.Features.Set<IRinRequestRecordingFeature>(feature);
+            context.Features.Set<IRinRequestRecordingFeature>(new RinRequestRecordingFeature(record));
+
+            await _eventBus.PostAsync(new RequestEventMessage(EventSourceName, record, RequestEvent.BeginRequest));
 
             // Set a current Rin request ID to response header.
             context.Response.Headers.Add("X-Rin-Request-Id", record.Id);
@@ -138,7 +139,6 @@ namespace Rin.Middlewares
                 request.Body.Position = 0; // rewind the stream to head
                 await request.Body.CopyToAsync(memoryStreamRequestBody);
 
-                // Set Rin recorder feature.
                 var feature = context.Features.Get<IRinRequestRecordingFeature>();
 
                 await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Request, record.Id, memoryStreamRequestBody.ToArray()));
