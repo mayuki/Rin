@@ -16,6 +16,8 @@ export class InspectorStore {
   responseBody: BodyDataPayload | null = null;
   @observable
   currentRecordDetail: RequestRecordDetailPayload | null;
+  @observable
+  isRecordDeleted: boolean = false;
 
   @observable
   leftPaneSize: number = 300;
@@ -87,15 +89,17 @@ export class InspectorStore {
 
   @action.bound
   async updateCurrentRecordAsync(itemId: string) {
-    const record = await this.hubClient.GetDetailById(itemId);
+    this.isRecordDeleted = false;
 
+    const record = await this.hubClient.GetDetailById(itemId);
     if (record == null) {
       runInAction(() => {
         this.requestBody = null;
         this.responseBody = null;
         this.currentRecordDetail = null;
         this.selectedId = null;
-        this.history.push(`/Inspect/`);
+        this.isRecordDeleted = true;
+        // this.history.push(`/Inspect/`);
       });
       return;
     }

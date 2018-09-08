@@ -22,3 +22,21 @@
     padding: 0 12px;
     height: 100%;
 }
+
+.inspectorDetailDeleted {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+.inspectorDetailDeleted::after {
+    content: ':-(';
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    font-size: 10rem;
+    color: #eee;
+}
+.inspectorDetailDeleted_Content {
+
+}

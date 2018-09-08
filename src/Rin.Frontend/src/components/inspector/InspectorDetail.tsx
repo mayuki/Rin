@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react';
+import { Icon } from 'office-ui-fabric-react';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import * as React from 'react';
 import { createUrl } from '../../domain/RequestRecord';
@@ -21,64 +22,75 @@ export class InspectorDetail extends React.Component {
     const whenCompleted = (c: () => any) => (selectedRecord != null && selectedRecord.IsCompleted ? c() : <></>);
 
     return (
-      <div className={styles.inspectorDetail}>
-        <div className={styles.inspectorDetail_CommandBar}>
-          <InspectorDetailCommandBar
-            endpointUrlBase={appStore.endpointUrlBase}
-            currentRecordDetail={inspectorStore.currentRecordDetail}
-            requestBody={inspectorStore.requestBody}
-          />
-        </div>
-        {selectedRecord != null && (
-          <>
-            <div className={styles.inspectorDetail_Pivot}>
-              <Pivot selectedKey={inspectorStore.currentDetailView} onLinkClick={this.onPivotItemClicked}>
-                <PivotItem itemKey={DetailViewType.Request} headerText="Request" itemIcon="CloudUpload" />
-                {whenCompleted(() => (
-                  <PivotItem itemKey={DetailViewType.Response} headerText="Response" itemIcon="CloudDownload" />
-                ))}
-                {whenCompleted(() => (
-                  <PivotItem itemKey={DetailViewType.Timeline} headerText="Timeline" itemIcon="TimelineProgress" />
-                ))}
-                <PivotItem itemKey={DetailViewType.Trace} headerText="Trace" itemIcon="TimeEntry" />
-                {selectedRecord.Exception ? (
-                  <PivotItem itemKey={DetailViewType.Exception} headerText="Exception" itemIcon="StatusErrorFull" />
-                ) : (
-                  <></>
-                )}
-              </Pivot>
+      <>
+        {inspectorStore.isRecordDeleted && (
+          <div className={styles.inspectorDetailDeleted}>
+            <div className={styles.inspectorDetailDeleted_Content}>
+              <Icon iconName="PageRemove" /> The record is already deleted/expired.
             </div>
-            <div className={styles.inspectorDetail_DetailView}>
-              {inspectorStore.currentDetailView === DetailViewType.Request && this.renderRequestView()}
-              {inspectorStore.currentDetailView === DetailViewType.Response && this.renderResponseView()}
-              {inspectorStore.currentDetailView === DetailViewType.Timeline && (
-                <InspectorDetailTimelineView
-                  data={selectedRecord.Timeline}
-                  isTraceVisibleInTimeline={inspectorTimelineStore.isTraceVisibleInTimeline}
-                  calloutTarget={inspectorTimelineStore.calloutTarget}
-                  calloutTimelineData={inspectorTimelineStore.calloutTimelineData}
-                  isCalloutVisible={inspectorTimelineStore.isCalloutVisible}
-                  dismissCallout={inspectorTimelineStore.dismissCallout}
-                  showCallout={inspectorTimelineStore.showCallout}
-                  toggleTraceVisibility={inspectorTimelineStore.toggleTraceVisibility}
-                />
-              )}
-              {inspectorStore.currentDetailView === DetailViewType.Trace && (
-                <div className={styles.inspectorDetail_TraceView}>
-                  <InspectorDetailTraceView
-                    record={selectedRecord}
-                    enableWordWrap={inspectorStore.enableTraceViewWordWrap}
-                    toggleWordWrap={inspectorStore.toggleTraceViewWordWrap}
-                  />
-                </div>
-              )}
-              {inspectorStore.currentDetailView === DetailViewType.Exception && (
-                <InspectorDetailExceptionView record={selectedRecord} />
-              )}
-            </div>
-          </>
+          </div>
         )}
-      </div>
+        {!inspectorStore.isRecordDeleted && (
+          <div className={styles.inspectorDetail}>
+            <div className={styles.inspectorDetail_CommandBar}>
+              <InspectorDetailCommandBar
+                endpointUrlBase={appStore.endpointUrlBase}
+                currentRecordDetail={inspectorStore.currentRecordDetail}
+                requestBody={inspectorStore.requestBody}
+              />
+            </div>
+            {selectedRecord != null && (
+              <>
+                <div className={styles.inspectorDetail_Pivot}>
+                  <Pivot selectedKey={inspectorStore.currentDetailView} onLinkClick={this.onPivotItemClicked}>
+                    <PivotItem itemKey={DetailViewType.Request} headerText="Request" itemIcon="CloudUpload" />
+                    {whenCompleted(() => (
+                      <PivotItem itemKey={DetailViewType.Response} headerText="Response" itemIcon="CloudDownload" />
+                    ))}
+                    {whenCompleted(() => (
+                      <PivotItem itemKey={DetailViewType.Timeline} headerText="Timeline" itemIcon="TimelineProgress" />
+                    ))}
+                    <PivotItem itemKey={DetailViewType.Trace} headerText="Trace" itemIcon="TimeEntry" />
+                    {selectedRecord.Exception ? (
+                      <PivotItem itemKey={DetailViewType.Exception} headerText="Exception" itemIcon="StatusErrorFull" />
+                    ) : (
+                      <></>
+                    )}
+                  </Pivot>
+                </div>
+                <div className={styles.inspectorDetail_DetailView}>
+                  {inspectorStore.currentDetailView === DetailViewType.Request && this.renderRequestView()}
+                  {inspectorStore.currentDetailView === DetailViewType.Response && this.renderResponseView()}
+                  {inspectorStore.currentDetailView === DetailViewType.Timeline && (
+                    <InspectorDetailTimelineView
+                      data={selectedRecord.Timeline}
+                      isTraceVisibleInTimeline={inspectorTimelineStore.isTraceVisibleInTimeline}
+                      calloutTarget={inspectorTimelineStore.calloutTarget}
+                      calloutTimelineData={inspectorTimelineStore.calloutTimelineData}
+                      isCalloutVisible={inspectorTimelineStore.isCalloutVisible}
+                      dismissCallout={inspectorTimelineStore.dismissCallout}
+                      showCallout={inspectorTimelineStore.showCallout}
+                      toggleTraceVisibility={inspectorTimelineStore.toggleTraceVisibility}
+                    />
+                  )}
+                  {inspectorStore.currentDetailView === DetailViewType.Trace && (
+                    <div className={styles.inspectorDetail_TraceView}>
+                      <InspectorDetailTraceView
+                        record={selectedRecord}
+                        enableWordWrap={inspectorStore.enableTraceViewWordWrap}
+                        toggleWordWrap={inspectorStore.toggleTraceViewWordWrap}
+                      />
+                    </div>
+                  )}
+                  {inspectorStore.currentDetailView === DetailViewType.Exception && (
+                    <InspectorDetailExceptionView record={selectedRecord} />
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </>
     );
   }
 
