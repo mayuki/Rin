@@ -50,7 +50,7 @@ Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured 
 
 ## Install NuGet Package
 ### Using Visual Studio
-`Dependencies` -> `Manage NuGet Packages...` -> Search and install `Rin` and `Rin.Mvc` (if your project is built with ASP.NET MVC Core) package.
+`Dependencies` -> `Manage NuGet Packages...` -> Search and install `Rin` and `Rin.Mvc` (if your project is built with ASP.NET Core MVC) package.
 
 ### Using dotnet command
 ```
@@ -102,7 +102,7 @@ public class Startup
             // Important: `UseRin` (Middlewares) must be top of the HTTP pipeline.
             app.UseRin();
 
-            // Add(option): Enable ASP.NET MVC Core support if the project built with ASP.NET MVC Core
+            // Add(option): Enable ASP.NET Core MVC support if the project built with ASP.NET Core MVC
             app.UseRinMvcSupport();
 
             app.UseDeveloperExceptionPage();
@@ -122,7 +122,7 @@ public class Startup
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
-        @* Add: Enable In-View Inspector for ASP.NET MVC Core *@
+        @* Add: Enable In-View Inspector for ASP.NET Core MVC *@
         @RinHelper.RenderInViewInspector()
     </environment>
 ...

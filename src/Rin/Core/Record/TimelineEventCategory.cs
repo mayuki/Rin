@@ -28,17 +28,17 @@
         public const string AspNetCoreCommon = "Rin.Timeline.AspNetCore.Common";
 
         /// <summary>
-        /// ASP.NET MVC Core view events.
+        /// ASP.NET Core MVC view events.
         /// </summary>
         public const string AspNetCoreMvcView = "Rin.Timeline.AspNetCore.Mvc.View";
 
         /// <summary>
-        /// ASP.NET MVC Core result events.
+        /// ASP.NET Core MVC result events.
         /// </summary>
         public const string AspNetCoreMvcResult = "Rin.Timeline.AspNetCore.Mvc.Result";
 
         /// <summary>
-        /// ASP.NET MVC Core action events.
+        /// ASP.NET Core MVC action events.
         /// </summary>
         public const string AspNetCoreMvcAction = "Rin.Timeline.AspNetCore.Mvc.Action";
     }
