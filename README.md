@@ -1,52 +1,56 @@
 # <img src="docs/images/logo.svg" alt="" width="32" /> Rin
 **R**equest/response **In**spector middleware for ASP.NET Core. like Glimpse.
 
-Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured data. It's useful tool to debug your Web application.
+Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured data. It's useful tool to debug your Web application (e.g. Web sites, API apps).
 
 ![](docs/images/Demo-01.gif)
 
-# Features
-## 📼 Record incoming requests and responses (+additional metrics)
+# ✅ Features
+## Capture requests and responses
+Rin captures HTTP traffics between the ASP.NET Core app and any clients.
+
+- Headers + Body
 - Traces (`Microsoft.Extensions.Logging.ILogger`, log4net, ...)
 - Unhandled Exception
 
-## 🌎 Inspect from Web browser
+## Inspect from Web browser in realtime
 
-### ⚡ Stream requests in realtime (powered by WebSocket)
+### View events timeline
+Rin inspector displays events that occurred while processing a request.
 
-### ⏲ View events timeline
 ![](docs/images/Screenshot-02.png)
 
-### 🔍 Preview a request/response body
-- JSON as tree view
-- Image preview (PNG, JPEG, SVG, ...)
-- Syntax highligting (powered by Monaco Editor)
-- application/x-www-form-urlencoded as list view
+### Preview a request/response body
+Rin inspector can display request and response body with a preview. (e.g. JSON, Image, HTML, JavaScript ...)
 
 ![](docs/images/Screenshot-03.png)
 
-### 📝 View related trace logs
+### View related trace logs
+Rin captures a request and response. Also, it captures logs while processing a request.
+
 - Built-in `Microsoft.Extensions.Logging.ILogger` integration
 - log4net Appender
 
-### 💾 Save and export request/response
+### Save and export request/response
+You can replay a request easily using cURL and LINQPad.
+
 - Save request/response body
 - Copy request as cURL and C#
 
-### 🔌 Integrate with ASP.NET Core MVC
+### Integrate with ASP.NET Core MVC
 - Record timings of view rendering and action execution
 - In-View Inspector (like MiniProfiler)
 
 ![](docs/images/Screenshot-04.png)
 
-# Requirements
+# 📝 Requirements
 - .NET Core 2.0+
 - ASP.NET Core 2.1+
 - ASP.NET Core MVC 2.1+
 - Modern browser (e.g. Microsoft Edge, Google Chrome, Firefox, Safari...)
     - WebSocket connectivity
 
-# QuickStart
+# ⚡ QuickStart
 
 ## Install NuGet Package
 ### Using Visual Studio
@@ -88,7 +92,10 @@ public class Startup
     {
         ...
         
-        services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+        services.AddMvc()
+            // Add(option): Enable ASP.NET Core MVC support if the project built with ASP.NET Core MVC
+            .AddRinMvcSupport()
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
         // Add: Register Rin services
         services.AddRin();
@@ -132,16 +139,20 @@ public class Startup
 
 Launch the app, then open `http://[Host:Port]/rin/` in the browser, you can see Rin Inspector now.
 
-# Develop and build Rin Inspector (frontend)
-The front-end codes for Rin is separated from Rin core C# project. If you want to develop Rin or launch a sample project, you need to build and pack the codes.
+# 🔨 Develop and build Rin Inspector (client side)
+Rin Inspector (client side) codes is separated from Rin core C# project. If you want to develop Rin (C#) or launch a sample project, you need to build and deploy the artifacts.
 
-## Setup and start the development server
+## [Rin.Frontend, Rin.Mvc.Frontend] Setup and start the development server
 - `npm install`
 - `npm run start`
 
-## Build Rin/Resources.zip
+## [Rin.Frontend] Build Rin/Resources.zip
 - `npm run build`
 - `npm run pack`
+
+## [Rin.Mvc.Frontend] Build Rin.Mvc/EmbeddedResources
+- `npm run build`
+- `copy .\build\static\main.js* ..\Rin.Mvc\EmbeddedResources\`
 
 # License
 [MIT License](LICENSE)
