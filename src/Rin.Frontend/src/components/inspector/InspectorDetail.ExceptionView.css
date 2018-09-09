@@ -1,10 +1,13 @@
+.inspectorDetail_ExceptionView {
+    padding: 0 16px;
+}
 .inspectorDetail_ExceptionView h2 {
-    margin: 12px 0 0 0;
+    margin: 8px 0 0 0;
 }
 .inspectorDetail_ExceptionView pre {
     overflow: auto;
     font-family: 'Consolas', monospace;
     font-size: 0.85rem;
     line-height: 1.6;
-    margin: 12px 0 0 0;
+    margin: 16px 0 0 0;
 }
