@@ -7,7 +7,8 @@ function installHook_fetch() {
     return (fetchOriginal.apply(window, args) as Promise<Response>).then(x => {
       const requestId = x.headers.get('X-Rin-Request-Id');
       if (requestId != null && requestId !== '') {
-        rinInViewInspectorStore.fetchSubRequestById(requestId);
+        // WORKAROUND: The request on server-side may not be finished yet while "loadend" event on client-side.
+        setTimeout(() => rinInViewInspectorStore.fetchSubRequestById(requestId), 100);
       }
       return x;
     });
@@ -20,7 +21,8 @@ function installHook_XHR() {
     this.addEventListener('loadend', () => {
       const requestId = this.getResponseHeader('X-Rin-Request-Id');
       if (requestId != null && requestId !== '') {
-        rinInViewInspectorStore.fetchSubRequestById(requestId);
+        // WORKAROUND: The request on server-side may not be finished yet while "loadend" event on client-side.
+        setTimeout(() => rinInViewInspectorStore.fetchSubRequestById(requestId), 100);
       }
     });
     xhrSend.apply(this, args);
