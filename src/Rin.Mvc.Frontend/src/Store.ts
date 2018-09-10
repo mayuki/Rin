@@ -7,6 +7,13 @@ export interface RinInViewInspectorConfig {
   RequestId: string;
 }
 
+export class SubRequestFailurePayload {
+  Id: string = new Date().valueOf().toString() + '.' + Math.random();
+  constructor(public Path: string, public ResponseStatusCode: number) {}
+}
+
+export type SubRequestPayload = RequestRecordDetailPayload | SubRequestFailurePayload;
+
 export class RinInViewInspectorStore {
   @observable
   data: RequestRecordDetailPayload;
@@ -15,7 +22,7 @@ export class RinInViewInspectorStore {
   position: 'Bottom' | 'Top';
 
   @observable
-  subRequests: RequestRecordDetailPayload[] = [];
+  subRequests: SubRequestPayload[] = [];
 
   @observable
   config: RinInViewInspectorConfig;
@@ -40,6 +47,11 @@ export class RinInViewInspectorStore {
     runInAction(() => {
       this.subRequests = this.subRequests.concat([detail]);
     });
+  }
+
+  @action.bound
+  addFailureSubRequest(url: string, status: number) {
+    this.subRequests = this.subRequests.concat([new SubRequestFailurePayload(url, status)]);
   }
 
   private async getDetailByIdAsync(id: string): Promise<RequestRecordDetailPayload> {

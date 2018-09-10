@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { Fragment } from 'react';
-import { RequestRecordDetailPayload, TimelineData, TimelineDataScope } from './api/IRinCoreHub';
+import { TimelineData, TimelineDataScope } from './api/IRinCoreHub';
 import * as styles from './App.css';
-import { RinInViewInspectorStore } from './Store';
+import { RinInViewInspectorStore, SubRequestFailurePayload, SubRequestPayload } from './Store';
 
 @observer
 class App extends React.Component<{ inspectorStore: RinInViewInspectorStore }> {
@@ -43,28 +43,36 @@ class App extends React.Component<{ inspectorStore: RinInViewInspectorStore }> {
   }
 }
 
-class SubRequests extends React.Component<{ subRequests: RequestRecordDetailPayload[]; pathBase: string }> {
+class SubRequests extends React.Component<{ subRequests: SubRequestPayload[]; pathBase: string }> {
   render() {
     return (
       <div className={styles.subRequests}>
         <h2>SubRequests</h2>
         <table>
           <tbody>
-            {this.props.subRequests.map(x => (
-              <tr key={`s-${x.Id}`}>
-                <td>
-                  <a href={`${this.props.pathBase}/Inspect/${x.Id}`} target="_blank">
-                    {x.Path}
-                  </a>
-                </td>
-                <td>
-                  <a href={`${this.props.pathBase}/Inspect/${x.Id}`} target="_blank">
-                    {x.Timeline.Duration}
-                    ms
-                  </a>
-                </td>
-              </tr>
-            ))}
+            {this.props.subRequests.map(
+              x =>
+                x instanceof SubRequestFailurePayload ? (
+                  <tr key={`s-${x.Id}`} className={styles.subRequests_subRequestError}>
+                    <td>{x.Path}</td>
+                    <td>(Error: {x.ResponseStatusCode})</td>
+                  </tr>
+                ) : (
+                  <tr key={`s-${x.Id}`}>
+                    <td>
+                      <a href={`${this.props.pathBase}/Inspect/${x.Id}`} target="_blank">
+                        {x.Path}
+                      </a>
+                    </td>
+                    <td>
+                      <a href={`${this.props.pathBase}/Inspect/${x.Id}`} target="_blank">
+                        {x.Timeline.Duration}
+                        ms
+                      </a>
+                    </td>
+                  </tr>
+                )
+            )}
           </tbody>
         </table>
       </div>

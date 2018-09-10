@@ -9,6 +9,8 @@ function installHook_fetch() {
       if (requestId != null && requestId !== '') {
         // WORKAROUND: The request on server-side may not be finished yet while "loadend" event on client-side.
         setTimeout(() => rinInViewInspectorStore.fetchSubRequestById(requestId), 100);
+      } else if (x.status >= 400 && x.status <= 599) {
+        rinInViewInspectorStore.addFailureSubRequest(x.url, x.status);
       }
       return x;
     });
@@ -23,6 +25,8 @@ function installHook_XHR() {
       if (requestId != null && requestId !== '') {
         // WORKAROUND: The request on server-side may not be finished yet while "loadend" event on client-side.
         setTimeout(() => rinInViewInspectorStore.fetchSubRequestById(requestId), 100);
+      } else if (this.status >= 400 && this.status <= 599) {
+        rinInViewInspectorStore.addFailureSubRequest(this.responseURL, this.status);
       }
     });
     xhrSend.apply(this, args);
