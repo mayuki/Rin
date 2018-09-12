@@ -10,6 +10,7 @@
     <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
     <PackageTags>Rin MVC</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.svg</PackageIconUrl>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
