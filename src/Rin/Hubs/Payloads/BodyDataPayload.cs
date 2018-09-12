@@ -22,6 +22,11 @@ namespace Rin.Hubs.Payloads
 
         public static BodyDataPayload CreateFromRecord(HttpRequestRecord record, IDictionary<string, StringValues> headers, byte[] body, IBodyDataTransformer transformer)
         {
+            if (body == null)
+            {
+                return new BodyDataPayload(null, false, "");
+            }
+
             if (headers.TryGetValue("Content-Type", out var contentType))
             {
                 var result = transformer.Transform(record, body, contentType);
