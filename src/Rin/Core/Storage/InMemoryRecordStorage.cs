@@ -99,7 +99,7 @@ namespace Rin.Core.Storage
             _lock.EnterReadLock();
             try
             {
-                var succeed = _entries.TryGetValue(id, out var value);
+                var succeed = _entries.TryGetValue(id, out var value) && value.ResponseBody != null;
                 return Task.FromResult(RecordStorageTryGetResult.Create(succeed, value?.ResponseBody));
             }
             finally
@@ -113,7 +113,7 @@ namespace Rin.Core.Storage
             _lock.EnterReadLock();
             try
             {
-                var succeed = _entries.TryGetValue(id, out var value);
+                var succeed = _entries.TryGetValue(id, out var value) && value.RequestBody != null;
                 return Task.FromResult(RecordStorageTryGetResult.Create(succeed, value?.RequestBody));
             }
             finally

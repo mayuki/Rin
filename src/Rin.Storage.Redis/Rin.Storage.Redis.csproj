@@ -9,6 +9,7 @@
     <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.svg</PackageIconUrl>
     <PackageTags>Rin</PackageTags>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

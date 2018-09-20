@@ -53,13 +53,13 @@ export class InspectorDetailRequestResponseView extends React.Component<
         : getContentType(this.props.headers)
       : null;
     const isTransformed = this.props.body != null && this.props.body.PresentationContentType !== '';
+    const hasBody = this.props.body != null && this.props.body.Body != null && this.props.body.Body.length > 0;
     const body =
-      this.props.body != null
+      this.props.body != null && this.props.body.Body != null && this.props.body.Body.length > 0
         ? this.props.body.IsBase64Encoded
           ? atob(this.props.body.Body)
           : this.props.body.Body
         : '';
-    const hasBody = this.props.body != null && this.props.body.Body.length > 0;
 
     return (
       <div className={styles.inspectorRequestResponseView}>
