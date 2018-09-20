@@ -59,15 +59,19 @@ namespace Rin.Core.Record
 
     public class ExceptionData
     {
+        public string ClassName { get; }
+        public string FullName { get; }
         public string Message { get; }
-        public string StackTrace { get; }
         public string FullMessage { get; }
+        public string StackTrace { get; }
 
         public ExceptionData(Exception ex)
         {
+            ClassName = ex.GetType().Name;
+            FullName = ex.GetType().FullName;
             Message = ex.Message;
-            StackTrace = ex.StackTrace;
             FullMessage = ex.ToString();
+            StackTrace = ex.StackTrace;
         }
     }
 }
