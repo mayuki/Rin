@@ -50,10 +50,24 @@ namespace Rin.Core.Record
         public IDictionary<string, StringValues> RequestHeaders { get; set; }
         public IDictionary<string, StringValues> ResponseHeaders { get; set; }
 
-        public Exception Exception { get; set; }
+        public ExceptionData Exception { get; set; }
         public ITimelineScope Timeline { get; set; }
 
         internal ITimelineScope Processing { get; set; }
         internal ITimelineScope Transferring { get; set; }
+    }
+
+    public class ExceptionData
+    {
+        public string Message { get; }
+        public string StackTrace { get; }
+        public string FullMessage { get; }
+
+        public ExceptionData(Exception ex)
+        {
+            Message = ex.Message;
+            StackTrace = ex.StackTrace;
+            FullMessage = ex.ToString();
+        }
     }
 }

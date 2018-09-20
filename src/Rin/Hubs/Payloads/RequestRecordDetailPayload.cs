@@ -28,7 +28,7 @@ namespace Rin.Hubs.Payloads
         public DateTimeOffset RequestReceivedAt { get; private set; }
         public DateTimeOffset TransferringCompletedAt { get; private set; }
 
-        public Exception Exception { get; private set; }
+        public ExceptionData Exception { get; private set; }
 
         public TimelineData Timeline { get; private set; }
 

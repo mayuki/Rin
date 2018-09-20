@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Rin.Core.Record;
 using Rin.Features;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace Rin.Middlewares
                 var feature = context.Features.Get<IRinRequestRecordingFeature>();
                 if (feature != null)
                 {
-                    feature.Record.Exception = ex;
+                    feature.Record.Exception = new ExceptionData(ex);
                 }
                 throw;
             }

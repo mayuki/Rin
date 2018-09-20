@@ -65,7 +65,7 @@ namespace Rin.Middlewares
             {
                 if (record != null)
                 {
-                    record.Exception = ex;
+                    record.Exception = new ExceptionData(ex);
                 }
                 throw;
             }
@@ -148,7 +148,7 @@ namespace Rin.Middlewares
             var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
             if (exceptionFeature != null)
             {
-                record.Exception = exceptionFeature.Error;
+                record.Exception = new ExceptionData(exceptionFeature.Error);
             }
         }
 

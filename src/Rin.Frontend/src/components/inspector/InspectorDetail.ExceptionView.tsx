@@ -14,7 +14,7 @@ export class InspectorDetailExceptionView extends React.Component<IInspectorDeta
         <h2 className={FontClassNames.large}>
           {this.props.record.Exception.ClassName}: {this.props.record.Exception.Message}
         </h2>
-        <pre>{this.props.record.Exception.StackTraceString}</pre>
+        <pre>{this.props.record.Exception.StackTrace}</pre>
       </div>
     );
   }
