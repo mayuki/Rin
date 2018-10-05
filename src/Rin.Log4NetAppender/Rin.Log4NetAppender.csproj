@@ -8,8 +8,8 @@
     <PackageLicenseUrl>https://github.com/mayuki/Rin/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
     <PackageTags>Rin log4net</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.svg</PackageIconUrl>
-    <Version>1.0.1</Version>
+    <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.svg?v1</PackageIconUrl>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
