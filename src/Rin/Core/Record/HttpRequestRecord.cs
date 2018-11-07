@@ -65,8 +65,16 @@ namespace Rin.Core.Record
         public string FullMessage { get; }
         public string StackTrace { get; }
 
+        // MEMO: A deserializer uses this constructor.
+        [Obsolete("Use ExceptionData(Exception) overload instead.")]
+        public ExceptionData()
+        {
+        }
+
         public ExceptionData(Exception ex)
         {
+            if (ex == null) throw new ArgumentNullException(nameof(ex));
+
             ClassName = ex.GetType().Name;
             FullName = ex.GetType().FullName;
             Message = ex.Message;
