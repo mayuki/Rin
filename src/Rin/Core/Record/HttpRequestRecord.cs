@@ -59,11 +59,11 @@ namespace Rin.Core.Record
 
     public class ExceptionData
     {
-        public string ClassName { get; }
-        public string FullName { get; }
-        public string Message { get; }
-        public string FullMessage { get; }
-        public string StackTrace { get; }
+        public string ClassName { get; set; }
+        public string FullName { get; set; }
+        public string Message { get; set; }
+        public string FullMessage { get; set; }
+        public string StackTrace { get; set; }
 
         // MEMO: A deserializer uses this constructor.
         [Obsolete("Use ExceptionData(Exception) overload instead.")]
