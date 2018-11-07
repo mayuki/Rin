@@ -11,7 +11,7 @@
     <VersionPrefix>1.0.0</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <LangVersion>latest</LangVersion>
-    <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.svg?v1</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.png</PackageIconUrl>
     <Version>1.0.3</Version>
   </PropertyGroup>
 

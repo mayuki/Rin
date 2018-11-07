@@ -7,7 +7,7 @@
     <Copyright>Mayuki Sawatari</Copyright>
     <PackageLicenseUrl>https://github.com/mayuki/Rin/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.svg?v1</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.png</PackageIconUrl>
     <PackageTags>Rin</PackageTags>
     <Version>1.0.3</Version>
   </PropertyGroup>
