@@ -34,7 +34,17 @@ namespace Rin.Core.Event
             }
 
             _subscribers = subscribers.ToArray();
-            _readerTask = Task.Run(RunLoopAsync);
+            _readerTask = Task.Run(async () =>
+            {
+                try
+                {
+                    await RunLoopAsync();
+                }
+                catch (OperationCanceledException)
+                {
+                    // An application and Rin is shutting down ...
+                }
+            });
         }
 
         private async Task RunLoopAsync()
@@ -73,6 +83,7 @@ namespace Rin.Core.Event
             if (_disposed) return;
 
             _cancellationTokenSource.Cancel();
+
             _readerTask.Wait();
 
             _disposed = true;
