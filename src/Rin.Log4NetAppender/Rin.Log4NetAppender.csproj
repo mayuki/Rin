@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
     <PackageTags>Rin log4net</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.png</PackageIconUrl>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
