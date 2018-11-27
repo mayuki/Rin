@@ -80,14 +80,12 @@ namespace Rin.Storage.Redis
         {
             await Task.WhenAll(
                 _redis.ListLeftPushAsync(GetRedisKey($"Records"), entry.Id),
-                _redis.StringSetAsync(GetRedisKey($"RecordEntry?{entry.Id}"), Serialize(entry)),
-                _redis.StringSetAsync(GetRedisKey($"RecordEntryInfo?{entry.Id}"), Serialize(HttpRequestRecordInfo.CreateFromRecord(entry)))
+                _redis.StringSetAsync(GetRedisKey($"RecordEntry?{entry.Id}"), Serialize(entry), _options.Expiry),
+                _redis.StringSetAsync(GetRedisKey($"RecordEntryInfo?{entry.Id}"), Serialize(HttpRequestRecordInfo.CreateFromRecord(entry)), _options.Expiry)
             );
             await Task.WhenAll(
                 _redis.ListTrimAsync(GetRedisKey($"Records"), 0, _options.RetentionMaxRequests),
-                _redis.KeyExpireAsync(GetRedisKey($"Records"), _options.Expiry),
-                _redis.KeyExpireAsync(GetRedisKey($"RecordEntry?{entry.Id}"), _options.Expiry),
-                _redis.KeyExpireAsync(GetRedisKey($"RecordEntryInfo?{entry.Id}"), _options.Expiry)
+                _redis.KeyExpireAsync(GetRedisKey($"Records"), _options.Expiry)
             );
         }
 
@@ -115,8 +113,8 @@ namespace Rin.Storage.Redis
         public async Task UpdateAsync(HttpRequestRecord entry)
         {
             await Task.WhenAll(
-                _redis.StringSetAsync(GetRedisKey($"RecordEntry?{entry.Id}"), Serialize(entry)),
-                _redis.StringSetAsync(GetRedisKey($"RecordEntryInfo?{entry.Id}"), Serialize(HttpRequestRecordInfo.CreateFromRecord(entry)))
+                _redis.StringSetAsync(GetRedisKey($"RecordEntry?{entry.Id}"), Serialize(entry), _options.Expiry),
+                _redis.StringSetAsync(GetRedisKey($"RecordEntryInfo?{entry.Id}"), Serialize(HttpRequestRecordInfo.CreateFromRecord(entry)), _options.Expiry)
             );
         }
 
@@ -151,10 +149,10 @@ namespace Rin.Storage.Redis
             switch (message.Event)
             {
                 case StoreBodyEvent.Request:
-                    await _redis.StringSetAsync(GetRedisKey($"RecordEntry.RequestBody?{message.Id}"), message.Body, expiry: _options.Expiry);
+                    await _redis.StringSetAsync(GetRedisKey($"RecordEntry.RequestBody?{message.Id}"), message.Body, _options.Expiry);
                     break;
                 case StoreBodyEvent.Response:
-                    await _redis.StringSetAsync(GetRedisKey($"RecordEntry.ResponseBody?{message.Id}"), message.Body, expiry: _options.Expiry);
+                    await _redis.StringSetAsync(GetRedisKey($"RecordEntry.ResponseBody?{message.Id}"), message.Body, _options.Expiry);
                     break;
             }
         }
