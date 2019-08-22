@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rin.IO
 {
     public class DataCaptureStream : Stream
     {
-        private MemoryStream _capturedData = new MemoryStream();
-        private Stream _innerStream;
+        private readonly MemoryStream _capturedData = new MemoryStream();
+        private readonly Stream _innerStream;
 
         public DataCaptureStream(Stream stream)
         {
@@ -57,6 +58,39 @@ namespace Rin.IO
         {
             _capturedData.Write(buffer, offset, count);
             _innerStream.Write(buffer, offset, count);
+        }
+
+        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            return Task.WhenAll(
+                _capturedData.WriteAsync(buffer, offset, count, cancellationToken),
+                _innerStream.WriteAsync(buffer, offset, count, cancellationToken)
+            );
+        }
+
+        public override Task FlushAsync(CancellationToken cancellationToken)
+        {
+            return Task.WhenAll(
+                _capturedData.FlushAsync(cancellationToken),
+                _innerStream.FlushAsync(cancellationToken)
+            );
+        }
+
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            var results = await Task.WhenAll(
+                _capturedData.ReadAsync(buffer, offset, count, cancellationToken),
+                _innerStream.ReadAsync(buffer, offset, count, cancellationToken)
+            );
+            return results[1];
+        }
+
+        public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
+        {
+            return Task.WhenAll(
+                _capturedData.CopyToAsync(destination, bufferSize, cancellationToken),
+                _innerStream.CopyToAsync(destination, bufferSize, cancellationToken)
+            );
         }
     }
 }
