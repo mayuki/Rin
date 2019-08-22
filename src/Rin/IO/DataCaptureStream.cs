@@ -87,10 +87,7 @@ namespace Rin.IO
 
         public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
-            return Task.WhenAll(
-                _capturedData.CopyToAsync(destination, bufferSize, cancellationToken),
-                _innerStream.CopyToAsync(destination, bufferSize, cancellationToken)
-            );
+            throw new NotSupportedException();
         }
     }
 }
