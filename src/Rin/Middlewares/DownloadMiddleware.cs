@@ -26,7 +26,7 @@ namespace Rin.Middlewares
         public async Task InvokeAsync(HttpContext context)
         {
             var result = await _storage.TryGetDetailByIdAsync(context.Request.Query["id"]);
-            var resultBody = await _storage.TryGetRequestBodyByIdAsync(context.Request.Query["id"]);
+            var resultBody = await _storage.TryGetResponseBodyByIdAsync(context.Request.Query["id"]);
 
             if (!result.Succeed || !resultBody.Succeed)
             {
