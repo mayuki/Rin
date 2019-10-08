@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Rin.Features;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -21,6 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddHttpContextAccessor();
 
             // Other services
+            services.AddSingleton<IRinRequestRecordingFeatureAccessor>(new RinRequestRecordingFeatureAccessor());
             services.AddSingleton<BodyDataTransformerSet>(serviceProvider =>
             {
                 var transformers = serviceProvider.GetServices<IBodyDataTransformer>().ToArray();

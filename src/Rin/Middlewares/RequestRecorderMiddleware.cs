@@ -22,16 +22,24 @@ namespace Rin.Middlewares
         private readonly RequestDelegate _next;
         private readonly IMessageEventBus<RequestEventMessage> _eventBus;
         private readonly IMessageEventBus<StoreBodyEventMessage> _eventBusStoreBody;
+        private readonly IRinRequestRecordingFeatureAccessor _recordingFeatureAccessor;
         private readonly ILogger _logger;
 
         public const string EventSourceName = "Rin.Middlewares.RequestRecorderMiddleware";
 
-        public RequestRecorderMiddleware(RequestDelegate next, IMessageEventBus<RequestEventMessage> eventBus, IMessageEventBus<StoreBodyEventMessage> eventBusStoreBody, RinChannel rinChannel, ILoggerFactory loggerFactory)
+        public RequestRecorderMiddleware(
+            RequestDelegate next,
+            IMessageEventBus<RequestEventMessage> eventBus,
+            IMessageEventBus<StoreBodyEventMessage> eventBusStoreBody,
+            RinChannel rinChannel,
+            ILoggerFactory loggerFactory,
+            IRinRequestRecordingFeatureAccessor recordingFeatureAccessor)
         {
             _next = next;
             _eventBus = eventBus;
             _eventBusStoreBody = eventBusStoreBody;
             _logger = loggerFactory.CreateLogger<RequestRecorderMiddleware>();
+            _recordingFeatureAccessor = recordingFeatureAccessor;
         }
 
         public async Task InvokeAsync(HttpContext context, RinOptions options)
@@ -102,7 +110,9 @@ namespace Rin.Middlewares
             };
 
             // Set Rin recorder feature.
-            context.Features.Set<IRinRequestRecordingFeature>(new RinRequestRecordingFeature(record));
+            var feature = new RinRequestRecordingFeature(record);;
+            _recordingFeatureAccessor.SetValue(feature);
+            context.Features.Set<IRinRequestRecordingFeature>(feature);
 
             await _eventBus.PostAsync(new RequestEventMessage(EventSourceName, record, RequestEvent.BeginRequest));
 

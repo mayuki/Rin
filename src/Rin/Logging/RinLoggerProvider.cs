@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Rin.Features;
 
 namespace Rin.Logging
 {
@@ -18,7 +19,7 @@ namespace Rin.Logging
 
         public ILogger CreateLogger(string categoryName)
         {
-            return new RinLogger(_serviceProvider.GetService<IHttpContextAccessor>());
+            return new RinLogger(_serviceProvider.GetService<IRinRequestRecordingFeatureAccessor>());
         }
 
         public void Dispose()
