@@ -38,10 +38,10 @@ namespace Rin.Hubs.Payloads
             ParentId = record.ParentId;
             IsCompleted = record.IsCompleted;
             IsHttps = record.IsHttps;
-            Host = record.Host.Value;
+            Host = record.Host;
             Method = record.Method;
             Path = record.Path;
-            QueryString = record.QueryString.Value;
+            QueryString = record.QueryString;
             ResponseStatusCode = record.ResponseStatusCode;
 
             RemoteIpAddress = record.RemoteIpAddress.ToString();

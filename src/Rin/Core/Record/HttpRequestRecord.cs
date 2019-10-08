@@ -14,9 +14,9 @@ namespace Rin.Core.Record
         public string ParentId { get; set; }
 
         public bool IsHttps { get; set; }
-        public HostString Host { get; set; }
-        public QueryString QueryString { get; set; }
-        public PathString Path { get; set; }
+        public string Host { get; set; }
+        public string QueryString { get; set; }
+        public string Path { get; set; }
         public string Method { get; set; }
         public int ResponseStatusCode { get; set; }
         public IPAddress RemoteIpAddress { get; set; }
@@ -26,7 +26,7 @@ namespace Rin.Core.Record
 
         public bool IsCompleted => TransferringCompletedAt != default(DateTimeOffset);
 
-        public static HttpRequestRecordInfo CreateFromRecord(HttpRequestRecordInfo record)
+        public static HttpRequestRecordInfo CreateFromRecord(HttpRequestRecord record)
         {
             return new HttpRequestRecordInfo
             {
@@ -53,8 +53,8 @@ namespace Rin.Core.Record
         public ExceptionData Exception { get; set; }
         public ITimelineScope Timeline { get; set; }
 
-        internal ITimelineScope Processing { get; set; }
-        internal ITimelineScope Transferring { get; set; }
+        public ITimelineScope Processing { get; set; }
+        public ITimelineScope Transferring { get; set; }
     }
 
     public class ExceptionData
