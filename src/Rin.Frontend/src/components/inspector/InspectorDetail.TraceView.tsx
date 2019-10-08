@@ -21,7 +21,12 @@ export class InspectorDetailTraceView extends React.Component<IInspectorDetailTr
     return (
       <div className={styles.inspectorDetailTraceView}>
         <div className={styles.inspectorDetailTraceView_Commands}>
-          <Toggle label="Enable WordWrap" checked={this.props.enableWordWrap} onChanged={this.props.toggleWordWrap} />
+          <Toggle
+            label="Enable WordWrap"
+            inlineLabel={true}
+            checked={this.props.enableWordWrap}
+            onChanged={this.props.toggleWordWrap}
+          />
         </div>
         <TraceTextView
           body={traceAsText(collectTraces(this.props.record.Timeline))}

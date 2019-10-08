@@ -25,6 +25,7 @@ export class InspectorDetailTimelineView extends React.Component<InspectorDetail
       <div className={styles.inspectorDetailTimelineView}>
         <div className={styles.inspectorDetailTimelineView_Commands}>
           <Toggle
+            inlineLabel={true}
             label="Show Traces"
             checked={this.props.isTraceVisibleInTimeline}
             onChanged={this.props.toggleTraceVisibility}
