@@ -20,18 +20,15 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddHttpContextAccessor();
 
-            var eventBus = new MessageEventBus<RequestEventMessage>();
-            var eventBusStoreBody = new MessageEventBus<StoreBodyEventMessage>();
-            var transformerSet = new BodyDataTransformerSet(
-                new BodyDataTransformerPipeline(options.Inspector.RequestBodyDataTransformers),
-                new BodyDataTransformerPipeline(options.Inspector.ResponseBodyDataTransformers)
-            );
-
             // Other services
-            services.AddSingleton<BodyDataTransformerSet>(transformerSet);
+            services.AddSingleton<BodyDataTransformerSet>(serviceProvider =>
+            {
+                var transformers = serviceProvider.GetServices<IBodyDataTransformer>().ToArray();
+                return new BodyDataTransformerSet(new BodyDataTransformerPipeline(transformers), new BodyDataTransformerPipeline(transformers));
+            });
             services.AddSingleton<IRecordStorage>(options.RequestRecorder.StorageFactory);
-            services.AddSingleton<IMessageEventBus<RequestEventMessage>>(eventBus);
-            services.AddSingleton<IMessageEventBus<StoreBodyEventMessage>>(eventBusStoreBody);
+            services.AddSingleton<IMessageEventBus<RequestEventMessage>>(new MessageEventBus<RequestEventMessage>());
+            services.AddSingleton<IMessageEventBus<StoreBodyEventMessage>>(new MessageEventBus<StoreBodyEventMessage>());
             services.AddSingleton<RinOptions>(options);
             services.AddSingleton<RinChannel>();
 
