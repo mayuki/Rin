@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import { Icon } from 'office-ui-fabric-react';
+import { Icon, Stack, StackItem } from 'office-ui-fabric-react';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import * as React from 'react';
 import { createUrl } from '../../domain/RequestRecord';
@@ -34,31 +34,47 @@ export class InspectorDetail extends React.Component {
         {!inspectorStore.isRecordDeleted && (
           <div className={styles.inspectorDetail}>
             <div className={styles.inspectorDetail_CommandBar}>
-              <InspectorDetailCommandBar
-                endpointUrlBase={appStore.endpointUrlBase}
-                currentRecordDetail={inspectorStore.currentRecordDetail}
-                requestBody={inspectorStore.requestBody}
-              />
+              <Stack horizontal={true}>
+                <StackItem grow={true}>
+                  {selectedRecord != null && (
+                    <div className={styles.inspectorDetail_Pivot}>
+                      <Pivot selectedKey={inspectorStore.currentDetailView} onLinkClick={this.onPivotItemClicked}>
+                        <PivotItem itemKey={DetailViewType.Request} headerText="Request" itemIcon="CloudUpload" />
+                        {whenCompleted(() => (
+                          <PivotItem itemKey={DetailViewType.Response} headerText="Response" itemIcon="CloudDownload" />
+                        ))}
+                        {whenCompleted(() => (
+                          <PivotItem
+                            itemKey={DetailViewType.Timeline}
+                            headerText="Timeline"
+                            itemIcon="TimelineProgress"
+                          />
+                        ))}
+                        <PivotItem itemKey={DetailViewType.Trace} headerText="Trace" itemIcon="TimeEntry" />
+                        {selectedRecord.Exception ? (
+                          <PivotItem
+                            itemKey={DetailViewType.Exception}
+                            headerText="Exception"
+                            itemIcon="StatusErrorFull"
+                          />
+                        ) : (
+                          <></>
+                        )}
+                      </Pivot>
+                    </div>
+                  )}
+                </StackItem>
+                <StackItem>
+                  <InspectorDetailCommandBar
+                    endpointUrlBase={appStore.endpointUrlBase}
+                    currentRecordDetail={inspectorStore.currentRecordDetail}
+                    requestBody={inspectorStore.requestBody}
+                  />
+                </StackItem>
+              </Stack>
             </div>
             {selectedRecord != null && (
               <>
-                <div className={styles.inspectorDetail_Pivot}>
-                  <Pivot selectedKey={inspectorStore.currentDetailView} onLinkClick={this.onPivotItemClicked}>
-                    <PivotItem itemKey={DetailViewType.Request} headerText="Request" itemIcon="CloudUpload" />
-                    {whenCompleted(() => (
-                      <PivotItem itemKey={DetailViewType.Response} headerText="Response" itemIcon="CloudDownload" />
-                    ))}
-                    {whenCompleted(() => (
-                      <PivotItem itemKey={DetailViewType.Timeline} headerText="Timeline" itemIcon="TimelineProgress" />
-                    ))}
-                    <PivotItem itemKey={DetailViewType.Trace} headerText="Trace" itemIcon="TimeEntry" />
-                    {selectedRecord.Exception ? (
-                      <PivotItem itemKey={DetailViewType.Exception} headerText="Exception" itemIcon="StatusErrorFull" />
-                    ) : (
-                      <></>
-                    )}
-                  </Pivot>
-                </div>
                 <div className={styles.inspectorDetail_DetailView}>
                   {inspectorStore.currentDetailView === DetailViewType.Request && this.renderRequestView()}
                   {inspectorStore.currentDetailView === DetailViewType.Response && this.renderResponseView()}

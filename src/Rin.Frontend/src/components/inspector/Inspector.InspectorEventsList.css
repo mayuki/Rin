@@ -1,4 +1,8 @@
 .inspectorEventsItem_ReceivedAt {
     font-size: 0.7rem;
     color: #999;
-  }
+}
+
+.inspectorEventsList :global(.ms-DetailsHeader) {
+  padding-top: 0;
+}

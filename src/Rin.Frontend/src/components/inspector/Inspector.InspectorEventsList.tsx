@@ -101,6 +101,7 @@ export class InspectorEventsList extends React.Component<InspectorEventsListProp
           value={this.props.query}
         />
         <DetailsList
+          className={styles.inspectorEventsList}
           compact={true}
           checkboxVisibility={CheckboxVisibility.hidden}
           columns={this.columns}
