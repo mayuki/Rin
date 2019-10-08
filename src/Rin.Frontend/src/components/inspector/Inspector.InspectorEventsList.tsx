@@ -5,7 +5,7 @@ import { RequestEventPayload } from '../../api/IRinCoreHub';
 import * as styles from './Inspector.InspectorEventsList.css';
 
 export interface InspectorEventsListProps {
-  onFilterChange: (newValue: string) => void;
+  onFilterChange: (event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) => void;
   query: string;
   selectedId: string | undefined;
   filteredItems: RequestEventPayload[];

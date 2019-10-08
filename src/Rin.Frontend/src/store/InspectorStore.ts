@@ -51,8 +51,8 @@ export class InspectorStore {
   }
 
   @action.bound
-  onFilterChange(newValue: string) {
-    this.query = newValue;
+  onFilterChange(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
+    this.query = newValue == null ? '' : newValue;
   }
 
   @action.bound
