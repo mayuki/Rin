@@ -12,6 +12,9 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.0.100
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.402
     - name: npm install & build & pack (Rin.Frontend)
       working-directory: src/Rin.Frontend
       run: |
