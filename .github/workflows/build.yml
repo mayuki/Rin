@@ -24,8 +24,11 @@ jobs:
         npm install
         npm run build
     - name: Copy Rin.Mvc.Frontend
-      run: cp -R src/Rin.Mvc.Frontend/build/static/* src/Rin.Mvc/EmbeddedResources/
-    - run: |
+      run: |
+        mkdir -p src/Rin.Mvc/EmbeddedResources/
+        cp -R src/Rin.Mvc.Frontend/build/static/* src/Rin.Mvc/EmbeddedResources/
+    - name: dotnet
+      run: |
         dotnet restore
         dotnet build -c Release
         dotnet pack -c Release -o artifacts --version-suffix preview.`date +%Y%m%d%H%M%S`
