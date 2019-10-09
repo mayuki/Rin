@@ -38,4 +38,4 @@ jobs:
     - uses: actions/upload-artifact@master
       with:
         name: Packages
-        path: $GITHUB_WORKSPACE/artifacts
+        path: ${{ GITHUB_WORKSPACE }}/artifacts
