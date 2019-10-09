@@ -53,7 +53,9 @@ namespace Rin.Middlewares
                 return;
             }
 
+            // Prepare AsyncLocals
             var timelineRoot = TimelineScope.Prepare();
+            _recordingFeatureAccessor.SetValue(null);
 
             HttpRequestRecord record = default;
             try

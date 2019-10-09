@@ -16,17 +16,23 @@ namespace Rin.Features
     // Currently, Rin depends IRinRequestRecordingFeature, so we use this instead of HttpContext at this time.
     public class RinRequestRecordingFeatureAccessor : IRinRequestRecordingFeatureAccessor
     {
-        private static readonly AsyncLocal<IRinRequestRecordingFeature> _current = new AsyncLocal<IRinRequestRecordingFeature>();
+        private static readonly AsyncLocal<Holder> _current = new AsyncLocal<Holder>();
 
-        public IRinRequestRecordingFeature Feature
-        {
-            get => _current.Value;
-            set => _current.Value = value;
-        }
+        public IRinRequestRecordingFeature Feature => _current.Value?.Value;
 
         public void SetValue(IRinRequestRecordingFeature feature)
         {
-            _current.Value = feature;
+            if (_current.Value == null)
+            {
+                _current.Value = new Holder();
+            }
+
+            _current.Value.Value = feature;
+        }
+
+        private class Holder
+        {
+            public IRinRequestRecordingFeature Value { get; set; }
         }
     }
 }
