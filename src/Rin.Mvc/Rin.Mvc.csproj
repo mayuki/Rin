@@ -6,16 +6,20 @@
     <Description>This package adds support for ASP.NET Core MVC to Rin</Description>
     <Company>Mayuki Sawatari</Company>
     <Copyright>Mayuki Sawatari</Copyright>
-    <PackageLicenseUrl>https://github.com/mayuki/Rin/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
     <PackageTags>Rin MVC</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.png</PackageIconUrl>
-    <Version>1.0.5</Version>
+    <PackageIcon>logo.png</PackageIcon>
+    <VersionPrefix>1.0.5</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="EmbeddedResources\main.js" />
     <None Remove="EmbeddedResources\main.js.map" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\docs\images\logo.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>
