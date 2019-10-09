@@ -1,0 +1,35 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.0.100
+    - name: npm install & build & pack (Rin.Frontend)
+      working-directory: src/Rin.Frontend
+      run: |
+        npm install
+        npm run build
+        npm run pack
+    - name: npm install & build & pack (Rin.Mvc.Frontend)
+      working-directory: src/Rin.Frontend
+      run: |
+        npm install
+        npm run build
+    - name: Copy Rin.Mvc.Frontend
+      run: cp -R src/Rin.Mvc.Frontend/build/static/* src/Rin.Mvc/EmbeddedResources/
+    - run: |
+        dotnet restore
+        dotnet build -c Release
+        dotnet pack -c Release -o artifacts --version-suffix preview.`date +%Y%m%d%H%M%S`
+    - uses: actions/upload-artifact@master
+      with:
+        name: Packages
+        path: artifacts
