@@ -19,7 +19,7 @@ jobs:
         npm run build
         npm run pack
     - name: npm install & build & pack (Rin.Mvc.Frontend)
-      working-directory: src/Rin.Frontend
+      working-directory: src/Rin.Mvc.Frontend
       run: |
         npm install
         npm run build
