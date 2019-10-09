@@ -34,8 +34,8 @@ jobs:
       run: |
         dotnet restore
         dotnet build -c Release
-        dotnet pack -c Release -o artifacts --version-suffix preview.`date +%Y%m%d%H%M%S`
+        dotnet pack -c Release -o $GITHUB_WORKSPACE/artifacts --version-suffix preview.`date +%Y%m%d%H%M%S`
     - uses: actions/upload-artifact@master
       with:
         name: Packages
-        path: artifacts
+        path: $GITHUB_WORKSPACE/artifacts
