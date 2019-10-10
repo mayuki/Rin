@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
-namespace Rin.FrontendResources
+namespace Rin
 {
     public static class Resources
     {
@@ -14,7 +14,7 @@ namespace Rin.FrontendResources
         static Resources()
         {
             var asm = typeof(Resources).Assembly;
-            var resourceZipStream = asm.GetManifestResourceStream(typeof(Resources).Assembly.GetName().Name + ".Resources.zip");
+            var resourceZipStream = asm.GetManifestResourceStream(typeof(Resources).Assembly.GetName().Name + ".Resources");
             _zipArchive = new ZipArchive(resourceZipStream, ZipArchiveMode.Read);
             _resourceNameByPath = _zipArchive.Entries.Where(x => x.Name != "").ToDictionary(k => k.FullName, v => (Func<Stream>)(() => v.Open()));
         }
