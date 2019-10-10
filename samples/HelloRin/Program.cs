@@ -25,7 +25,7 @@ namespace HelloRin
             WebHost.CreateDefaultBuilder(args)
                 .ConfigureLogging(config =>
                 {
-                    config.UseRinLogger();
+                    config.AddRinLogger();
                 })
                 .UseStartup<Startup>();
     }
