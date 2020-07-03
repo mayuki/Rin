@@ -16,7 +16,7 @@ export interface IInspectorDetailTraceViewProps {
   toggleWordWrap: (value: boolean) => void;
 }
 
-export class InspectorDetailTraceView extends React.Component<IInspectorDetailTraceViewProps, {}> {
+export class InspectorDetailTraceView extends React.Component<IInspectorDetailTraceViewProps> {
   render() {
     return (
       <div className={styles.inspectorDetailTraceView}>
@@ -37,9 +37,9 @@ export class InspectorDetailTraceView extends React.Component<IInspectorDetailTr
   }
 }
 
-class TraceTextView extends React.Component<{ body: string; enableWordWrap: boolean }, {}> {
-  private unsubscribe: () => void;
-  private editor: monacoEditor.editor.IStandaloneCodeEditor;
+class TraceTextView extends React.Component<{ body: string; enableWordWrap: boolean }> {
+  private unsubscribe!: () => void;
+  private editor!: monacoEditor.editor.IStandaloneCodeEditor;
 
   componentDidMount() {
     const listener = () => {
@@ -70,10 +70,11 @@ class TraceTextView extends React.Component<{ body: string; enableWordWrap: bool
       <MonacoEditor
         width="100%"
         height="100%"
-        options={{ ...this.monacoOptions, theme: 'rin-log' }}
+        options={this.monacoOptions}
         language={'text/x-rin-log'}
         value={this.props.body}
         editorDidMount={this.editorDidMount}
+        theme="rin-log"
       />
     );
   }

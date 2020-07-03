@@ -15,14 +15,14 @@ export class InspectorStore {
   @observable
   responseBody: BodyDataPayload | null = null;
   @observable
-  currentRecordDetail: RequestRecordDetailPayload | null;
+  currentRecordDetail: RequestRecordDetailPayload | null = null;
   @observable
   isRecordDeleted: boolean = false;
 
   @observable
   leftPaneSize: number = 300;
   @observable
-  requestResponsePaneSize: number | null;
+  requestResponsePaneSize: number | null = null;
 
   @observable
   items: RequestEventPayload[] = [];
@@ -30,10 +30,10 @@ export class InspectorStore {
   @observable
   enableTraceViewWordWrap: boolean = false;
 
-  private hubClient: IHubClient & IRinCoreHub;
+  private hubClient!: IHubClient & IRinCoreHub;
   private requestEventQueue: { event: 'RequestBegin' | 'RequestEnd'; args: any }[] = [];
   private triggerRequestEventQueueTimerId?: number;
-  private history: History;
+  private history!: History;
 
   @computed
   get selectedItem() {
@@ -46,7 +46,7 @@ export class InspectorStore {
       return this.items;
     }
 
-    const regex = new RegExp(this.query.replace(/[.*+?^=!:${}()|[\]\/\\]/g, '\\$&'), 'i');
+    const regex = new RegExp(this.query.replace(/[.*+?^=!:${}()|[\]/\\]/g, '\\$&'), 'i');
     return this.items.filter(x => x.Path.match(regex));
   }
 
