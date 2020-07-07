@@ -8,6 +8,7 @@
         "strict": true,
         "moduleResolution": "node",
         "rootDirs": ["src"],
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "sourceMap": true
     }
 }
