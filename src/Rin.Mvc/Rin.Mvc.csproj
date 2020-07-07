@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <None Remove="EmbeddedResources\main.js" />
-    <None Remove="EmbeddedResources\main.js.map" />
+    <None Remove="EmbeddedResources\main.js.LICENSE.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="EmbeddedResources\main.js" />
-    <EmbeddedResource Include="EmbeddedResources\main.js.map" />
+    <EmbeddedResource Include="EmbeddedResources\main.js.LICENSE.txt" />
   </ItemGroup>
 
   <ItemGroup>
