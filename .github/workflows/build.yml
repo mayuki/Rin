@@ -15,13 +15,13 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 2.2.402
-    - name: Rin.Frontend: build & pack
+    - name: "Rin.Frontend: build & pack"
       working-directory: src/Rin.Frontend
       run: |
         yarn
         yarn run build
         yarn run pack
-    - name: Rin.Mvc.Frontend: build
+    - name: "Rin.Mvc.Frontend: build"
       working-directory: src/Rin.Mvc.Frontend
       run: |
         yarn
@@ -30,7 +30,7 @@ jobs:
       run: |
         mkdir -p src/Rin.Mvc/EmbeddedResources/
         cp -R src/Rin.Mvc.Frontend/dist/static/* src/Rin.Mvc/EmbeddedResources/
-    - name: dotnet
+    - name: "dotnet build & pack"
       run: |
         dotnet restore
         dotnet build -c Release
