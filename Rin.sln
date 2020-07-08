@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rin", "src\Rin\Rin.csproj", "{B9CDC00F-4AED-49D5-B4DC-6520FAF371CB}"
 EndProject
@@ -13,7 +13,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rin.Mvc", "src\Rin.Mvc\Rin.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rin.Log4NetAppender", "src\Rin.Log4NetAppender\Rin.Log4NetAppender.csproj", "{20890D4F-9D03-4663-ACCE-D4404E8A8AF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rin.Storage.Redis", "src\Rin.Storage.Redis\Rin.Storage.Redis.csproj", "{306BC2D2-ACB8-4F60-9D03-6EAAAD6CF8F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rin.Storage.Redis", "src\Rin.Storage.Redis\Rin.Storage.Redis.csproj", "{306BC2D2-ACB8-4F60-9D03-6EAAAD6CF8F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FFF7EB81-6AC3-4509-ACB5-502DECFAE084}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
