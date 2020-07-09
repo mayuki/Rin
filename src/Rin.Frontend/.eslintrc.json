@@ -13,7 +13,14 @@
         {
             "files": ["*.js", "*.ts", "*.tsx"],
             "rules": {
-                "@typescript-eslint/no-inferrable-types": "off"
+                "@typescript-eslint/no-inferrable-types": "off",
+                "@typescript-eslint/no-unused-vars": "off"
+            }
+        },
+        {
+            "files": ["*.tsx"],
+            "rules": {
+                "@typescript-eslint/explicit-module-boundary-types": "off"
             }
         }
     ]

@@ -9,6 +9,7 @@
         "moduleResolution": "node",
         "rootDirs": ["src"],
         "experimentalDecorators": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "allowSyntheticDefaultImports": true
     }
 }
