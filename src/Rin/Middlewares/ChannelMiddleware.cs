@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
 using Rin.Channel;
 using Rin.Core;
 using Rin.Core.Event;
@@ -11,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace Rin.Middlewares
 {
@@ -22,7 +21,7 @@ namespace Rin.Middlewares
 
         private readonly RequestDelegate _next;
 
-        public ChannelMiddleware(RequestDelegate next, IRecordStorage storage, RinChannel rinChannel, BodyDataTransformerSet bodyDataTransformerSet, IApplicationLifetime applicationLifetime)
+        public ChannelMiddleware(RequestDelegate next, IRecordStorage storage, RinChannel rinChannel, BodyDataTransformerSet bodyDataTransformerSet, IHostApplicationLifetime applicationLifetime)
         {
             _next = next;
 

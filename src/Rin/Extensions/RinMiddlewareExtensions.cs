@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -18,13 +19,13 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static void UseRin(this IApplicationBuilder app)
         {
-            var options = app.ApplicationServices.GetService(typeof(RinOptions)) as RinOptions;
+            var options = app.ApplicationServices.GetService<RinOptions>();
             if (options == null)
             {
                 throw new InvalidOperationException("Rin Services are not registered. Please call 'services.AddRin()' in a Startup class");
             }
 
-            var env = app.ApplicationServices.GetService(typeof(IHostingEnvironment)) as IHostingEnvironment;
+            var env = app.ApplicationServices.GetService<IHostEnvironment>();
             if (env.IsProduction() && !options.RequestRecorder.AllowRunningOnProduction)
             {
                 throw new InvalidOperationException("Rin requires non-Production environment to run. If you want to run in Production environment, configure AllowRunningOnProduction option.");
@@ -51,7 +52,7 @@ namespace Microsoft.AspNetCore.Builder
 
         private static void UseRinInspector(this IApplicationBuilder app)
         {
-            var options = app.ApplicationServices.GetService(typeof(RinOptions)) as RinOptions;
+            var options = app.ApplicationServices.GetService<RinOptions>();
 
             app.Map(options.Inspector.MountPath, branch =>
             {
