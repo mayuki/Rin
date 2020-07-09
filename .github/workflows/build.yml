@@ -6,15 +6,17 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      DOTNET_NOLOGO: true
     
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.0.100
+        dotnet-version: '2.2.x'
     - uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 2.2.402
+        dotnet-version: '3.1.x'
     - name: "Rin.Frontend: build & pack"
       working-directory: src/Rin.Frontend
       run: |
