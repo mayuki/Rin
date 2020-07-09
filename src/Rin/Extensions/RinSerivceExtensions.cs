@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class RinSerivceExtensions
+    public static class RinServiceExtensions
     {
         public static void AddRin(this IServiceCollection services, Action<RinOptions> configure = null)
         {
