@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Authors>Mayuki Sawatari</Authors>
     <Description>This package adds support for Redis storage to Rin</Description>
     <Copyright>Mayuki Sawatari</Copyright>
