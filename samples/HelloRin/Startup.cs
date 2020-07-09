@@ -32,7 +32,10 @@ namespace HelloRin
             });
 
 
-            services.AddMvc()
+            services.AddMvc(options =>
+                {
+                    options.EnableEndpointRouting = false;
+                })
                 .AddRinMvcSupport()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
