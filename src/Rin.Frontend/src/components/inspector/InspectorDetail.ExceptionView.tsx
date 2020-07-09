@@ -7,7 +7,7 @@ export interface IInspectorDetailExceptionViewProps {
   record: RequestRecordDetailPayload;
 }
 
-export class InspectorDetailExceptionView extends React.Component<IInspectorDetailExceptionViewProps, {}> {
+export class InspectorDetailExceptionView extends React.Component<IInspectorDetailExceptionViewProps> {
   render() {
     return (
       <div className={styles.inspectorDetail_ExceptionView}>

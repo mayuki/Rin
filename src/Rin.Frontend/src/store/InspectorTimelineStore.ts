@@ -6,10 +6,10 @@ export class InspectorTimelineStore {
   isCalloutVisible = false;
 
   @observable
-  calloutTarget: HTMLElement;
+  calloutTarget!: HTMLElement;
 
   @observable
-  calloutTimelineData: TimelineData | null;
+  calloutTimelineData!: TimelineData | null;
 
   @observable
   isTraceVisibleInTimeline = true;

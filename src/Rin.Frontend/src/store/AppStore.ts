@@ -10,7 +10,7 @@ export interface IAppStoreProps {
 }
 
 export class AppStore {
-  hubClient: IHubClient & IRinCoreHub;
+  hubClient!: IHubClient & IRinCoreHub;
 
   @observable
   viewMode: ViewMode = ViewMode.Inspector;
@@ -26,7 +26,7 @@ export class AppStore {
     PathBase: '/rin'
   };
 
-  endpointUrlBase: string;
+  endpointUrlBase!: string;
 
   inspectorTimelineStore = inspectorTimelineStore;
   inspectorStore = inspectorStore;

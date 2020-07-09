@@ -16,18 +16,18 @@ export type SubRequestPayload = RequestRecordDetailPayload | SubRequestFailurePa
 
 export class RinInViewInspectorStore {
   @observable
-  data: RequestRecordDetailPayload;
+  data?: RequestRecordDetailPayload;
 
   @observable
-  position: 'Bottom' | 'Top';
+  position: 'Bottom' | 'Top' = 'Top';
 
   @observable
   subRequests: SubRequestPayload[] = [];
 
   @observable
-  config: RinInViewInspectorConfig;
+  config!: RinInViewInspectorConfig;
 
-  private apiEndPointBase: string;
+  private apiEndPointBase!: string;
 
   @action.bound
   async ready(config: RinInViewInspectorConfig) {

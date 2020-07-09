@@ -115,7 +115,7 @@ function prettyPrintTimelineDataName(data: TimelineData) {
 }
 
 function renderTimelineTree(timelineScope: TimelineDataScope, depth: number, beginTime: Date): JSX.Element[] {
-  return timelineScope.Children.filter(x => x.EventType === 'TimelineScope').map((x: TimelineDataScope, i: number) => (
+  return timelineScope.Children.filter(x => x.EventType === 'TimelineScope').map(x => x as TimelineDataScope).map((x: TimelineDataScope, i: number) => (
     <Fragment key={`${depth}_${i}`}>
       <tr>
         <td>

@@ -1,43 +1,78 @@
+import * as React from 'react';
+import { Switch, Route, BrowserRouter, useParams } from 'react-router-dom';
+import {
+  Customizer,
+  ICustomizations,
+  FontClassNames,
+  createTheme,
+  Overlay,
+  Spinner,
+  SpinnerSize,
+} from '@fluentui/react';
+import { Helmet } from 'react-helmet';
+import * as styles from './App.css';
+import { inspectorStore } from '../../store/InspectorStore';
+import { appStore } from '../../store/AppStore';
+import { Inspector } from '../inspector/Inspector';
 import * as mobx from 'mobx';
 import { observer } from 'mobx-react';
-import { Fabric, FontClassNames, Overlay, Spinner, SpinnerSize } from 'office-ui-fabric-react';
-import * as React from 'react';
-import { Helmet } from 'react-helmet';
-import { match as Match, Route, RouteComponentProps, Switch } from 'react-router';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { appStore } from '../../store/AppStore';
-import { inspectorStore } from '../../store/InspectorStore';
-import { Inspector } from '../inspector/Inspector';
-import * as styles from './App.css';
+
+export const RinTheme: ICustomizations = {
+  settings: {
+    theme: createTheme({
+      palette: {
+        themePrimary: '#9cc4be',
+        themeLighterAlt: '#fbfdfc',
+        themeLighter: '#eef6f4',
+        themeLight: '#dfedeb',
+        themeTertiary: '#c1dcd8',
+        themeSecondary: '#a8cbc6',
+        themeDarkAlt: '#8db1ab',
+        themeDark: '#779591',
+        themeDarker: '#586e6b',
+        neutralLighterAlt: '#f8f8f8',
+        neutralLighter: '#f4f4f4',
+        neutralLight: '#eaeaea',
+        neutralQuaternaryAlt: '#dadada',
+        neutralQuaternary: '#d0d0d0',
+        neutralTertiaryAlt: '#c8c8c8',
+        neutralTertiary: '#c2c2c2',
+        neutralSecondary: '#858585',
+        neutralPrimaryAlt: '#4b4b4b',
+        neutralPrimary: '#333',
+        neutralDark: '#272727',
+        black: '#1d1d1d',
+        white: '#fff',
+      },
+    }),
+  },
+  scopedSettings: {},
+};
 
 mobx.configure({
   enforceActions: true
 });
 
 @observer
-class App extends React.Component {
-  constructor(props: {}) {
-    super(props);
-
-    appStore.ready();
-  }
-
+export class App extends React.Component {
   public render() {
     return (
       <>
-        <Helmet>{appStore.serverInfo.Host !== '' && <title>Rin: {appStore.serverInfo.Host}</title>}</Helmet>
-        <Fabric>
+        <Customizer {...RinTheme}>
+          <Helmet>
+            <title>Rin</title>
+          </Helmet>
           <div className={styles.applicationFrame}>
             <header>
               <h1 className={FontClassNames.xLarge}>Rin</h1>
             </header>
             <div className={styles.contentArea}>
-              <Router basename={appStore.serverInfo.PathBase}>
+              <BrowserRouter basename={appStore.serverInfo.PathBase}>
                 <Switch>
                   <Route path="/" exact={true} component={InspectorWithRouteMatch} />
                   <Route path="/inspect/:id?/:section?" component={InspectorWithRouteMatch} />
                 </Switch>
-              </Router>
+              </BrowserRouter>
               {!appStore.connected && (
                 <>
                   <Overlay className={styles.connectingOverlay}>
@@ -47,30 +82,17 @@ class App extends React.Component {
               )}
             </div>
           </div>
-        </Fabric>
+        </Customizer>
       </>
     );
   }
 }
 
-function syncWithRoute<P>(WrappedComponent: React.ComponentType<P>, onMatched: ((match: Match<any>) => void)) {
-  return class extends React.Component<RouteComponentProps<any> & P> {
-    componentDidMount() {
-      onMatched(this.props.match);
-    }
-    componentDidUpdate() {
-      onMatched(this.props.match);
-    }
-    render() {
-      return <WrappedComponent {...this.props} />;
-    }
-  };
-}
-
-const InspectorWithRouteMatch = syncWithRoute(Inspector, match => {
-  if (match.params.id != null) {
-    inspectorStore.selectDetail(match.params.id, match.params.section, true);
+function InspectorWithRouteMatch() {
+  const { id, section } = useParams();
+  if (id != null) {
+    inspectorStore.selectDetail(id, section);
   }
-});
 
-export default App;
+  return <Inspector />;
+}
