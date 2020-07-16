@@ -41,15 +41,17 @@ export function TraceTextView(props: { body: string; enableWordWrap: boolean }) 
   useEffect(() => {
     const listener = () => {
       editor?.layout({ width: 0, height: 0 });
+      editor?.layout();
     };
 
     window.addEventListener('resize', listener);
 
     // force re-layout
     editor?.layout({ width: 0, height: 0 });
+    editor?.layout();
 
     return () => window.removeEventListener('resize', listener);
-  }, [] /* once */);
+  }, [editor]);
 
   const monacoOptions = {
     readOnly: true,
