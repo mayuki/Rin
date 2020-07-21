@@ -1,15 +1,16 @@
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { inspectorStore } from '../../store/InspectorStore';
 import * as styles from './Inspector.css';
 import { InspectorEventsList } from './Inspector.InspectorEventsList';
 import { InspectorDetail } from './InspectorDetail';
 
 import SplitterLayout from 'react-splitter-layout';
 import { RequestEventPayload } from '../../api/IRinCoreHub';
+import { useInspectorStore } from '../../store/InspectorStore';
 
 // Container Component
 export const Inspector = observer(function Inspector() {
+  const inspectorStore = useInspectorStore();
   const onActiveItemChanged = (item: RequestEventPayload) => {
     inspectorStore.selectDetail(item.Id);
   };

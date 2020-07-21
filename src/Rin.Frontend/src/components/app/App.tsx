@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import { Switch, Route, BrowserRouter, useParams } from 'react-router-dom';
 import {
   Customizer,
@@ -11,11 +11,13 @@ import {
 } from '@fluentui/react';
 import { Helmet } from 'react-helmet';
 import * as styles from './App.css';
-import { inspectorStore } from '../../store/InspectorStore';
-import { appStore } from '../../store/AppStore';
 import { Inspector } from '../inspector/Inspector';
 import * as mobx from 'mobx';
 import { observer } from 'mobx-react';
+import { useAppStore } from '../../store/AppStore';
+import { useInspectorStore } from '../../store/InspectorStore';
+import { useInspectorTimelineStore } from '../../store/InspectorTimelineStore';
+import { createBrowserHistory } from 'history';
 
 export const RinTheme: ICustomizations = {
   settings: {
@@ -50,10 +52,20 @@ export const RinTheme: ICustomizations = {
 };
 
 mobx.configure({
-  enforceActions: true
+  enforceActions: 'observed',
 });
 
 export const App = observer(function App() {
+  const appStore = useAppStore();
+  const inspectorStore = useInspectorStore();
+  const inspectorTimelineStore = useInspectorTimelineStore();
+
+  useEffect(() => {
+    appStore.ready();
+    inspectorStore.ready(appStore.hubClient, createBrowserHistory({ basename: appStore.serverInfo.PathBase }));
+    inspectorTimelineStore.ready();
+  }, []);
+
   return (
     <>
       <Customizer {...RinTheme}>
@@ -65,13 +77,15 @@ export const App = observer(function App() {
             <h1 className={FontClassNames.xLarge}>Rin</h1>
           </header>
           <div className={styles.contentArea}>
-            <BrowserRouter basename={appStore.serverInfo.PathBase}>
-              <Switch>
-                <Route path="/" exact={true} component={InspectorWithRouteMatch} />
-                <Route path="/inspect/:id?/:section?" component={InspectorWithRouteMatch} />
-              </Switch>
-            </BrowserRouter>
-            {!appStore.connected && (
+            {appStore.isReady && appStore.connected && (
+              <BrowserRouter basename={appStore.serverInfo.PathBase}>
+                <Switch>
+                  <Route path="/" exact={true} component={InspectorWithRouteMatch} />
+                  <Route path="/inspect/:id?/:section?" component={InspectorWithRouteMatch} />
+                </Switch>
+              </BrowserRouter>
+            )}
+            {(!appStore.connected || !appStore.isReady) && (
               <>
                 <Overlay className={styles.connectingOverlay}>
                   <Spinner size={SpinnerSize.large} label="Connecting..." ariaLive="assertive" />
@@ -85,11 +99,13 @@ export const App = observer(function App() {
   );
 });
 
-function InspectorWithRouteMatch() {
+const InspectorWithRouteMatch = observer(function InspectorWithRouteMatch() {
+  const inspectorStore = useInspectorStore();
   const { id, section } = useParams();
+
   if (id != null) {
     inspectorStore.selectDetail(id, section);
   }
 
   return <Inspector />;
-}
+});

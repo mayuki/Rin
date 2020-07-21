@@ -3,9 +3,8 @@ import { Icon, Stack, StackItem } from 'office-ui-fabric-react';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import React from 'react';
 import { createUrl } from '../../domain/RequestRecord';
-import { appStore } from '../../store/AppStore';
-import { DetailViewType, inspectorStore } from '../../store/InspectorStore';
-import { inspectorTimelineStore } from '../../store/InspectorTimelineStore';
+import { DetailViewType, useInspectorStore } from '../../store/InspectorStore';
+import { useInspectorTimelineStore } from '../../store/InspectorTimelineStore';
 import { InspectorDetailCommandBar } from './InspectorDetail.CommandBar';
 import * as styles from './InspectorDetail.css';
 import { InspectorDetailExceptionView } from './InspectorDetail.ExceptionView';
@@ -13,9 +12,14 @@ import { InspectorDetailRequestResponseView } from './InspectorDetail.RequestRes
 import { InspectorDetailTimelineView } from './InspectorDetail.Timeline';
 import { InspectorDetailTraceView } from './InspectorDetail.TraceView';
 import { RequestRecordDetailPayload, BodyDataPayload } from '../../api/IRinCoreHub';
+import { useAppStore } from '../../store/AppStore';
 
 // Container Component
 export const InspectorDetail = observer(function InspectorDetail() {
+  const inspectorStore = useInspectorStore();
+  const appStore = useAppStore();
+  const inspectorTimelineStore = useInspectorTimelineStore();
+
   const selectedRecord = inspectorStore.currentRecordDetail;
 
   const whenCompleted = (c: () => void) => (selectedRecord != null && selectedRecord.IsCompleted ? c() : <></>);
@@ -80,8 +84,22 @@ export const InspectorDetail = observer(function InspectorDetail() {
           {selectedRecord != null && (
             <>
               <div className={styles.inspectorDetail_DetailView}>
-                {inspectorStore.currentDetailView === DetailViewType.Request && <RequestView detail={selectedRecord} body={inspectorStore.requestBody} paneSize={inspectorStore.requestResponsePaneSize} onPaneSizeChange={inspectorStore.onUpdateRequestResponsePaneSize} />}
-                {inspectorStore.currentDetailView === DetailViewType.Response && <ResponseView detail={selectedRecord} body={inspectorStore.responseBody} paneSize={inspectorStore.requestResponsePaneSize} onPaneSizeChange={inspectorStore.onUpdateRequestResponsePaneSize} />}
+                {inspectorStore.currentDetailView === DetailViewType.Request && (
+                  <RequestView
+                    detail={selectedRecord}
+                    body={inspectorStore.requestBody}
+                    paneSize={inspectorStore.requestResponsePaneSize}
+                    onPaneSizeChange={inspectorStore.onUpdateRequestResponsePaneSize}
+                  />
+                )}
+                {inspectorStore.currentDetailView === DetailViewType.Response && (
+                  <ResponseView
+                    detail={selectedRecord}
+                    body={inspectorStore.responseBody}
+                    paneSize={inspectorStore.requestResponsePaneSize}
+                    onPaneSizeChange={inspectorStore.onUpdateRequestResponsePaneSize}
+                  />
+                )}
                 {inspectorStore.currentDetailView === DetailViewType.Timeline && (
                   <InspectorDetailTimelineView
                     data={selectedRecord.Timeline}
@@ -115,7 +133,12 @@ export const InspectorDetail = observer(function InspectorDetail() {
   );
 });
 
-function ResponseView(props: {detail: RequestRecordDetailPayload, body: BodyDataPayload | null, paneSize: number | null, onPaneSizeChange: (newSize: number) => void }) {
+function ResponseView(props: {
+  detail: RequestRecordDetailPayload;
+  body: BodyDataPayload | null;
+  paneSize: number | null;
+  onPaneSizeChange: (newSize: number) => void;
+}) {
   const selectedRecord = props.detail;
   const headers = selectedRecord.ResponseHeaders;
 
@@ -131,7 +154,12 @@ function ResponseView(props: {detail: RequestRecordDetailPayload, body: BodyData
   );
 }
 
-function RequestView(props: {detail: RequestRecordDetailPayload, body: BodyDataPayload | null, paneSize: number | null, onPaneSizeChange: (newSize: number) => void }) {
+function RequestView(props: {
+  detail: RequestRecordDetailPayload;
+  body: BodyDataPayload | null;
+  paneSize: number | null;
+  onPaneSizeChange: (newSize: number) => void;
+}) {
   const selectedRecord = props.detail;
   const headers = { ...selectedRecord.RequestHeaders };
   const url = createUrl(selectedRecord);
@@ -142,7 +170,7 @@ function RequestView(props: {detail: RequestRecordDetailPayload, body: BodyDataP
       generals={[
         { key: 'Method', value: selectedRecord.Method },
         { key: 'Url', value: url },
-        { key: 'Remote Address', value: selectedRecord.RemoteIpAddress }
+        { key: 'Remote Address', value: selectedRecord.RemoteIpAddress },
       ]}
       headers={headers}
       body={props.body}

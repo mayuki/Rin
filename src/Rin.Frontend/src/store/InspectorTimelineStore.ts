@@ -1,5 +1,6 @@
 import { action, observable } from 'mobx';
 import { TimelineData } from '../api/IRinCoreHub';
+import { createContext, useContext } from 'react';
 
 export class InspectorTimelineStore {
   @observable
@@ -40,4 +41,5 @@ export class InspectorTimelineStore {
   }
 }
 
-export const inspectorTimelineStore = new InspectorTimelineStore();
+const inspectorTimelineStoreContext = createContext(new InspectorTimelineStore());
+export const useInspectorTimelineStore = () => useContext(inspectorTimelineStoreContext);
