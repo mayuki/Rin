@@ -9,37 +9,33 @@ import SplitterLayout from 'react-splitter-layout';
 import { RequestEventPayload } from '../../api/IRinCoreHub';
 
 // Container Component
-@observer
-export class Inspector extends React.Component {
-  public render() {
-    return (
-      <>
-        <div className={styles.inspectorFrame}>
-          <SplitterLayout
-            secondaryMinSize={300}
-            secondaryInitialSize={inspectorStore.leftPaneSize}
-            primaryIndex={1}
-            onSecondaryPaneSizeChange={inspectorStore.onUpdateLeftPaneSize}
-          >
-            <div className={styles.leftPane}>
-              <InspectorEventsList
-                filteredItems={inspectorStore.filteredItems}
-                onActiveItemChanged={this.onActiveItemChanged}
-                onFilterChange={inspectorStore.onFilterChange}
-                query={inspectorStore.query}
-                selectedId={inspectorStore.selectedId || undefined}
-              />
-            </div>
-            <div className={styles.rightPane}>
-              <InspectorDetail />
-            </div>
-          </SplitterLayout>
-        </div>
-      </>
-    );
-  }
-
-  private onActiveItemChanged = (item: RequestEventPayload) => {
+export const Inspector = observer(function Inspector() {
+  const onActiveItemChanged = (item: RequestEventPayload) => {
     inspectorStore.selectDetail(item.Id);
   };
-}
+  return (
+    <>
+      <div className={styles.inspectorFrame}>
+        <SplitterLayout
+          secondaryMinSize={300}
+          secondaryInitialSize={inspectorStore.leftPaneSize}
+          primaryIndex={1}
+          onSecondaryPaneSizeChange={inspectorStore.onUpdateLeftPaneSize}
+        >
+          <div className={styles.leftPane}>
+            <InspectorEventsList
+              filteredItems={inspectorStore.filteredItems}
+              onActiveItemChanged={onActiveItemChanged}
+              onFilterChange={inspectorStore.onFilterChange}
+              query={inspectorStore.query}
+              selectedId={inspectorStore.selectedId || undefined}
+            />
+          </div>
+          <div className={styles.rightPane}>
+            <InspectorDetail />
+          </div>
+        </SplitterLayout>
+      </div>
+    </>
+  );
+});

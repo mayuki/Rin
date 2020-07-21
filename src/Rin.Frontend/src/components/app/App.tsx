@@ -53,40 +53,37 @@ mobx.configure({
   enforceActions: true
 });
 
-@observer
-export class App extends React.Component {
-  public render() {
-    return (
-      <>
-        <Customizer {...RinTheme}>
-          <Helmet>
-            <title>Rin</title>
-          </Helmet>
-          <div className={styles.applicationFrame}>
-            <header>
-              <h1 className={FontClassNames.xLarge}>Rin</h1>
-            </header>
-            <div className={styles.contentArea}>
-              <BrowserRouter basename={appStore.serverInfo.PathBase}>
-                <Switch>
-                  <Route path="/" exact={true} component={InspectorWithRouteMatch} />
-                  <Route path="/inspect/:id?/:section?" component={InspectorWithRouteMatch} />
-                </Switch>
-              </BrowserRouter>
-              {!appStore.connected && (
-                <>
-                  <Overlay className={styles.connectingOverlay}>
-                    <Spinner size={SpinnerSize.large} label="Connecting..." ariaLive="assertive" />
-                  </Overlay>
-                </>
-              )}
-            </div>
+export const App = observer(function App() {
+  return (
+    <>
+      <Customizer {...RinTheme}>
+        <Helmet>
+          <title>Rin</title>
+        </Helmet>
+        <div className={styles.applicationFrame}>
+          <header>
+            <h1 className={FontClassNames.xLarge}>Rin</h1>
+          </header>
+          <div className={styles.contentArea}>
+            <BrowserRouter basename={appStore.serverInfo.PathBase}>
+              <Switch>
+                <Route path="/" exact={true} component={InspectorWithRouteMatch} />
+                <Route path="/inspect/:id?/:section?" component={InspectorWithRouteMatch} />
+              </Switch>
+            </BrowserRouter>
+            {!appStore.connected && (
+              <>
+                <Overlay className={styles.connectingOverlay}>
+                  <Spinner size={SpinnerSize.large} label="Connecting..." ariaLive="assertive" />
+                </Overlay>
+              </>
+            )}
           </div>
-        </Customizer>
-      </>
-    );
-  }
-}
+        </div>
+      </Customizer>
+    </>
+  );
+});
 
 function InspectorWithRouteMatch() {
   const { id, section } = useParams();
