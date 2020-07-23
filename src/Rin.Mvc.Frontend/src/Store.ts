@@ -1,5 +1,6 @@
 import { action, observable, runInAction } from 'mobx';
 import { RequestRecordDetailPayload } from './api/IRinCoreHub';
+import { createContext, useContext } from 'react';
 
 export interface RinInViewInspectorConfig {
   Position?: 'Bottom' | 'Top';
@@ -27,6 +28,9 @@ export class RinInViewInspectorStore {
   @observable
   config!: RinInViewInspectorConfig;
 
+  @observable
+  isReady = false;
+
   private apiEndPointBase!: string;
 
   @action.bound
@@ -37,7 +41,10 @@ export class RinInViewInspectorStore {
 
     const detail = await this.getDetailByIdAsync(config.RequestId);
 
-    runInAction(() => (this.data = detail));
+    runInAction(() => {
+      this.data = detail;
+      this.isReady = true;
+    });
   }
 
   @action.bound
@@ -55,7 +62,7 @@ export class RinInViewInspectorStore {
   }
 
   private async getDetailByIdAsync(id: string): Promise<RequestRecordDetailPayload> {
-    return fetch(`${this.apiEndPointBase}/GetDetailById?id=${id}`).then(x => x.json());
+    return fetch(`${this.apiEndPointBase}/GetDetailById?id=${id}`).then((x) => x.json());
   }
 }
 
@@ -76,3 +83,5 @@ function getApiEndPointBase(config: RinInViewInspectorConfig) {
 }
 
 export const rinInViewInspectorStore = new RinInViewInspectorStore();
+const rinInViewInspectorStoreContext = createContext(rinInViewInspectorStore);
+export const useRinInViewInspectorStore = () => useContext(rinInViewInspectorStoreContext);
