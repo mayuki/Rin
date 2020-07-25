@@ -14,6 +14,7 @@ namespace Rin.Extensions
             var captureFeature = new CaptureHttpResponseBodyFeature(originalResponseBodyFeature);
             context.Features.Set<IHttpResponseBodyFeature>(captureFeature);
 
+            context.Response.Body = captureFeature.Stream;
             context.Features.Get<IRinRequestRecordingFeature>().ResponseDataStream = captureFeature.CaptureStream;
         }
     }
