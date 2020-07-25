@@ -139,6 +139,9 @@
 .timelineCalloutContent {
   margin: 0.83em 12px;
 }
+.timelineCalloutContent h2 {
+  font-weight: 600;
+}
 .timelineCalloutContent_data {
   max-width: 70vw;
   white-space: pre-wrap;

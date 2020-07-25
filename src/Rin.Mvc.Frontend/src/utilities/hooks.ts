@@ -3,8 +3,10 @@ import { rinInViewInspectorStore } from '../Store';
 // tslint:disable:only-arrow-functions
 function installHook_fetch() {
   const fetchOriginal = window.fetch;
-  window.fetch = function(...args) {
-    return (fetchOriginal.apply(window, args) as Promise<Response>).then(x => {
+  window.fetch = function (...args) {
+    return (fetchOriginal.apply(window, args) as Promise<Response>).then((x) => {
+      if (new URL(x.url).origin != location.origin) return x;
+
       const requestId = x.headers.get('X-Rin-Request-Id');
       if (requestId != null && requestId !== '') {
         // WORKAROUND: The request on server-side may not be finished yet while "loadend" event on client-side.
@@ -19,8 +21,10 @@ function installHook_fetch() {
 
 function installHook_XHR() {
   const xhrSend = XMLHttpRequest.prototype.send;
-  XMLHttpRequest.prototype.send = function(...args) {
+  XMLHttpRequest.prototype.send = function (...args) {
     this.addEventListener('loadend', () => {
+      if (new URL(this.responseURL).origin != location.origin) return;
+
       const requestId = this.getResponseHeader('X-Rin-Request-Id');
       if (requestId != null && requestId !== '') {
         // WORKAROUND: The request on server-side may not be finished yet while "loadend" event on client-side.

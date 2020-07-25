@@ -8,6 +8,7 @@ import {
   createCurlFromDetail
 } from '../../domain/RequestRecord';
 import { copyTextToClipboard } from '../../utilities';
+import { IContextualMenuItem } from '@fluentui/react';
 
 export interface InspectorDetailCommandBarProps {
   endpointUrlBase: string;
@@ -15,23 +16,20 @@ export interface InspectorDetailCommandBarProps {
   currentRecordDetail: RequestRecordDetailPayload | null;
 }
 
-export class InspectorDetailCommandBar extends React.Component<InspectorDetailCommandBarProps> {
-  private readonly commandBarItems: ICommandBarItemProps[] = [
+export function InspectorDetailCommandBar(props: InspectorDetailCommandBarProps) {
+  const commandBarItems: ICommandBarItemProps[] = [
     // { key: 'Replay', text: 'Replay', iconProps: { iconName: 'SendMirrored' } }
   ];
 
-  render() {
-    return <CommandBar items={this.commandBarItems} farItems={this.getCommandBarFarItems()} />;
-  }
 
-  private getCommandBarFarItems(): ICommandBarItemProps[] {
-    const record = this.props.currentRecordDetail;
+  function getCommandBarFarItems(): ICommandBarItemProps[] {
+    const record = props.currentRecordDetail;
     if (record === null || record === undefined) {
       return [];
     }
 
     const disableRequestDownload =
-      !this.props.requestBody || (this.props.requestBody.Body != null && this.props.requestBody.Body.length === 0);
+      !props.requestBody || (props.requestBody.Body != null && props.requestBody.Body.length === 0);
 
     return [
       {
@@ -39,7 +37,7 @@ export class InspectorDetailCommandBar extends React.Component<InspectorDetailCo
         text: 'Export/Save',
         iconProps: { iconName: 'Download' },
         subMenuProps: {
-          onItemClick: (ev, item) => this.onContextualMenuItemClicked(ev, item),
+          onItemClick: onContextualMenuItemClicked,
           items: [
             {
               key: 'section1',
@@ -74,42 +72,52 @@ export class InspectorDetailCommandBar extends React.Component<InspectorDetailCo
     ];
   }
 
-  private onContextualMenuItemClicked = (ev: any, item: any) => {
-    const selectedRecord = this.props.currentRecordDetail!;
+  function onContextualMenuItemClicked(ev?: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>, item?: IContextualMenuItem) {
+    const selectedRecord = props.currentRecordDetail;
+    if (selectedRecord == null || item == null) return;
+
     switch (item.key) {
       case 'SaveResponseBody':
-        window.open(`${this.props.endpointUrlBase}/download/response?id=${selectedRecord.Id}`);
+        window.open(`${props.endpointUrlBase}/download/response?id=${selectedRecord.Id}`);
         break;
       case 'SaveRequestBody':
-        window.open(`${this.props.endpointUrlBase}/download/request?id=${selectedRecord.Id}`);
+        window.open(`${props.endpointUrlBase}/download/request?id=${selectedRecord.Id}`);
         break;
       case 'SaveRequestAsCSharp':
-        this.saveRequestAsCSharp();
+        saveRequestAsCSharp();
         break;
       case 'CopyAsCSharp':
-        this.copyAsCSharp();
+        copyAsCSharp();
         break;
       case 'CopyAsCurl':
-        this.copyAsCurl();
+        copyAsCurl();
         break;
     }
   };
 
-  private saveRequestAsCSharp() {
-    const selectedRecord = this.props.currentRecordDetail!;
-    const linqFileContent = createCSharpLinqPadFileFromDetail(selectedRecord, this.props.requestBody);
+  function saveRequestAsCSharp() {
+    const selectedRecord = props.currentRecordDetail;
+    if (selectedRecord == null) return;
+
+    const linqFileContent = createCSharpLinqPadFileFromDetail(selectedRecord, props.requestBody);
     saveAs(new File([linqFileContent], `${selectedRecord.Id}.linq`, { type: 'application/octet-stream' }));
   }
 
-  private copyAsCSharp() {
-    const selectedRecord = this.props.currentRecordDetail!;
-    const code = createCSharpCodeFromDetail(selectedRecord, this.props.requestBody, false);
+  function copyAsCSharp() {
+    const selectedRecord = props.currentRecordDetail;
+    if (selectedRecord == null) return;
+
+    const code = createCSharpCodeFromDetail(selectedRecord, props.requestBody, false);
     copyTextToClipboard(code);
   }
 
-  private copyAsCurl() {
-    const selectedRecord = this.props.currentRecordDetail!;
-    const code = createCurlFromDetail(selectedRecord, this.props.requestBody);
+  function copyAsCurl() {
+    const selectedRecord = props.currentRecordDetail;
+    if (selectedRecord == null) return;
+
+    const code = createCurlFromDetail(selectedRecord, props.requestBody);
     copyTextToClipboard(code);
   }
+
+  return <CommandBar items={commandBarItems} farItems={getCommandBarFarItems()} />;
 }

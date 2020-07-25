@@ -2,6 +2,7 @@ import { History } from 'history';
 import { action, computed, observable, runInAction } from 'mobx';
 import { IHubClient } from '../api/hubClient';
 import { BodyDataPayload, IRinCoreHub, RequestEventPayload, RequestRecordDetailPayload } from '../api/IRinCoreHub';
+import { useContext, createContext } from 'react';
 
 export class InspectorStore {
   @observable
@@ -37,7 +38,7 @@ export class InspectorStore {
 
   @computed
   get selectedItem() {
-    return this.items.find(x => x.Id === this.selectedId);
+    return this.items.find((x) => x.Id === this.selectedId);
   }
 
   @computed
@@ -47,7 +48,7 @@ export class InspectorStore {
     }
 
     const regex = new RegExp(this.query.replace(/[.*+?^=!:${}()|[\]/\\]/g, '\\$&'), 'i');
-    return this.items.filter(x => x.Path.match(regex));
+    return this.items.filter((x) => x.Path.match(regex));
   }
 
   @action.bound
@@ -152,11 +153,11 @@ export class InspectorStore {
       });
     });
 
-    this.hubClient.on('RequestBegin', args => {
+    this.hubClient.on('RequestBegin', (args) => {
       this.requestEventQueue.push({ event: 'RequestBegin', args });
       this.triggerRequestEventQueue();
     });
-    this.hubClient.on('RequestEnd', args => {
+    this.hubClient.on('RequestEnd', (args) => {
       this.requestEventQueue.push({ event: 'RequestEnd', args });
       this.triggerRequestEventQueue();
     });
@@ -176,12 +177,12 @@ export class InspectorStore {
 
     this.triggerRequestEventQueueTimerId = window.setTimeout(() => {
       const items = this.items.concat([]);
-      this.requestEventQueue.forEach(x => {
+      this.requestEventQueue.forEach((x) => {
         const item = x.args[0];
         if (x.event === 'RequestBegin') {
           items.unshift(item);
         } else if (x.event === 'RequestEnd') {
-          const itemIndex = items.findIndex(y => y.Id === item.Id);
+          const itemIndex = items.findIndex((y) => y.Id === item.Id);
           items[itemIndex] = item;
 
           if (item.Id === this.selectedId) {
@@ -200,7 +201,8 @@ export enum DetailViewType {
   Response = 'Response',
   Timeline = 'Timeline',
   Trace = 'Trace',
-  Exception = 'Exception'
+  Exception = 'Exception',
 }
 
-export const inspectorStore = new InspectorStore();
+const inspectorStoreContext = createContext(new InspectorStore());
+export const useInspectorStore = () => useContext(inspectorStoreContext);
