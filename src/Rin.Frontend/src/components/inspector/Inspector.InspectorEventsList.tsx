@@ -1,5 +1,5 @@
 import { CheckboxVisibility, DetailsList, IColumn, Icon, SearchBox } from 'office-ui-fabric-react';
-import { Selection, SelectionMode } from 'office-ui-fabric-react/lib/Selection';
+import { Selection, SelectionMode, IObjectWithKey } from 'office-ui-fabric-react/lib/Selection';
 import React, { useEffect } from 'react';
 import { RequestEventPayload } from '../../api/IRinCoreHub';
 import * as styles from './Inspector.InspectorEventsList.css';
@@ -27,16 +27,16 @@ export function InspectorEventsList(props: InspectorEventsListProps) {
               item.Path.match(/\.(jpg|png|svg)/)
                 ? 'PictureCenter'
                 : item.Path.match(/\.(js|vbs)/)
-                  ? 'Script'
-                  : item.Path.match(/\.(css)/)
-                    ? 'FileCSS'
-                    : item.Path.match(/\.html?/)
-                      ? 'FileHTML'
-                      : 'TextDocument'
+                ? 'Script'
+                : item.Path.match(/\.(css)/)
+                ? 'FileCSS'
+                : item.Path.match(/\.html?/)
+                ? 'FileHTML'
+                : 'TextDocument'
             }
           />
         );
-      }
+      },
     },
     {
       key: 'Path',
@@ -54,7 +54,7 @@ export function InspectorEventsList(props: InspectorEventsListProps) {
             {new Date(item.RequestReceivedAt).toLocaleString()}
           </div>
         </div>
-      )
+      ),
     },
     {
       key: 'ResponseStatusCode',
@@ -72,17 +72,17 @@ export function InspectorEventsList(props: InspectorEventsListProps) {
           >
             {item.ResponseStatusCode}
           </span>
-        )
-    }
+        ),
+    },
   ];
 
   const selection = new Selection({
-    getKey: (item: {Id: string}, index?: number) => item.Id
+    getKey: (item: IObjectWithKey, index?: number) => (item as { Id: string }).Id,
   });
 
   if (props.selectedId != null) {
     const selections = selection.getSelection();
-    if (selections.length > 0 && (selections[0] as any).Id === props.selectedId) {
+    if (selections.length > 0 && (selections[0] as { Id: string }).Id === props.selectedId) {
       return <></>;
     }
     selection.setAllSelected(false);
@@ -91,12 +91,7 @@ export function InspectorEventsList(props: InspectorEventsListProps) {
 
   return (
     <>
-      <SearchBox
-        placeholder="Filter"
-        underlined={true}
-        onChange={props.onFilterChange}
-        value={props.query}
-      />
+      <SearchBox placeholder="Filter" underlined={true} onChange={props.onFilterChange} value={props.query} />
       <DetailsList
         className={styles.inspectorEventsList}
         compact={true}
