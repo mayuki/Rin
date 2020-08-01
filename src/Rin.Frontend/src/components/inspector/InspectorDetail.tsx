@@ -59,14 +59,12 @@ export const InspectorDetail = observer(function InspectorDetail() {
                         />
                       ))}
                       <PivotItem itemKey={DetailViewType.Trace} headerText="Trace" itemIcon="TimeEntry" />
-                      {selectedRecord.Exception ? (
+                      {selectedRecord.Exception && (
                         <PivotItem
                           itemKey={DetailViewType.Exception}
                           headerText="Exception"
                           itemIcon="StatusErrorFull"
                         />
-                      ) : (
-                        <></>
                       )}
                     </Pivot>
                   </div>
