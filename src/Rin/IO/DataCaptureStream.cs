@@ -18,6 +18,8 @@ namespace Rin.IO
             _capturedData = capturedDataStream ?? new MemoryStream();
         }
 
+        public Stream CaptureStream => _capturedData;
+
         public byte[] GetCapturedData() => _capturedData.ToArray();
 
         public override bool CanRead => _innerStream.CanRead;

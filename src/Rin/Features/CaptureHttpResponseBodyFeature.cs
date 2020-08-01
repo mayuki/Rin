@@ -36,6 +36,7 @@ namespace Rin.Features
 
         public Task SendFileAsync(string path, long offset, long? count, CancellationToken cancellationToken = default)
         {
+            _captureStream.CaptureStream.Write(File.ReadAllBytes(path));
             return _responseBodyFeature.SendFileAsync(path, offset, count, cancellationToken);
         }
 
