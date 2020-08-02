@@ -14,6 +14,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace Rin.Middlewares
 {
@@ -144,6 +145,17 @@ namespace Rin.Middlewares
 
             record.ResponseStatusCode = response.StatusCode;
             record.ResponseHeaders = response.Headers.ToDictionary(k => k.Key, v => v.Value);
+
+            if (request.SupportsTrailers())
+            {
+                var trailers = context.Features.Get<IHttpResponseTrailersFeature>();
+                record.RequestTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
+            }
+            if (response.SupportsTrailers())
+            {
+                var trailers = context.Features.Get<IHttpResponseTrailersFeature>();
+                record.ResponseTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
+            }
 
             if (options.RequestRecorder.EnableBodyCapturing)
             {

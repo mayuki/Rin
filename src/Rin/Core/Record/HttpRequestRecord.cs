@@ -48,7 +48,9 @@ namespace Rin.Core.Record
     public class HttpRequestRecord : HttpRequestRecordInfo
     {
         public IDictionary<string, StringValues> RequestHeaders { get; set; }
+        public IDictionary<string, StringValues>? RequestTrailers { get; set; }
         public IDictionary<string, StringValues> ResponseHeaders { get; set; }
+        public IDictionary<string, StringValues>? ResponseTrailers { get; set; }
 
         public ExceptionData Exception { get; set; }
         public ITimelineScope Timeline { get; set; }

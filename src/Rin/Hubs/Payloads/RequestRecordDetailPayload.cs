@@ -24,7 +24,9 @@ namespace Rin.Hubs.Payloads
         public string RemoteIpAddress { get; private set; }
 
         public IDictionary<string, StringValues> RequestHeaders { get; private set; }
+        public IDictionary<string, StringValues>? RequestTrailers { get; private set; }
         public IDictionary<string, StringValues> ResponseHeaders { get; private set; }
+        public IDictionary<string, StringValues>? ResponseTrailers { get; private set; }
         public DateTimeOffset RequestReceivedAt { get; private set; }
         public DateTimeOffset TransferringCompletedAt { get; private set; }
 
@@ -46,7 +48,9 @@ namespace Rin.Hubs.Payloads
 
             RemoteIpAddress = record.RemoteIpAddress.ToString();
             RequestHeaders = record.RequestHeaders;
+            RequestTrailers = record.RequestTrailers;
             ResponseHeaders = record.ResponseHeaders;
+            ResponseTrailers = record.ResponseTrailers;
             RequestReceivedAt = record.RequestReceivedAt;
             TransferringCompletedAt = record.TransferringCompletedAt;
 

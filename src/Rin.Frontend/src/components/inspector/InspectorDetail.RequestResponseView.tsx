@@ -21,6 +21,7 @@ export interface IInspectorRequestResponseViewProps {
   record: RequestRecordDetailPayload;
   generals: { key: string; value: string }[];
   headers: { [key: string]: string[] };
+  trailers: { [key: string]: string[] } | null;
   body: BodyDataPayload | null;
   paneSize: number | null;
   onPaneSizeChange: (newSize: number) => void;
@@ -62,6 +63,7 @@ export function InspectorDetailRequestResponseView(props: IInspectorRequestRespo
     }
   }, [contentType]);
 
+  const trailers = props.trailers;
   return (
     <div className={styles.inspectorRequestResponseView}>
       <SplitterLayout
@@ -91,6 +93,18 @@ export function InspectorDetailRequestResponseView(props: IInspectorRequestRespo
               }))}
             />
           </div>
+          {trailers != null && Object.keys(trailers).length > 0 && (
+            <div className={styles.inspectorRequestResponseView_Headers}>
+              <KeyValueDetailList
+                keyName="Trailer"
+                valueName="Value"
+                items={Object.keys(trailers).map((x) => ({
+                  key: x,
+                  value: trailers[x].join('\n'),
+                }))}
+              />
+            </div>
+          )}
         </div>
         <div className={styles.inspectorRequestResponseView_Body}>
           {hasBody && contentType && canPreview(contentType) && (

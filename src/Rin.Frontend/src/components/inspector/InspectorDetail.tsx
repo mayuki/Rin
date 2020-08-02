@@ -139,12 +139,14 @@ function ResponseView(props: {
 }) {
   const selectedRecord = props.detail;
   const headers = selectedRecord.ResponseHeaders;
+  const trailers = selectedRecord.ResponseTrailers;
 
   return (
     <InspectorDetailRequestResponseView
       record={selectedRecord}
       generals={[{ key: 'StatusCode', value: selectedRecord.ResponseStatusCode + '' }]}
       headers={headers}
+      trailers={trailers}
       body={props.body}
       paneSize={props.paneSize}
       onPaneSizeChange={props.onPaneSizeChange}
@@ -160,6 +162,7 @@ function RequestView(props: {
 }) {
   const selectedRecord = props.detail;
   const headers = { ...selectedRecord.RequestHeaders };
+  const trailers = selectedRecord.RequestTrailers;
   const url = createUrl(selectedRecord);
 
   return (
@@ -171,6 +174,7 @@ function RequestView(props: {
         { key: 'Remote Address', value: selectedRecord.RemoteIpAddress },
       ]}
       headers={headers}
+      trailers={trailers}
       body={props.body}
       paneSize={props.paneSize}
       onPaneSizeChange={props.onPaneSizeChange}
