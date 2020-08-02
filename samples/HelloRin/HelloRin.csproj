@@ -7,7 +7,8 @@
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="MessagePack" Version="1.7.3.4" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.27.0" />
+
   </ItemGroup>
 
   <ItemGroup>
@@ -15,6 +16,10 @@
     <ProjectReference Include="..\..\src\Rin.Mvc\Rin.Mvc.csproj" />
     <ProjectReference Include="..\..\src\Rin.Storage.Redis\Rin.Storage.Redis.csproj" />
     <ProjectReference Include="..\..\src\Rin\Rin.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\greet.proto" GrpcServices="Both" />
   </ItemGroup>
 
 </Project>

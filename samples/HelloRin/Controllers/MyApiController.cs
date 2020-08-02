@@ -28,6 +28,11 @@ namespace HelloRin.Controllers
             return Content("Index");
         }
 
+        public async Task<IActionResult> InvokeGrpc([FromServices] Greeter.GreeterClient client)
+        {
+            return Content((await client.SayHelloAsync(new HelloRequest() { Name = "Alice" })).Message);
+        }
+
         public async Task<string> Delay(int ms)
         {
             await Task.Delay(ms);

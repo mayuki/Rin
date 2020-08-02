@@ -25,6 +25,14 @@ namespace HelloRin
             services.AddControllersWithViews()
                 .AddRinMvcSupport();
 
+            services.AddGrpc();
+
+            // Register gRPC client for pseudo-client request.
+            services.AddGrpcClient<Greeter.GreeterClient>(options =>
+            {
+                options.Address = new Uri("https://localhost:5001");
+            });
+
             services.AddRin(options =>
             {
                 // Optional: Use Redis as storage
@@ -64,6 +72,8 @@ namespace HelloRin
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGrpcService<GreeterService>();
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
