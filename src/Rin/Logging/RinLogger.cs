@@ -19,7 +19,7 @@ namespace Rin.Logging
 
         public IDisposable BeginScope<TState>(TState state)
         {
-            return null;
+            return NullDisposable.Instance;
         }
 
         public bool IsEnabled(LogLevel logLevel)
@@ -33,6 +33,14 @@ namespace Rin.Logging
             if (recording == null) return;
 
             TimelineStamp.Stamp(logLevel.ToString(), TimelineEventCategory.Trace, formatter(state, exception));
+        }
+
+        private class NullDisposable : IDisposable
+        {
+            public static IDisposable Instance { get; } = new NullDisposable();
+            public void Dispose()
+            {
+            }
         }
     }
 }

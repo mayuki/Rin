@@ -12,27 +12,27 @@ namespace Rin.Hubs.Payloads
 {
     public class RequestRecordDetailPayload
     {
-        public string Id { get; private set; }
-        public string ParentId { get; private set; }
-        public bool IsCompleted { get; private set; }
-        public string Method { get; private set; }
-        public bool IsHttps { get; private set; }
-        public string Host { get; private set; }
-        public string Path { get; private set; }
-        public string QueryString { get; private set; }
-        public int ResponseStatusCode { get; private set; }
-        public string RemoteIpAddress { get; private set; }
+        public string Id { get; }
+        public string? ParentId { get; }
+        public bool IsCompleted { get; }
+        public string Method { get; }
+        public bool IsHttps { get; }
+        public string Host { get; }
+        public string Path { get; }
+        public string QueryString { get; }
+        public int ResponseStatusCode { get; }
+        public string RemoteIpAddress { get; }
 
-        public IDictionary<string, StringValues> RequestHeaders { get; private set; }
-        public IDictionary<string, StringValues>? RequestTrailers { get; private set; }
-        public IDictionary<string, StringValues> ResponseHeaders { get; private set; }
-        public IDictionary<string, StringValues>? ResponseTrailers { get; private set; }
-        public DateTimeOffset RequestReceivedAt { get; private set; }
-        public DateTimeOffset TransferringCompletedAt { get; private set; }
+        public IDictionary<string, StringValues> RequestHeaders { get; }
+        public IDictionary<string, StringValues>? RequestTrailers { get; }
+        public IDictionary<string, StringValues>? ResponseHeaders { get; }
+        public IDictionary<string, StringValues>? ResponseTrailers { get; }
+        public DateTimeOffset RequestReceivedAt { get; }
+        public DateTimeOffset TransferringCompletedAt { get; }
 
-        public ExceptionData Exception { get; private set; }
+        public ExceptionData? Exception { get; }
 
-        public TimelineData Timeline { get; private set; }
+        public TimelineData Timeline { get; }
 
         public RequestRecordDetailPayload(HttpRequestRecord record)
         {
@@ -65,8 +65,8 @@ namespace Rin.Hubs.Payloads
             public long Duration { get; }
             public string Category { get; }
             public string Name { get; }
-            public string Data { get; }
-            public TimelineData[] Children { get; }
+            public string? Data { get; }
+            public TimelineData[]? Children { get; }
 
             public TimelineData(ITimelineEvent timelineEvent)
             {

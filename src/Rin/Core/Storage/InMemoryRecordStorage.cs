@@ -80,7 +80,7 @@ namespace Rin.Core.Storage
             }
         }
 
-        public Task<RecordStorageTryGetResult<HttpRequestRecord>> TryGetDetailByIdAsync(string id)
+        public Task<RecordStorageTryGetResult<HttpRequestRecord?>> TryGetDetailByIdAsync(string id)
         {
             _lock.EnterReadLock();
             try
@@ -94,7 +94,7 @@ namespace Rin.Core.Storage
             }
         }
 
-        public Task<RecordStorageTryGetResult<byte[]>> TryGetResponseBodyByIdAsync(string id)
+        public Task<RecordStorageTryGetResult<byte[]?>> TryGetResponseBodyByIdAsync(string id)
         {
             _lock.EnterReadLock();
             try
@@ -108,7 +108,7 @@ namespace Rin.Core.Storage
             }
         }
 
-        public Task<RecordStorageTryGetResult<byte[]>> TryGetRequestBodyByIdAsync(string id)
+        public Task<RecordStorageTryGetResult<byte[]?>> TryGetRequestBodyByIdAsync(string id)
         {
             _lock.EnterReadLock();
             try
@@ -170,9 +170,9 @@ namespace Rin.Core.Storage
 
         private class RecordEntry
         {
-            public HttpRequestRecord Record { get; set; }
-            public byte[] RequestBody { get; set; }
-            public byte[] ResponseBody { get; set; }
+            public HttpRequestRecord Record { get; set; } = default!;
+            public byte[]? RequestBody { get; set; }
+            public byte[]? ResponseBody { get; set; }
         }
     }
 }

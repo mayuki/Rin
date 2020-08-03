@@ -27,21 +27,21 @@ namespace Rin.Middlewares
         {
             var result = await _storage.TryGetDetailByIdAsync(context.Request.Query["id"]);
             var resultBody = await _storage.TryGetRequestBodyByIdAsync(context.Request.Query["id"]);
+            var entry = result.Value;
 
-            if (!result.Succeed || !resultBody.Succeed)
+            if (!result.Succeed || !resultBody.Succeed || entry == null)
             {
                 context.Response.StatusCode = 404;
                 return;
             }
 
-            var entry = result.Value;
             var contentType = entry.RequestHeaders["Content-Type"].FirstOrDefault();
             context.Response.ContentType = "application/octet-stream";
             context.Response.StatusCode = 200;
             var contentDisposition = new ContentDispositionHeaderValue("attachment");
             contentDisposition.SetHttpFileName(entry.Id + FileNameHelper.GetExtension(entry.Path, contentType));
             context.Response.GetTypedHeaders().ContentDisposition = contentDisposition;
-            await context.Response.Body.WriteAsync(resultBody.Value, 0, resultBody.Value.Length);
+            await context.Response.Body.WriteAsync(resultBody.Value ?? Array.Empty<byte>(), 0, resultBody.Value?.Length ?? 0);
         }
     }
 
@@ -60,28 +60,34 @@ namespace Rin.Middlewares
         {
             var result = await _storage.TryGetDetailByIdAsync(context.Request.Query["id"]);
             var resultBody = await _storage.TryGetResponseBodyByIdAsync(context.Request.Query["id"]);
+            var entry = result.Value;
 
-            if (!result.Succeed || !resultBody.Succeed)
+            if (!result.Succeed || !resultBody.Succeed || entry == null)
             {
                 context.Response.StatusCode = 404;
                 return;
             }
 
-            var entry = result.Value;
-            var contentType = entry.ResponseHeaders["Content-Type"].FirstOrDefault();
+            var contentType = (entry.ResponseHeaders != null)
+                ? entry.ResponseHeaders.TryGetValue("Content-Type", out var headers)
+                    ? headers.FirstOrDefault()
+                    : "application/octet-stream"
+                : "application/octet-stream";
             context.Response.ContentType = "application/octet-stream";
             context.Response.StatusCode = 200;
             var contentDisposition = new ContentDispositionHeaderValue("attachment");
             contentDisposition.SetHttpFileName(entry.Id + FileNameHelper.GetExtension(entry.Path, contentType));
             context.Response.GetTypedHeaders().ContentDisposition = contentDisposition;
-            await context.Response.Body.WriteAsync(resultBody.Value, 0, resultBody.Value.Length);
+            await context.Response.Body.WriteAsync(resultBody.Value ?? Array.Empty<byte>(), 0, resultBody.Value?.Length ?? 0);
         }
     }
 
     internal static class FileNameHelper
     {
-        public static string GetExtension(string path, string contentType)
+        public static string GetExtension(string path, string? contentType)
         {
+            if (contentType == null) return ".bin";
+
             var originalExt = Path.GetExtension(path);
             if (!String.IsNullOrWhiteSpace(originalExt)) return originalExt;
 
@@ -96,7 +102,7 @@ namespace Rin.Middlewares
                 case "text/javascript":
                 case "application/javascript": return ".js";
                 case "text/xml":
-                case "applicaitn/xml": return ".xml";
+                case "application/xml": return ".xml";
                 case "text/json":
                 case "application/json": return ".json";
                 case "image/png": return ".png";

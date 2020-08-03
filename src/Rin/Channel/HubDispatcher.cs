@@ -10,7 +10,7 @@ namespace Rin.Channel
 {
     internal class HubDispatcher<T> where T: IHub
     {
-        private static Dictionary<string, Func<object, JToken[], Task<object>>> _methodMap = new Dictionary<string, Func<object, JToken[], Task<object>>>();
+        private static Dictionary<string, Func<object, JToken[]?, Task<object>>> _methodMap = new Dictionary<string, Func<object, JToken[]?, Task<object>>>();
 
         static HubDispatcher()
         {
@@ -22,7 +22,7 @@ namespace Rin.Channel
             }
         }
 
-        public static Task<object> InvokeAsync(string name, T thisArg, JToken[] args)
+        public static Task<object> InvokeAsync(string name, T thisArg, JToken[]? args)
         {
             return _methodMap[name](thisArg, args);
         }
@@ -32,11 +32,11 @@ namespace Rin.Channel
             return _methodMap.ContainsKey(name);
         }
 
-        private static Func<object, JToken[], Task<object>> CreateFunctionProxyFromInstanceMethod(MethodInfo methodInfo)
+        private static Func<object, JToken[]?, Task<object>> CreateFunctionProxyFromInstanceMethod(MethodInfo methodInfo)
         {
             var methodInfoOfAsTask = (methodInfo.ReturnType.BaseType == typeof(Task))
-                ? typeof(HubDispatcher<IHub>).GetMethod(nameof(AsTaskOfObject), BindingFlags.Static | BindingFlags.NonPublic).MakeGenericMethod(methodInfo.ReturnType.GenericTypeArguments[0])
-                : typeof(HubDispatcher<IHub>).GetMethod(nameof(AsTaskFromResult), BindingFlags.Static | BindingFlags.NonPublic).MakeGenericMethod(methodInfo.ReturnType);
+                ? typeof(HubDispatcher<IHub>).GetMethod(nameof(AsTaskOfObject), BindingFlags.Static | BindingFlags.NonPublic)!.MakeGenericMethod(methodInfo.ReturnType.GenericTypeArguments[0])
+                : typeof(HubDispatcher<IHub>).GetMethod(nameof(AsTaskFromResult), BindingFlags.Static | BindingFlags.NonPublic)!.MakeGenericMethod(methodInfo.ReturnType);
             var methodInfoToObject = typeof(JObject).GetMethod(nameof(JObject.ToObject), new[] { typeof(Type) });
 
             var thisType = typeof(T);
@@ -48,7 +48,7 @@ namespace Rin.Channel
                 Expression.Convert(Expression.Call(Expression.ArrayIndex(args, Expression.Constant(i)), methodInfoToObject, Expression.Constant(x.ParameterType)), x.ParameterType)
             );
 
-            var expression = Expression.Lambda<Func<object, JToken[], Task<Object>>>(
+            var expression = Expression.Lambda<Func<object, JToken[]?, Task<object>>>(
                 Expression.Call(methodInfoOfAsTask, Expression.Call(Expression.Convert(thisArg, thisType), methodInfo, lambdaParams)),
                 thisArg, args
             );
@@ -56,14 +56,14 @@ namespace Rin.Channel
             return expression.Compile();
         }
 
-        private static Task<object> AsTaskFromResult<TValue>(TValue value)
+        private static Task<object?> AsTaskFromResult<TValue>(TValue value)
         {
-            return Task.FromResult((object)value);
+            return Task.FromResult((object?)value);
         }
 
-        private static Task<object> AsTaskOfObject<TValue>(Task<TValue> task)
+        private static Task<object?> AsTaskOfObject<TValue>(Task<TValue> task)
         {
-            return task.ContinueWith<object>(x => x.Result);
+            return task.ContinueWith<object?>(x => x.Result);
         }
     }
 }

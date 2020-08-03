@@ -22,7 +22,7 @@ namespace Rin.Core.Record
         /// <summary>
         /// Custom operation data.
         /// </summary>
-        string Data { get; set; }
+        string? Data { get; set; }
 
         /// <summary>
         /// Timestamp of operation started at.

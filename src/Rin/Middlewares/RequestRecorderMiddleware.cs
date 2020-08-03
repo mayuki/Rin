@@ -58,7 +58,7 @@ namespace Rin.Middlewares
             var timelineRoot = TimelineScope.Prepare();
             _recordingFeatureAccessor.SetValue(null);
 
-            HttpRequestRecord record = default;
+            HttpRequestRecord? record = default;
             try
             {
                 record = await PreprocessAsync(context, options, timelineRoot);
@@ -84,7 +84,10 @@ namespace Rin.Middlewares
             {
                 try
                 {
-                    await PostprocessAsync(context, options, record);
+                    if (record != null)
+                    {
+                        await PostprocessAsync(context, options, record);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -159,14 +162,17 @@ namespace Rin.Middlewares
 
             if (options.RequestRecorder.EnableBodyCapturing)
             {
+                var feature = context.Features.Get<IRinRequestRecordingFeature>();
+
                 var memoryStreamRequestBody = new MemoryStream();
                 request.Body.Position = 0; // rewind the stream to head
                 await request.Body.CopyToAsync(memoryStreamRequestBody);
 
-                var feature = context.Features.Get<IRinRequestRecordingFeature>();
-
                 await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Request, record.Id, memoryStreamRequestBody.ToArray()));
-                await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Response, record.Id, feature.ResponseDataStream.GetCapturedData()));
+                if (feature.ResponseDataStream != null)
+                {
+                    await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Response, record.Id, feature.ResponseDataStream.GetCapturedData()));
+                }
             }
 
             var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
@@ -188,7 +194,7 @@ namespace Rin.Middlewares
             var record = ((HttpRequestRecord)state);
 
             record.TransferringCompletedAt = DateTime.Now;
-            record.Transferring.Complete();
+            record.Transferring?.Complete();
             record.Timeline.Complete();
 
             return _eventBus.PostAsync(new RequestEventMessage(EventSourceName, record, RequestEvent.CompleteRequest)).AsTask();

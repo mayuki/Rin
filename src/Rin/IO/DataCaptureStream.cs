@@ -12,7 +12,7 @@ namespace Rin.IO
         private readonly MemoryStream _capturedData;
         private readonly Stream _innerStream;
 
-        public DataCaptureStream(Stream stream, MemoryStream capturedDataStream = null)
+        public DataCaptureStream(Stream stream, MemoryStream? capturedDataStream = null)
         {
             _innerStream = stream;
             _capturedData = capturedDataStream ?? new MemoryStream();

@@ -32,43 +32,38 @@ namespace Rin.Hubs
             return (await _storage.GetAllAsync()).Select(x => new RequestEventPayload(x)).ToArray();
         }
 
-        public async Task<RequestRecordDetailPayload> GetDetailById(string id)
+        public async Task<RequestRecordDetailPayload?> GetDetailById(string id)
         {
             var result = await _storage.TryGetDetailByIdAsync(id);
 
-            return (result.Succeed)
+            return (result.Succeed && result.Value != null)
                 ? new RequestRecordDetailPayload(result.Value)
                 : null;
         }
 
-        public async Task<BodyDataPayload> GetRequestBody(string id)
+        public async Task<BodyDataPayload?> GetRequestBody(string id)
         {
             var result = await _storage.TryGetDetailByIdAsync(id);
             var resultBody = await _storage.TryGetRequestBodyByIdAsync(id);
 
-            return (result.Succeed && resultBody.Succeed)
+            return (result.Succeed && resultBody.Succeed && result.Value != null)
                 ? BodyDataPayload.CreateFromRecord(result.Value, result.Value.RequestHeaders, resultBody.Value, _bodyDataTransformerSet.Request)
                 : null;
         }
 
-        public async Task<BodyDataPayload> GetResponseBody(string id)
+        public async Task<BodyDataPayload?> GetResponseBody(string id)
         {
             var result = await _storage.TryGetDetailByIdAsync(id);
             var resultBody = await _storage.TryGetResponseBodyByIdAsync(id);
 
-            return (result.Succeed && resultBody.Succeed)
+            return (result.Succeed && resultBody.Succeed && result.Value != null)
                 ? BodyDataPayload.CreateFromRecord(result.Value, result.Value.ResponseHeaders, resultBody.Value, _bodyDataTransformerSet.Response)
                 : null;
         }
 
         public RinServerInfoPayload GetServerInfo()
         {
-            return new RinServerInfoPayload
-            {
-                Version = typeof(RinCoreHub).Assembly.GetName().Version.ToString(),
-                BuildDate = new FileInfo(typeof(RinCoreHub).Assembly.Location).LastWriteTimeUtc,
-                FeatureFlags = Array.Empty<string>(),
-            };
+            return new RinServerInfoPayload(typeof(RinCoreHub).Assembly.GetName().Version!.ToString(), new FileInfo(typeof(RinCoreHub).Assembly.Location).LastWriteTimeUtc, Array.Empty<string>());
         }
 
         public bool Ping()
