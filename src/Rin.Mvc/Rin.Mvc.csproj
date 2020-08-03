@@ -2,15 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Authors>Mayuki Sawatari</Authors>
+
+    <!-- NuGet Package Information -->
     <Description>This package adds support for ASP.NET Core MVC to Rin</Description>
-    <Company>Mayuki Sawatari</Company>
-    <Copyright>Mayuki Sawatari</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
     <PackageTags>Rin MVC</PackageTags>
-    <PackageIcon>logo.png</PackageIcon>
-    <VersionPrefix>2.0.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

@@ -2,17 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Authors>Mayuki Sawatari</Authors>
-    <Copyright>Mayuki Sawatari</Copyright>
-    <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageTags>Rin ASP.NET Request Inspector</PackageTags>
+
+    <!-- NuGet Package Information -->
     <Description>Request/response Inspector middleware for ASP.NET Core</Description>
-    <VersionPrefix>1.0.0</VersionPrefix>
-    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <LangVersion>latest</LangVersion>
-    <PackageIcon>logo.png</PackageIcon>
-    <VersionPrefix>2.0.0</VersionPrefix>
+    <PackageTags>Rin ASP.NET Request Inspector</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
