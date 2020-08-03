@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <nullable>enable</nullable>
 
     <!-- NuGet Package Information -->
     <Description>Request/response Inspector middleware for ASP.NET Core</Description>

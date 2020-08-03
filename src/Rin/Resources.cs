@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Rin
             _resourceNameByPath = _zipArchive.Entries.Where(x => x.Name != "").ToDictionary(k => k.FullName, v => (Func<Stream>)(() => v.Open()));
         }
 
-        public static bool TryOpen(string name, out Stream stream, out string contentType)
+        public static bool TryOpen(string name, [MaybeNullWhen(false)] out Stream stream, [MaybeNullWhen(false)] out string contentType)
         {
             if (_resourceNameByPath.TryGetValue(name, out var func))
             {

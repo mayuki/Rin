@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class RinSerivceExtensions
     {
-        public static void AddRin(this IServiceCollection services, Action<RinOptions> configure = null)
+        public static void AddRin(this IServiceCollection services, Action<RinOptions>? configure = null)
         {
             var options = new RinOptions();
             configure?.Invoke(options);

@@ -6,8 +6,15 @@ namespace Rin.Hubs.Payloads
 {
     public class RinServerInfoPayload
     {
-        public string Version { get; set; }
-        public DateTimeOffset BuildDate { get; set; }
-        public string[] FeatureFlags { get; set; }
+        public string Version { get; }
+        public DateTimeOffset BuildDate { get; }
+        public IReadOnlyList<string> FeatureFlags { get; }
+
+        public RinServerInfoPayload(string version, DateTimeOffset buildDate, IReadOnlyList<string> featureFlags)
+        {
+            Version = version;
+            BuildDate = buildDate;
+            FeatureFlags = featureFlags;
+        }
     }
 }

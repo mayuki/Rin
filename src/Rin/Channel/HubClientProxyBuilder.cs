@@ -32,7 +32,7 @@ namespace Rin.Channel
             var typeBuilder = _moduleBuilder.DefineType(proxyTypeName, TypeAttributes.Class, hubClientBaseType);
 
             // Constructor
-            var baseCtor = hubClientBaseType.GetConstructor(new[] { typeof(RinChannel) });
+            var baseCtor = hubClientBaseType.GetConstructor(new[] { typeof(RinChannel) })!;
             var ctorParameters = baseCtor.GetParameters().Select(x => x.ParameterType).ToArray();
             var ctorBuilder = typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, ctorParameters);
             {
@@ -65,7 +65,7 @@ namespace Rin.Channel
                 null,
                 new[] { typeof(string), typeof(object[]) },
                 null
-            );
+            )!;
             typeBuilder.AddInterfaceImplementation(targetInterfaceType);
             foreach (var method in targetInterfaceType.GetMethods())
             {
@@ -113,7 +113,7 @@ namespace Rin.Channel
                 typeBuilder.DefineMethodOverride(methodBuilder, method);
             }
 
-            return typeBuilder.CreateType();
+            return typeBuilder.CreateType()!;
         }
     }
 

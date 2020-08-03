@@ -10,9 +10,9 @@ namespace Rin.Core.Record
         Task AddAsync(HttpRequestRecord entry);
         Task UpdateAsync(HttpRequestRecord entry);
         Task<HttpRequestRecordInfo[]> GetAllAsync();
-        Task<RecordStorageTryGetResult<HttpRequestRecord>> TryGetDetailByIdAsync(string id);
-        Task<RecordStorageTryGetResult<byte[]>> TryGetResponseBodyByIdAsync(string id);
-        Task<RecordStorageTryGetResult<byte[]>> TryGetRequestBodyByIdAsync(string id);
+        Task<RecordStorageTryGetResult<HttpRequestRecord?>> TryGetDetailByIdAsync(string id);
+        Task<RecordStorageTryGetResult<byte[]?>> TryGetResponseBodyByIdAsync(string id);
+        Task<RecordStorageTryGetResult<byte[]?>> TryGetRequestBodyByIdAsync(string id);
     }
 
     public struct RecordStorageTryGetResult<T>

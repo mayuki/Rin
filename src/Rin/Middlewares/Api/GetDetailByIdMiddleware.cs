@@ -28,7 +28,7 @@ namespace Rin.Middlewares.Api
             }
 
             var result = await _storage.TryGetDetailByIdAsync(id);
-            if (!result.Succeed)
+            if (!result.Succeed || result.Value == null)
             {
                 context.Response.StatusCode = 404;
                 return;

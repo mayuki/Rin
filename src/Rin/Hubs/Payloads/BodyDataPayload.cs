@@ -20,9 +20,14 @@ namespace Rin.Hubs.Payloads
             PresentationContentType = presentationContentType;
         }
 
-        public static BodyDataPayload CreateFromRecord(HttpRequestRecord record, IDictionary<string, StringValues> headers, byte[] body, IBodyDataTransformer transformer)
+        public static BodyDataPayload CreateFromRecord(HttpRequestRecord record, IDictionary<string, StringValues>? headers, byte[]? body, IBodyDataTransformer transformer)
         {
-            if (headers.TryGetValue("Content-Type", out var contentType))
+            if (body == null)
+            {
+                return new BodyDataPayload(Convert.ToBase64String(Array.Empty<byte>()), true, "");
+            }
+
+            if (headers != null && headers.TryGetValue("Content-Type", out var contentType))
             {
                 var result = transformer.Transform(record, body, contentType);
 

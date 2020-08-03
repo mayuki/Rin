@@ -7,9 +7,9 @@ namespace Rin.Features
 {
     public interface IRinRequestRecordingFeatureAccessor
     {
-        IRinRequestRecordingFeature Feature { get; }
+        IRinRequestRecordingFeature? Feature { get; }
 
-        void SetValue(IRinRequestRecordingFeature feature);
+        void SetValue(IRinRequestRecordingFeature? feature);
     }
 
     // NOTE: When Rin is integrated with non-ASP.NET Core application. We can't use HttpContext (or HttpContextAccessor).
@@ -18,9 +18,9 @@ namespace Rin.Features
     {
         private static readonly AsyncLocal<Holder> _current = new AsyncLocal<Holder>();
 
-        public IRinRequestRecordingFeature Feature => _current.Value?.Value;
+        public IRinRequestRecordingFeature? Feature => _current.Value?.Value;
 
-        public void SetValue(IRinRequestRecordingFeature feature)
+        public void SetValue(IRinRequestRecordingFeature? feature)
         {
             if (_current.Value == null)
             {
@@ -32,7 +32,7 @@ namespace Rin.Features
 
         private class Holder
         {
-            public IRinRequestRecordingFeature Value { get; set; }
+            public IRinRequestRecordingFeature? Value { get; set; }
         }
     }
 }

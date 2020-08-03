@@ -58,8 +58,8 @@ namespace Rin.Channel
             var buffer = ArrayPool<byte>.Shared.Rent(1024);
             try
             {
-                var establishConnectionAsync = typeof(RinChannel).GetMethod(nameof(EstablishConnectionAsync), BindingFlags.Instance | BindingFlags.NonPublic);
-                var task = establishConnectionAsync.MakeGenericMethod(typeOfHub).Invoke(this, new object[] { socket, hub, connectionId, buffer }) as Task;
+                var establishConnectionAsync = typeof(RinChannel).GetMethod(nameof(EstablishConnectionAsync), BindingFlags.Instance | BindingFlags.NonPublic)!;
+                var task = (Task)establishConnectionAsync.MakeGenericMethod(typeOfHub).Invoke(this, new object[] { socket, hub, connectionId, buffer })!;
                 await task;
             }
             catch (TaskCanceledException) { }
@@ -126,7 +126,7 @@ namespace Rin.Channel
 
             if (_cancellationTokenSource.IsCancellationRequested) return;
 
-            await socket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, _cancellationTokenSource.Token);
+            await socket.CloseAsync(result.CloseStatus ?? WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, _cancellationTokenSource.Token);
         }
 
         public TClient GetClient<THub, TClient>()
@@ -170,7 +170,7 @@ namespace Rin.Channel
             return SendAsync(connectionId, new { R = operationId, V = methodResult });
         }
 
-        public Task InvokeAsync<THub>(string methodName, object args = null)
+        public Task InvokeAsync<THub>(string methodName, object? args = null)
         {
             return SendAsync<THub>(new { M = methodName, A = args });
         }

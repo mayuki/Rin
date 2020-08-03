@@ -39,7 +39,7 @@ namespace Rin.IO
             _pipeWriter.CancelPendingFlush();
         }
 
-        public override void Complete(Exception exception = null)
+        public override void Complete(Exception? exception = null)
         {
             _pipeWriter.Complete(exception);
         }
