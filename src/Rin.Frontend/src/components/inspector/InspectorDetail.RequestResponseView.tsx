@@ -1,3 +1,4 @@
+import { hexy } from 'hexy';
 import * as monacoEditor from 'monaco-editor';
 import { Pivot, PivotItem } from 'office-ui-fabric-react';
 import React, { useEffect, useState, useRef } from 'react';
@@ -27,7 +28,7 @@ export interface IInspectorRequestResponseViewProps {
   onPaneSizeChange: (newSize: number) => void;
 }
 
-type PreviewType = 'Tree' | 'Source' | 'List';
+type PreviewType = 'Tree' | 'Source' | 'List' | 'Hex';
 
 export function InspectorDetailRequestResponseView(props: IInspectorRequestResponseViewProps) {
   const [bodyView, setBodyView] = useState<PreviewType>('Source');
@@ -117,6 +118,7 @@ export function InspectorDetailRequestResponseView(props: IInspectorRequestRespo
                   headerText={isTransformed ? `View as ${contentType}` : 'Source'}
                   itemIcon="Code"
                 />
+                <PivotItem itemKey="Hex" headerText="Hex" itemIcon="ComplianceAudit" />
               </Pivot>
               {bodyView === 'List' && (
                 <div className={styles.inspectorRequestResponseViewKeyValueDetailList}>
@@ -138,6 +140,13 @@ export function InspectorDetailRequestResponseView(props: IInspectorRequestRespo
                   )}
                 </>
               )}
+              {bodyView === 'Hex' && props.body != null && (
+                <HexDumpPreview
+                  body={props.body.Body}
+                  isBase64Encoded={props.body.IsBase64Encoded}
+                  paneResizeToken={paneToken}
+                />
+              )}
             </>
           )}
         </div>
@@ -146,7 +155,50 @@ export function InspectorDetailRequestResponseView(props: IInspectorRequestRespo
   );
 }
 
-function EditorPreview(props: { contentType: string; body: string; paneResizeToken: number }) {
+function HexDumpPreview(props: { body: string; isBase64Encoded: boolean; paneResizeToken: number }) {
+  function convertBase64StringToUint8Array(data: string) {
+    const binary = atob(data);
+    const array = new Array<number>(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      array[i] = binary.charCodeAt(i);
+    }
+    return array;
+  }
+
+  const body = props.isBase64Encoded ? convertBase64StringToUint8Array(props.body) : props.body;
+  const hexed = hexy(body, { format: 'twos', caps: 'upper' }).trimEnd();
+
+  return (
+    <EditorPreview
+      contentType="text/x-rin-hex-dump"
+      language="text/x-rin-hex-dump"
+      body={hexed}
+      paneResizeToken={props.paneResizeToken}
+      theme="rin-hex-dump"
+    />
+  );
+}
+
+monacoEditor.editor.defineTheme('rin-hex-dump', {
+  base: 'vs',
+  colors: {},
+  rules: [{ token: 'address-token', foreground: 'aaaaaa' }],
+  inherit: true,
+});
+monacoEditor.languages.register({ id: 'text/x-rin-hex-dump' });
+monacoEditor.languages.setMonarchTokensProvider('text/x-rin-hex-dump', {
+  tokenizer: {
+    root: [[/^[0-9a-fA-F]+:/, 'address-token']],
+  },
+});
+
+function EditorPreview(props: {
+  contentType: string;
+  body: string;
+  paneResizeToken: number;
+  theme?: string;
+  language?: string;
+}) {
   const [editor, setEditor] = useState<monacoEditor.editor.IStandaloneCodeEditor>();
 
   useEffect(() => {
@@ -175,8 +227,8 @@ function EditorPreview(props: { contentType: string; body: string; paneResizeTok
       width="100%"
       height="100%"
       options={monacoOptions}
-      theme="vs"
-      language={getMonacoLanguage(props.contentType)}
+      theme={props.theme ?? 'vs'}
+      language={props.language ?? getMonacoLanguage(props.contentType)}
       value={props.body}
       editorDidMount={(editor) => setEditor(editor)}
     />

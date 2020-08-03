@@ -148,7 +148,7 @@ namespace Rin.Middlewares
 
             if (request.SupportsTrailers())
             {
-                var trailers = context.Features.Get<IHttpResponseTrailersFeature>();
+                var trailers = context.Features.Get<IHttpRequestTrailersFeature>();
                 record.RequestTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
             }
             if (response.SupportsTrailers())
