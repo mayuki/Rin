@@ -13,6 +13,7 @@
     "@fluentui/react": "^7.121.9",
     "@uifabric/fluent-theme": "^7.1.105",
     "file-saver": "^2.0.2",
+    "hexy": "^0.3.0",
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.2",
     "monaco-editor": "^0.20.0",
