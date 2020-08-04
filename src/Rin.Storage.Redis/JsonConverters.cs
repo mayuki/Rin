@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -95,6 +95,8 @@ namespace Rin.Storage.Redis
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var item = JToken.ReadFrom(reader);
+            if (item.Type == JTokenType.Null) return null;
+
             switch ((string)item["EventType"])
             {
                 case nameof(TimelineScope):
