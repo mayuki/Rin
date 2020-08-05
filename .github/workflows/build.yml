@@ -11,9 +11,6 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '2.2.x'
 
     - uses: actions/setup-dotnet@v1
       with:
@@ -23,7 +20,8 @@ jobs:
       run: |
         echo "::set-env name=VERSION_SUFFIX::preview.`date '+%Y%m%d-%H%M%S'`+${GITHUB_SHA:0:6}"
 
-    - name: "Get Git tag"
+    - name: "Get git tag"
+      if: "contains(github.ref, 'refs/tags')"
       run: echo ::set-env name=GIT_TAG::${GITHUB_REF#refs/tags/}
 
     - name: "Rin.Frontend: build & pack"
