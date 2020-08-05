@@ -46,7 +46,7 @@ jobs:
       run: |
         dotnet restore
         dotnet build -c Release
-        dotnet pack -c Release -o $GITHUB_WORKSPACE/artifacts --version-suffix "$VERSION_SUFFIX"
+        dotnet pack -c Release -o $GITHUB_WORKSPACE/artifacts --version-suffix "$VERSION_SUFFIX" -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
 
     - uses: actions/upload-artifact@master
       with:
