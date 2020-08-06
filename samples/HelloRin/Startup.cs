@@ -41,10 +41,10 @@ namespace HelloRin
             });
 
             // Optional: Use Redis as storage
-            services.AddRinRedisStorage(options =>
-            {
-                options.ConnectionConfiguration = "localhost:6379";
-            });
+            //services.AddRinRedisStorage(options =>
+            //{
+            //    options.ConnectionConfiguration = "localhost:6379";
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
