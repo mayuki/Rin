@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,14 +35,15 @@ namespace HelloRin
 
             services.AddRin(options =>
             {
-                // Optional: Use Redis as storage
-                // options.RequestRecorder.StorageFactory = Rin.Storage.Redis.RedisRecordStorage.DefaultFactoryWithOptions(redisOptions =>
-                // {
-                //     redisOptions.ConnectionConfiguration = "[host]";
-                // });
                 options.RequestRecorder.RetentionMaxRequests = 100;
                 options.RequestRecorder.Excludes.Add(request => request.Path.Value.EndsWith(".js") || request.Path.Value.EndsWith(".css") || request.Path.Value.EndsWith(".svg"));
                 options.Inspector.ResponseBodyDataTransformers.Add(new RinCustomContentTypeTransformer());
+            });
+
+            // Optional: Use Redis as storage
+            services.AddRinRedisStorage(options =>
+            {
+                options.ConnectionConfiguration = "localhost:6379";
             });
         }
 

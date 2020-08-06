@@ -1,4 +1,4 @@
-﻿using Rin.Channel;
+using Rin.Channel;
 using Rin.Core;
 using Rin.Core.Event;
 using Rin.Core.Record;
@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Rin.Features;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -28,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var transformers = serviceProvider.GetServices<IBodyDataTransformer>().ToArray();
                 return new BodyDataTransformerSet(new BodyDataTransformerPipeline(transformers), new BodyDataTransformerPipeline(transformers));
             });
-            services.AddSingleton<IRecordStorage>(options.RequestRecorder.StorageFactory);
+            services.TryAddSingleton<IRecordStorage, InMemoryRecordStorage>();
             services.AddSingleton<IMessageEventBus<RequestEventMessage>>(new MessageEventBus<RequestEventMessage>());
             services.AddSingleton<IMessageEventBus<StoreBodyEventMessage>>(new MessageEventBus<StoreBodyEventMessage>());
             services.AddSingleton<RinOptions>(options);
