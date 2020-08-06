@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Rin.Core;
 using Rin.Core.Event;
@@ -8,6 +8,7 @@ using StackExchange.Redis;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace Rin.Storage.Redis
 {
@@ -20,24 +21,13 @@ namespace Rin.Storage.Redis
         private static readonly string _serializeVersion;
         private const string RedisSubscriptionKey = "RedisRecordStorage-Subscription";
 
+        private readonly RinOptions _rinOptions;
         private readonly RedisRecordStorageOptions _options;
         private readonly string _eventSourceKey = Guid.NewGuid().ToString();
         private readonly IMessageEventBus<RequestEventMessage> _eventBus;
         private readonly ConnectionMultiplexer _redisConnection;
         private readonly IDatabase _redis;
         private ISubscriber _redisSubscriber;
-
-        public static Func<IServiceProvider, IRecordStorage> DefaultFactoryWithOptions(Action<RedisRecordStorageOptions> configure)
-        {
-            return (services) =>
-            {
-                var retentionMaxRequests = services.GetService<RinOptions>().RequestRecorder.RetentionMaxRequests;
-                var options = new RedisRecordStorageOptions() { RetentionMaxRequests = retentionMaxRequests };
-                configure?.Invoke(options);
-
-                return new RedisRecordStorage(options, services.GetService<IMessageEventBus<RequestEventMessage>>());
-            };
-        }
 
         static RedisRecordStorage()
         {
@@ -52,9 +42,11 @@ namespace Rin.Storage.Redis
             _serializeVersion = typeof(Rin.Core.Record.HttpRequestRecord).Assembly.GetName().Version.ToString();
         }
 
-        public RedisRecordStorage(RedisRecordStorageOptions options, IMessageEventBus<RequestEventMessage> eventBus)
+        public RedisRecordStorage(IOptions<RedisRecordStorageOptions> options, IOptions<RinOptions> rinOptions, IMessageEventBus<RequestEventMessage> eventBus)
         {
-            _options = options;
+            _options = options.Value;
+            _rinOptions = rinOptions.Value;
+
             _eventBus = eventBus;
             _redisConnection = ConnectionMultiplexer.Connect(_options.ConnectionConfiguration);
             _redis = _redisConnection.GetDatabase(_options.Database);
@@ -84,7 +76,7 @@ namespace Rin.Storage.Redis
                 _redis.StringSetAsync(GetRedisKey($"RecordEntryInfo?{entry.Id}"), Serialize(HttpRequestRecordInfo.CreateFromRecord(entry)), _options.Expiry)
             );
             await Task.WhenAll(
-                _redis.ListTrimAsync(GetRedisKey($"Records"), 0, _options.RetentionMaxRequests),
+                _redis.ListTrimAsync(GetRedisKey($"Records"), 0, _rinOptions.RequestRecorder.RetentionMaxRequests),
                 _redis.KeyExpireAsync(GetRedisKey($"Records"), _options.Expiry)
             );
         }

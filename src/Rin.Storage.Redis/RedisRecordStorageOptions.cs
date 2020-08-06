@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Rin.Storage.Redis
 {
@@ -13,11 +13,6 @@ namespace Rin.Storage.Redis
         /// A prefix of the Redis keys for Rin records. If Rin is running on multiple applications, you can change the prefix to separate records.
         /// </summary>
         public string KeyPrefix { get; set; } = "Rin.Storage.";
-
-        /// <summary>
-        /// Maximum count of requests retention.
-        /// </summary>
-        public int RetentionMaxRequests { get; set; } = 100;
 
         /// <summary>
         /// Redis database for Rin records.
