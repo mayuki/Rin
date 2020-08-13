@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Rin.Core;
 using Rin.Core.Event;
 using Rin.Core.Record;
@@ -7,6 +6,7 @@ using Rin.Middlewares;
 using StackExchange.Redis;
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 
@@ -17,7 +17,7 @@ namespace Rin.Storage.Redis
     /// </summary>
     public class RedisRecordStorage : IRecordStorage
     {
-        private static readonly JsonSerializerSettings _jsonSerializerSettings;
+        private static readonly JsonSerializerOptions _jsonSerializerOptions;
         private static readonly string _serializeVersion;
         private const string RedisSubscriptionKey = "RedisRecordStorage-Subscription";
 
@@ -31,15 +31,18 @@ namespace Rin.Storage.Redis
 
         static RedisRecordStorage()
         {
-            _jsonSerializerSettings = new JsonSerializerSettings();
-            _jsonSerializerSettings.Converters.Add(new StringValuesJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new IPAddressJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new QueryStringJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new PathStringJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new HostStringJsonConverter());
-            _jsonSerializerSettings.Converters.Add(new TimelineEventJsonConverter());
+            _jsonSerializerOptions = new JsonSerializerOptions();
+            _jsonSerializerOptions.Converters.Add(new TimeSpanJsonConverter());
+            _jsonSerializerOptions.Converters.Add(new StringValuesJsonConverter());
+            _jsonSerializerOptions.Converters.Add(new IPAddressJsonConverter());
+            _jsonSerializerOptions.Converters.Add(new QueryStringJsonConverter());
+            _jsonSerializerOptions.Converters.Add(new PathStringJsonConverter());
+            _jsonSerializerOptions.Converters.Add(new HostStringJsonConverter());
+            _jsonSerializerOptions.Converters.Add(new TimelineScopeJsonConverter());
+            _jsonSerializerOptions.Converters.Add(new TimelineStampJsonConverter());
+            _jsonSerializerOptions.Converters.Add(new TimelineEventJsonConverter());
 
-            _serializeVersion = typeof(Rin.Core.Record.HttpRequestRecord).Assembly.GetName().Version.ToString();
+            _serializeVersion = typeof(Rin.Core.Record.HttpRequestRecord).Assembly.GetName().Version!.ToString();
         }
 
         public RedisRecordStorage(IOptions<RedisRecordStorageOptions> options, IOptions<RinOptions> rinOptions, IMessageEventBus<RequestEventMessage> eventBus)
@@ -176,14 +179,14 @@ namespace Rin.Storage.Redis
 
         private string Serialize<T>(T value)
         {
-            return JsonConvert.SerializeObject(value, _jsonSerializerSettings);
+            return JsonSerializer.Serialize(value, _jsonSerializerOptions);
         }
 
         private T Deserialize<T>(string value)
         {
             if (value == null) return default(T);
 
-            var result = JsonConvert.DeserializeObject<T>(value, _jsonSerializerSettings);
+            var result = JsonSerializer.Deserialize<T>(value, _jsonSerializerOptions);
             return result;
         }
     }
