@@ -1,126 +1,175 @@
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Rin.Core.Record;
-using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Primitives;
 
 namespace Rin.Storage.Redis
 {
+    internal class TimeSpanJsonConverter : JsonConverter<TimeSpan>
+    {
+        public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return TimeSpan.FromTicks(reader.GetInt64());
+        }
+
+        public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
+        {
+            JsonSerializer.Serialize(writer, value.Ticks, options);
+        }
+    }
+
     internal class IPAddressJsonConverter : JsonConverter<System.Net.IPAddress>
     {
-        public override IPAddress ReadJson(JsonReader reader, Type objectType, IPAddress existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override IPAddress Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var value = reader.Value as string;
-            if (!String.IsNullOrEmpty(value))
+            var value = reader.GetString();
+            if (!string.IsNullOrEmpty(value))
             {
                 return IPAddress.Parse(value);
             }
-            return existingValue;
+            return default;
         }
 
-        public override void WriteJson(JsonWriter writer, IPAddress value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, IPAddress value, JsonSerializerOptions options)
         {
-            writer.WriteValue(value.ToString());
+            writer.WriteStringValue(value.ToString());
         }
     }
 
     internal class QueryStringJsonConverter : JsonConverter<QueryString>
     {
-        public override QueryString ReadJson(JsonReader reader, Type objectType, QueryString existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override QueryString Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var value = reader.Value as string;
+            var value = reader.GetString();
             return new QueryString(value ?? "");
         }
 
-        public override void WriteJson(JsonWriter writer, QueryString value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, QueryString value, JsonSerializerOptions options)
         {
-            writer.WriteValue(value.ToString());
+            writer.WriteStringValue(value.ToString());
         }
     }
 
-    internal class PathStringJsonConverter : JsonConverter<Microsoft.AspNetCore.Http.PathString>
+    internal class PathStringJsonConverter : JsonConverter<PathString>
     {
-        public override PathString ReadJson(JsonReader reader, Type objectType, PathString existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override PathString Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var value = reader.Value as string;
+            var value = reader.GetString();
             return new PathString(value ?? "");
         }
 
-        public override void WriteJson(JsonWriter writer, PathString value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, PathString value, JsonSerializerOptions options)
         {
-            writer.WriteValue(value.ToString());
+            writer.WriteStringValue(value.ToString());
         }
     }
 
-    internal class HostStringJsonConverter : JsonConverter<Microsoft.AspNetCore.Http.HostString>
+    internal class HostStringJsonConverter : JsonConverter<HostString>
     {
-        public override HostString ReadJson(JsonReader reader, Type objectType, HostString existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override HostString Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var value = reader.Value as string;
+            var value = reader.GetString();
             return new HostString(value ?? "");
         }
 
-        public override void WriteJson(JsonWriter writer, HostString value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, HostString value, JsonSerializerOptions options)
         {
-            writer.WriteValue(value.ToString());
+            writer.WriteStringValue(value.ToString());
         }
     }
 
     internal class StringValuesJsonConverter : JsonConverter<StringValues>
     {
-        public override StringValues ReadJson(JsonReader reader, Type objectType, StringValues existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override StringValues Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var value = JArray.ReadFrom(reader).ToObject<string[]>();
-            return new StringValues(value ?? Array.Empty<string>());
+            return new StringValues(JsonSerializer.Deserialize<string[]>(ref reader, options));
         }
 
-        public override void WriteJson(JsonWriter writer, StringValues value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, StringValues value, JsonSerializerOptions options)
         {
-            serializer.Serialize(writer, value.ToArray());
+            JsonSerializer.Serialize(writer, value.ToArray(), options);
         }
     }
 
-    internal class TimelineEventJsonConverter : JsonConverter
+    internal class TimelineEventJsonConverter : JsonConverter<ITimelineEvent>
     {
-        public override bool CanConvert(Type objectType)
+        public override ITimelineEvent Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return (objectType == typeof(ITimelineEvent) || objectType == typeof(ITimelineScope) || objectType == typeof(ITimelineStamp));
-        }
+            var readerTmp = reader;
+            var timelineEvent = JsonSerializer.Deserialize<TimelineEvent_>(ref readerTmp, options);
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            var item = JToken.ReadFrom(reader);
-            if (item.Type == JTokenType.Null) return null;
-
-            switch ((string)item["EventType"])
+            switch (timelineEvent.EventType)
             {
                 case nameof(TimelineScope):
-                    return item.ToObject<TimelineScope_>(serializer);
+                    return JsonSerializer.Deserialize<ITimelineScope>(ref reader, options);
                 case nameof(TimelineStamp):
-                    return item.ToObject<TimelineStamp_>(serializer);
+                    return JsonSerializer.Deserialize<ITimelineStamp>(ref reader, options);
                 default:
                     throw new NotSupportedException();
             }
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, ITimelineEvent value, JsonSerializerOptions options)
         {
-            serializer.Serialize(writer, value);
+            if (value is ITimelineScope timelineScope)
+            {
+                JsonSerializer.Serialize(writer, timelineScope, options);
+            }
+            else if (value is ITimelineStamp timelineStamp)
+            {
+                JsonSerializer.Serialize(writer, timelineStamp, options);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
+    }
+
+    internal class TimelineScopeJsonConverter : JsonConverter<ITimelineScope>
+    {
+        public override ITimelineScope Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return JsonSerializer.Deserialize<TimelineScope_>(ref reader, options);
+        }
+
+        public override void Write(Utf8JsonWriter writer, ITimelineScope value, JsonSerializerOptions options)
+        {
+            JsonSerializer.Serialize(writer, new TimelineScope_(value), options);
+        }
+    }
+
+    internal class TimelineStampJsonConverter : JsonConverter<ITimelineStamp>
+    {
+        public override ITimelineStamp Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return JsonSerializer.Deserialize<TimelineStamp_>(ref reader, options);
+        }
+
+        public override void Write(Utf8JsonWriter writer, ITimelineStamp value, JsonSerializerOptions options)
+        {
+            JsonSerializer.Serialize(writer, new TimelineStamp_(value), options);
+        }
+    }
+
+    internal class TimelineEvent_
+    {
+        public string EventType { get; set; }
     }
 
     internal class TimelineScope_ : ITimelineScope
     {
+        public string EventType { get; set; }
+
         public TimeSpan Duration { get; set; }
 
         public IReadOnlyCollection<ITimelineEvent> Children { get; set; }
-
-        public string EventType { get; set; }
 
         public string Name { get; set; }
         public string Category { get; set; }
@@ -134,6 +183,20 @@ namespace Rin.Storage.Redis
         public void Dispose()
         {
         }
+
+        public TimelineScope_()
+        {}
+
+        public TimelineScope_(ITimelineScope timelineScope)
+        {
+            EventType = timelineScope.EventType;
+            Duration = timelineScope.Duration;
+            Children = timelineScope.Children;
+            Name = timelineScope.Name;
+            Category = timelineScope.Category;
+            Data = timelineScope.Data;
+            Timestamp = timelineScope.Timestamp;
+        }
     }
 
     internal class TimelineStamp_ : ITimelineStamp
@@ -144,5 +207,17 @@ namespace Rin.Storage.Redis
         public string Category { get; set; }
         public string Data { get; set; }
         public DateTimeOffset Timestamp { get; set; }
+
+        public TimelineStamp_()
+        {}
+
+        public TimelineStamp_(ITimelineStamp timelineScope)
+        {
+            EventType = timelineScope.EventType;
+            Name = timelineScope.Name;
+            Category = timelineScope.Category;
+            Data = timelineScope.Data;
+            Timestamp = timelineScope.Timestamp;
+        }
     }
 }
