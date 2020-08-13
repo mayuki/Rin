@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
 using Rin.Core.Record;
 using Rin.Hubs.Payloads;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Rin.Middlewares.Api
@@ -36,7 +36,7 @@ namespace Rin.Middlewares.Api
 
             context.Response.StatusCode = 200;
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(new RequestRecordDetailPayload(result.Value)));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new RequestRecordDetailPayload(result.Value)));
         }
     }
 }

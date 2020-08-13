@@ -1,26 +1,24 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Rin.Core;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net.WebSockets;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Rin.Channel.HubInvoker;
 
 namespace Rin.Channel
 {
     public class RinChannel : IDisposable
     {
         private static readonly Encoding _encoding = new UTF8Encoding(false);
-        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly ILogger _logger;
 
         public Dictionary<Type, ConcurrentDictionary<string, WebSocket>> ConnectionsByHub { get; } = new Dictionary<Type, ConcurrentDictionary<string, WebSocket>>();
@@ -75,6 +73,7 @@ namespace Rin.Channel
         {
             var memoryStream = new MemoryStream();
             var result = await socket.ReceiveAsync(buffer, _cancellationTokenSource.Token);
+            var invoker = new HubInvoker<THub>();
 
             while (!result.CloseStatus.HasValue && !_cancellationTokenSource.IsCancellationRequested)
             {
@@ -89,24 +88,27 @@ namespace Rin.Channel
 
                     try
                     {
-                        var operation = JsonConvert.DeserializeAnonymousType(messageString, new { M = "", O = "", A = default(JToken[]) });
-                        if (HubDispatcher<THub>.CanInvoke(operation.M))
+                        if (invoker.TryCreateMessage(messageString, out var invokeMessage))
                         {
-                            try
+                            if (invokeMessage.MethodDefinition != null)
                             {
-                                var methodResult = await HubDispatcher<THub>.InvokeAsync(operation.M, hub, operation.A);
-                                await SendResponseAsync(connectionId, operation.O, methodResult);
+                                try
+                                {
+                                    var methodResult = await invoker.InvokeAsync(hub, invokeMessage!);
+                                    await SendResponseAsync(connectionId, invokeMessage.OperationId, methodResult.Value);
+                                }
+                                catch (Exception ex)
+                                {
+                                    await SendResponseAsync(connectionId, invokeMessage.OperationId, new { E = ex.GetType().Name, Detail = ex });
+                                    _logger.LogError(ex, "Exception was thrown until invoking a hub method: Method = {0}; Hub = {1}", invokeMessage.Method, typeof(THub));
+                                }
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                await SendResponseAsync(connectionId, operation.O, new { E = ex.GetType().Name, Detail = ex });
-                                _logger.LogError(ex, "Exception was thrown until invoking a hub method: Method = {0}; Hub = {1}", operation.M, typeof(THub));
+                                await SendResponseAsync(connectionId, invokeMessage.OperationId, new { E = "MethodNotFound" });
+                                _logger.LogWarning("Method not found: Method = {0}; Hub = {1}", invokeMessage.Method, typeof(THub));
                             }
-                        }
-                        else
-                        {
-                            await SendResponseAsync(connectionId, operation.O, new { E = "MethodNotFound" });
-                            _logger.LogWarning("Method not found: Method = {0}; Hub = {1}", operation.M, typeof(THub));
+
                         }
                     }
                     catch (TaskCanceledException)
@@ -138,13 +140,11 @@ namespace Rin.Channel
 
         internal async Task SendAsync(string connectionId, object payload)
         {
-            var message = JsonConvert.SerializeObject(payload);
-
             if (Connections.TryGetValue(connectionId, out var conn))
             {
                 try
                 {
-                    await conn.Item2.SendAsync(_encoding.GetBytes(message), WebSocketMessageType.Text, true, _cancellationTokenSource.Token);
+                    await conn.Item2.SendAsync(JsonSerializer.SerializeToUtf8Bytes(payload), WebSocketMessageType.Text, true, _cancellationTokenSource.Token);
                 }
                 catch
                 {
@@ -155,6 +155,7 @@ namespace Rin.Channel
                 }
             }
         }
+
         private Task SendAsync<THub>(object payload)
         {
             if (ConnectionsByHub.TryGetValue(typeof(THub), out var connectionsByTHub))
@@ -165,7 +166,7 @@ namespace Rin.Channel
             return Task.CompletedTask;
         }
 
-        private Task SendResponseAsync(string connectionId, string operationId, object methodResult)
+        private Task SendResponseAsync(string connectionId, string operationId, object? methodResult)
         {
             return SendAsync(connectionId, new { R = operationId, V = methodResult });
         }
