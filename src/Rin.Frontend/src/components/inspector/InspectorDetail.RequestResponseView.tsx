@@ -203,14 +203,12 @@ function EditorPreview(props: {
 
   useEffect(() => {
     const listener = () => {
-      editor?.layout({ width: 0, height: 0 });
       editor?.layout();
     };
 
     window.addEventListener('resize', listener);
 
     // force re-layout
-    editor?.layout({ width: 0, height: 0 });
     editor?.layout();
 
     return () => window.removeEventListener('resize', listener);
@@ -223,15 +221,17 @@ function EditorPreview(props: {
   };
 
   return (
-    <MonacoEditor
-      width="100%"
-      height="100%"
-      options={monacoOptions}
-      theme={props.theme ?? 'vs'}
-      language={props.language ?? getMonacoLanguage(props.contentType)}
-      value={props.body}
-      editorDidMount={(editor) => setEditor(editor)}
-    />
+    <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+      <MonacoEditor
+        width="100%"
+        height="100%"
+        options={monacoOptions}
+        theme={props.theme ?? 'vs'}
+        language={props.language ?? getMonacoLanguage(props.contentType)}
+        value={props.body}
+        editorDidMount={(editor) => setEditor(editor)}
+      />
+    </div>
   );
 }
 
