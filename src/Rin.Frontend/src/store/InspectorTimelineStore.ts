@@ -1,15 +1,16 @@
 import { action, observable } from 'mobx';
 import { TimelineData } from '../api/IRinCoreHub';
+import { createContext, useContext } from 'react';
 
 export class InspectorTimelineStore {
   @observable
   isCalloutVisible = false;
 
   @observable
-  calloutTarget: HTMLElement;
+  calloutTarget!: HTMLElement;
 
   @observable
-  calloutTimelineData: TimelineData | null;
+  calloutTimelineData!: TimelineData | null;
 
   @observable
   isTraceVisibleInTimeline = true;
@@ -40,4 +41,5 @@ export class InspectorTimelineStore {
   }
 }
 
-export const inspectorTimelineStore = new InspectorTimelineStore();
+const inspectorTimelineStoreContext = createContext(new InspectorTimelineStore());
+export const useInspectorTimelineStore = () => useContext(inspectorTimelineStoreContext);

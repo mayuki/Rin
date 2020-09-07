@@ -25,14 +25,15 @@ namespace Rin.Core.Record
             set => SetValue(ref _category, value);
         }
 
-        public string Data { get; set; }
+        public string? Data { get; set; }
 
         public DateTimeOffset Timestamp { get; set; }
 
-        private TimelineStamp(string name, string category, string data, DateTimeOffset timestamp)
+        private TimelineStamp(string name, string category, string? data, DateTimeOffset timestamp)
         {
-            Name = name;
-            Category = category;
+            _name = name ?? throw new ArgumentNullException(nameof(name));
+            _category = category ?? throw new ArgumentNullException(nameof(category));
+
             Data = data;
             Timestamp = timestamp;
         }
@@ -50,7 +51,7 @@ namespace Rin.Core.Record
         /// <param name="category"></param>
         /// <param name="data"></param>
         /// <param name="timestamp"></param>
-        public static void Stamp(string name, string category, string data = null, DateTimeOffset? timestamp = null)
+        public static void Stamp(string name, string category, string? data = null, DateTimeOffset? timestamp = null)
         {
             if (TimelineScope.CurrentScope.Value == null) return;
 

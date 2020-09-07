@@ -1,40 +1,60 @@
-name: CI
+name: Build-Development
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      DOTNET_NOLOGO: true
     
     steps:
     - uses: actions/checkout@v1
+
     - uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.0.100
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.402
-    - name: npm install & build & pack (Rin.Frontend)
+        dotnet-version: '3.1.x'
+
+    - name: "Set VersionSuffix"
+      run: |
+        echo "::set-env name=VERSION_SUFFIX::preview.`date '+%Y%m%d-%H%M%S'`+${GITHUB_SHA:0:6}"
+
+    - name: "Get git tag"
+      if: "contains(github.ref, 'refs/tags')"
+      run: echo ::set-env name=GIT_TAG::${GITHUB_REF#refs/tags/}
+
+    - name: "Rin.Frontend: build & pack"
       working-directory: src/Rin.Frontend
       run: |
-        npm install
-        npm run build
-        npm run pack
-    - name: npm install & build & pack (Rin.Mvc.Frontend)
+        yarn
+        yarn run build
+        yarn run pack
+
+    - name: "Rin.Mvc.Frontend: build"
       working-directory: src/Rin.Mvc.Frontend
       run: |
-        npm install
-        npm run build
+        yarn
+        yarn run build
+
     - name: Copy Rin.Mvc.Frontend
       run: |
         mkdir -p src/Rin.Mvc/EmbeddedResources/
-        cp -R src/Rin.Mvc.Frontend/build/static/* src/Rin.Mvc/EmbeddedResources/
-    - name: dotnet
+        cp -R src/Rin.Mvc.Frontend/dist/static/* src/Rin.Mvc/EmbeddedResources/
+
+    - name: "dotnet build & pack"
       run: |
         dotnet restore
         dotnet build -c Release
-        dotnet pack -c Release -o $GITHUB_WORKSPACE/artifacts --version-suffix preview.`date +%Y%m%d%H%M%S`
+        dotnet pack -c Release -o $GITHUB_WORKSPACE/artifacts --version-suffix "$VERSION_SUFFIX" -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
+
     - uses: actions/upload-artifact@master
       with:
         name: Packages

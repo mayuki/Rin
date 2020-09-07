@@ -1,16 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-    <Authors>Mayuki Sawatari</Authors>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <!-- NuGet Package Information -->
     <Description>This package adds support for Redis storage to Rin</Description>
-    <Copyright>Mayuki Sawatari</Copyright>
-    <PackageLicenseUrl>https://github.com/mayuki/Rin/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.png</PackageIconUrl>
-    <PackageTags>Rin</PackageTags>
-    <Version>1.0.5</Version>
+    <PackageTags>Rin Redis</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\docs\images\logo.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="StackExchange.Redis" Version="2.0.513" />

@@ -1,31 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-    <Authors>Mayuki Sawatari</Authors>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <!-- NuGet Package Information -->
     <Description>This package adds support for ASP.NET Core MVC to Rin</Description>
-    <Company>Mayuki Sawatari</Company>
-    <Copyright>Mayuki Sawatari</Copyright>
-    <PackageLicenseUrl>https://github.com/mayuki/Rin/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/mayuki/Rin</PackageProjectUrl>
     <PackageTags>Rin MVC</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/mayuki/Rin/master/docs/images/logo.png</PackageIconUrl>
-    <Version>1.0.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="EmbeddedResources\main.js" />
-    <None Remove="EmbeddedResources\main.js.map" />
+    <None Remove="EmbeddedResources\main.js.LICENSE.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\docs\images\logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="EmbeddedResources\main.js" />
-    <EmbeddedResource Include="EmbeddedResources\main.js.map" />
+    <EmbeddedResource Include="EmbeddedResources\main.js.LICENSE.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.DiagnosticAdapter" Version="2.1.0" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Extensions.DiagnosticAdapter" Version="3.1.5" />
   </ItemGroup>
 
   <ItemGroup>

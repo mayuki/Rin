@@ -10,16 +10,16 @@ namespace Rin.Logging
 {
     internal class RinLogger : ILogger
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IRinRequestRecordingFeatureAccessor _accessor;
 
-        public RinLogger(IHttpContextAccessor httpContextAccessor)
+        public RinLogger(IRinRequestRecordingFeatureAccessor accessor)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _accessor = accessor;
         }
 
         public IDisposable BeginScope<TState>(TState state)
         {
-            return null;
+            return NullDisposable.Instance;
         }
 
         public bool IsEnabled(LogLevel logLevel)
@@ -29,11 +29,18 @@ namespace Rin.Logging
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            var httpContext = _httpContextAccessor?.HttpContext;
-            var recording = httpContext?.Features?.Get<IRinRequestRecordingFeature>();
+            var recording = _accessor?.Feature?.Record;
             if (recording == null) return;
 
             TimelineStamp.Stamp(logLevel.ToString(), TimelineEventCategory.Trace, formatter(state, exception));
+        }
+
+        private class NullDisposable : IDisposable
+        {
+            public static IDisposable Instance { get; } = new NullDisposable();
+            public void Dispose()
+            {
+            }
         }
     }
 }

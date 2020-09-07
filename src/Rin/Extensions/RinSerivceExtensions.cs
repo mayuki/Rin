@@ -1,4 +1,4 @@
-﻿using Rin.Channel;
+using Rin.Channel;
 using Rin.Core;
 using Rin.Core.Event;
 using Rin.Core.Record;
@@ -8,30 +8,30 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Rin.Features;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class RinServiceExtensions
     {
-        public static void AddRin(this IServiceCollection services, Action<RinOptions> configure = null)
+        public static void AddRin(this IServiceCollection services, Action<RinOptions>? configure = null)
         {
             var options = new RinOptions();
             configure?.Invoke(options);
 
             services.AddHttpContextAccessor();
 
-            var eventBus = new MessageEventBus<RequestEventMessage>();
-            var eventBusStoreBody = new MessageEventBus<StoreBodyEventMessage>();
-            var transformerSet = new BodyDataTransformerSet(
-                new BodyDataTransformerPipeline(options.Inspector.RequestBodyDataTransformers),
-                new BodyDataTransformerPipeline(options.Inspector.ResponseBodyDataTransformers)
-            );
-
             // Other services
-            services.AddSingleton<BodyDataTransformerSet>(transformerSet);
-            services.AddSingleton<IRecordStorage>(options.RequestRecorder.StorageFactory);
-            services.AddSingleton<IMessageEventBus<RequestEventMessage>>(eventBus);
-            services.AddSingleton<IMessageEventBus<StoreBodyEventMessage>>(eventBusStoreBody);
+            services.AddSingleton<IRinRequestRecordingFeatureAccessor>(new RinRequestRecordingFeatureAccessor());
+            services.AddSingleton<BodyDataTransformerSet>(serviceProvider =>
+            {
+                var transformers = serviceProvider.GetServices<IBodyDataTransformer>().ToArray();
+                return new BodyDataTransformerSet(new BodyDataTransformerPipeline(transformers), new BodyDataTransformerPipeline(transformers));
+            });
+            services.TryAddSingleton<IRecordStorage, InMemoryRecordStorage>();
+            services.AddSingleton<IMessageEventBus<RequestEventMessage>>(new MessageEventBus<RequestEventMessage>());
+            services.AddSingleton<IMessageEventBus<StoreBodyEventMessage>>(new MessageEventBus<StoreBodyEventMessage>());
             services.AddSingleton<RinOptions>(options);
             services.AddSingleton<RinChannel>();
 

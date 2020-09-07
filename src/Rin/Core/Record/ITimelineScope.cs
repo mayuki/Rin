@@ -30,6 +30,6 @@ namespace Rin.Core.Record
         /// <param name="category"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        ITimelineScope Create(string name, string category, string data);
+        ITimelineScope Create(string name, string category, string? data);
     }
 }

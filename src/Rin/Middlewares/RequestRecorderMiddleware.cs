@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Rin.Channel;
@@ -14,6 +14,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace Rin.Middlewares
 {
@@ -22,16 +23,24 @@ namespace Rin.Middlewares
         private readonly RequestDelegate _next;
         private readonly IMessageEventBus<RequestEventMessage> _eventBus;
         private readonly IMessageEventBus<StoreBodyEventMessage> _eventBusStoreBody;
+        private readonly IRinRequestRecordingFeatureAccessor _recordingFeatureAccessor;
         private readonly ILogger _logger;
 
         public const string EventSourceName = "Rin.Middlewares.RequestRecorderMiddleware";
 
-        public RequestRecorderMiddleware(RequestDelegate next, IMessageEventBus<RequestEventMessage> eventBus, IMessageEventBus<StoreBodyEventMessage> eventBusStoreBody, RinChannel rinChannel, ILoggerFactory loggerFactory)
+        public RequestRecorderMiddleware(
+            RequestDelegate next,
+            IMessageEventBus<RequestEventMessage> eventBus,
+            IMessageEventBus<StoreBodyEventMessage> eventBusStoreBody,
+            RinChannel rinChannel,
+            ILoggerFactory loggerFactory,
+            IRinRequestRecordingFeatureAccessor recordingFeatureAccessor)
         {
             _next = next;
             _eventBus = eventBus;
             _eventBusStoreBody = eventBusStoreBody;
             _logger = loggerFactory.CreateLogger<RequestRecorderMiddleware>();
+            _recordingFeatureAccessor = recordingFeatureAccessor;
         }
 
         public async Task InvokeAsync(HttpContext context, RinOptions options)
@@ -45,9 +54,11 @@ namespace Rin.Middlewares
                 return;
             }
 
+            // Prepare AsyncLocals
             var timelineRoot = TimelineScope.Prepare();
+            _recordingFeatureAccessor.SetValue(null);
 
-            HttpRequestRecord record = default;
+            HttpRequestRecord? record = default;
             try
             {
                 record = await PreprocessAsync(context, options, timelineRoot);
@@ -73,7 +84,10 @@ namespace Rin.Middlewares
             {
                 try
                 {
-                    await PostprocessAsync(context, options, record);
+                    if (record != null)
+                    {
+                        await PostprocessAsync(context, options, record);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -91,8 +105,8 @@ namespace Rin.Middlewares
             {
                 Id = Guid.NewGuid().ToString(),
                 IsHttps = request.IsHttps,
-                Host = request.Host,
-                QueryString = request.QueryString,
+                Host = request.Host.Value,
+                QueryString = request.QueryString.Value,
                 Path = request.Path,
                 Method = request.Method,
                 RequestReceivedAt = DateTimeOffset.Now,
@@ -102,7 +116,9 @@ namespace Rin.Middlewares
             };
 
             // Set Rin recorder feature.
-            context.Features.Set<IRinRequestRecordingFeature>(new RinRequestRecordingFeature(record));
+            var feature = new RinRequestRecordingFeature(record);;
+            _recordingFeatureAccessor.SetValue(feature);
+            context.Features.Set<IRinRequestRecordingFeature>(feature);
 
             await _eventBus.PostAsync(new RequestEventMessage(EventSourceName, record, RequestEvent.BeginRequest));
 
@@ -133,16 +149,30 @@ namespace Rin.Middlewares
             record.ResponseStatusCode = response.StatusCode;
             record.ResponseHeaders = response.Headers.ToDictionary(k => k.Key, v => v.Value);
 
+            if (request.SupportsTrailers())
+            {
+                var trailers = context.Features.Get<IHttpRequestTrailersFeature>();
+                record.RequestTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
+            }
+            if (response.SupportsTrailers())
+            {
+                var trailers = context.Features.Get<IHttpResponseTrailersFeature>();
+                record.ResponseTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
+            }
+
             if (options.RequestRecorder.EnableBodyCapturing)
             {
+                var feature = context.Features.Get<IRinRequestRecordingFeature>();
+
                 var memoryStreamRequestBody = new MemoryStream();
                 request.Body.Position = 0; // rewind the stream to head
                 await request.Body.CopyToAsync(memoryStreamRequestBody);
 
-                var feature = context.Features.Get<IRinRequestRecordingFeature>();
-
                 await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Request, record.Id, memoryStreamRequestBody.ToArray()));
-                await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Response, record.Id, feature.ResponseDataStream.GetCapturedData()));
+                if (feature.ResponseDataStream != null)
+                {
+                    await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Response, record.Id, feature.ResponseDataStream.GetCapturedData()));
+                }
             }
 
             var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
@@ -164,7 +194,7 @@ namespace Rin.Middlewares
             var record = ((HttpRequestRecord)state);
 
             record.TransferringCompletedAt = DateTime.Now;
-            record.Transferring.Complete();
+            record.Transferring?.Complete();
             record.Timeline.Complete();
 
             return _eventBus.PostAsync(new RequestEventMessage(EventSourceName, record, RequestEvent.CompleteRequest)).AsTask();

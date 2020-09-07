@@ -1,6 +1,6 @@
 import * as monacoEditor from 'monaco-editor';
 import { Toggle } from 'office-ui-fabric-react';
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import {
   RequestRecordDetailPayload,
@@ -16,70 +16,58 @@ export interface IInspectorDetailTraceViewProps {
   toggleWordWrap: (value: boolean) => void;
 }
 
-export class InspectorDetailTraceView extends React.Component<IInspectorDetailTraceViewProps, {}> {
-  render() {
-    return (
-      <div className={styles.inspectorDetailTraceView}>
-        <div className={styles.inspectorDetailTraceView_Commands}>
-          <Toggle label="Enable WordWrap" checked={this.props.enableWordWrap} onChanged={this.props.toggleWordWrap} />
-        </div>
-        <TraceTextView
-          body={traceAsText(collectTraces(this.props.record.Timeline))}
-          enableWordWrap={this.props.enableWordWrap}
+export function InspectorDetailTraceView(props: IInspectorDetailTraceViewProps) {
+  return (
+    <div className={styles.inspectorDetailTraceView}>
+      <div className={styles.inspectorDetailTraceView_Commands}>
+        <Toggle
+          label="Enable WordWrap"
+          inlineLabel={true}
+          checked={props.enableWordWrap}
+          onChanged={props.toggleWordWrap}
         />
       </div>
-    );
-  }
+      <TraceTextView
+        body={traceAsText(collectTraces(props.record.Timeline))}
+        enableWordWrap={props.enableWordWrap}
+      />
+    </div>
+  );
 }
 
-class TraceTextView extends React.Component<{ body: string; enableWordWrap: boolean }, {}> {
-  private unsubscribe: () => void;
-  private editor: monacoEditor.editor.IStandaloneCodeEditor;
+export function TraceTextView(props: { body: string; enableWordWrap: boolean }) {
+  const [editor, setEditor] = useState<monacoEditor.editor.IStandaloneCodeEditor>();
 
-  componentDidMount() {
+  useEffect(() => {
     const listener = () => {
-      this.editor.layout({ width: 0, height: 0 });
+      editor?.layout({ width: 0, height: 0 });
+      editor?.layout();
     };
 
     window.addEventListener('resize', listener);
-    this.unsubscribe = () => window.removeEventListener('resize', listener);
 
     // force re-layout
-    this.editor.layout({ width: 0, height: 0 });
-  }
+    editor?.layout({ width: 0, height: 0 });
+    editor?.layout();
 
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
+    return () => window.removeEventListener('resize', listener);
+  }, [editor]);
 
-  componentDidUpdate() {
-    this.editor.updateOptions(this.monacoOptions);
-  }
-
-  editorDidMount = (editor: monacoEditor.editor.IStandaloneCodeEditor) => {
-    this.editor = editor;
+  const monacoOptions = {
+    readOnly: true,
+    automaticLayout: true,
+    wordWrap: props.enableWordWrap ? 'on' : 'off' as 'on' | 'off'
   };
 
-  render() {
-    return (
-      <MonacoEditor
-        width="100%"
-        height="100%"
-        options={{ ...this.monacoOptions, theme: 'rin-log' }}
-        language={'text/x-rin-log'}
-        value={this.props.body}
-        editorDidMount={this.editorDidMount}
-      />
-    );
-  }
-
-  private get monacoOptions(): monacoEditor.editor.IEditorOptions {
-    return {
-      readOnly: true,
-      automaticLayout: true,
-      wordWrap: this.props.enableWordWrap ? 'on' : 'off'
-    };
-  }
+  return <MonacoEditor
+    width="100%"
+    height="100%"
+    options={monacoOptions}
+    language={'text/x-rin-log'}
+    value={props.body}
+    editorDidMount={editor => setEditor(editor)}
+    theme="rin-log"
+  />;
 }
 
 function traceAsText(timelineDataArray: TimelineData[]) {

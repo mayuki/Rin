@@ -21,7 +21,7 @@ namespace Rin.Core.Record
             set { }
         }
 
-        public string Data
+        public string? Data
         {
             get => null;
             set { }
@@ -49,6 +49,6 @@ namespace Rin.Core.Record
         {
         }
 
-        ITimelineScope ITimelineScopeCreatable.Create(string name, string category, string data) => this;
+        ITimelineScope ITimelineScopeCreatable.Create(string name, string category, string? data) => this;
     }
 }

@@ -1,19 +1,19 @@
 import { CheckboxVisibility, DetailsList, IColumn, Icon, SearchBox } from 'office-ui-fabric-react';
-import { Selection, SelectionMode } from 'office-ui-fabric-react/lib/Selection';
-import * as React from 'react';
+import { Selection, SelectionMode, IObjectWithKey } from 'office-ui-fabric-react/lib/Selection';
+import React, { useEffect } from 'react';
 import { RequestEventPayload } from '../../api/IRinCoreHub';
 import * as styles from './Inspector.InspectorEventsList.css';
 
 export interface InspectorEventsListProps {
-  onFilterChange: (newValue: string) => void;
+  onFilterChange: (event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) => void;
   query: string;
   selectedId: string | undefined;
   filteredItems: RequestEventPayload[];
   onActiveItemChanged: (item: RequestEventPayload) => void;
 }
 
-export class InspectorEventsList extends React.Component<InspectorEventsListProps> {
-  private readonly columns: IColumn[] = [
+export function InspectorEventsList(props: InspectorEventsListProps) {
+  const columns: IColumn[] = [
     {
       key: 'icon',
       name: '',
@@ -27,16 +27,16 @@ export class InspectorEventsList extends React.Component<InspectorEventsListProp
               item.Path.match(/\.(jpg|png|svg)/)
                 ? 'PictureCenter'
                 : item.Path.match(/\.(js|vbs)/)
-                  ? 'Script'
-                  : item.Path.match(/\.(css)/)
-                    ? 'FileCSS'
-                    : item.Path.match(/\.html?/)
-                      ? 'FileHTML'
-                      : 'TextDocument'
+                ? 'Script'
+                : item.Path.match(/\.(css)/)
+                ? 'FileCSS'
+                : item.Path.match(/\.html?/)
+                ? 'FileHTML'
+                : 'TextDocument'
             }
           />
         );
-      }
+      },
     },
     {
       key: 'Path',
@@ -54,7 +54,7 @@ export class InspectorEventsList extends React.Component<InspectorEventsListProp
             {new Date(item.RequestReceivedAt).toLocaleString()}
           </div>
         </div>
-      )
+      ),
     },
     {
       key: 'ResponseStatusCode',
@@ -72,45 +72,37 @@ export class InspectorEventsList extends React.Component<InspectorEventsListProp
           >
             {item.ResponseStatusCode}
           </span>
-        )
-    }
+        ),
+    },
   ];
 
-  private readonly selection = new Selection({
-    getKey: (item: any, index: number) => item.Id
+  const selection = new Selection({
+    getKey: (item: IObjectWithKey, index?: number) => (item as { Id: string }).Id,
   });
 
-  componentDidUpdate() {
-    if (this.props.selectedId != null) {
-      const selections = this.selection.getSelection();
-      if (selections.length > 0 && (selections[0] as any).Id === this.props.selectedId) {
-        return;
-      }
-      this.selection.setAllSelected(false);
-      this.selection.setKeySelected(this.props.selectedId, true, false);
+  if (props.selectedId != null) {
+    const selections = selection.getSelection();
+    if (selections.length > 0 && (selections[0] as { Id: string }).Id === props.selectedId) {
+      return <></>;
     }
+    selection.setAllSelected(false);
+    selection.setKeySelected(props.selectedId, true, false);
   }
 
-  render() {
-    return (
-      <>
-        <SearchBox
-          placeholder="Filter"
-          underlined={true}
-          onChange={this.props.onFilterChange}
-          value={this.props.query}
-        />
-        <DetailsList
-          compact={true}
-          checkboxVisibility={CheckboxVisibility.hidden}
-          columns={this.columns}
-          selection={this.selection}
-          selectionMode={SelectionMode.single}
-          items={this.props.filteredItems}
-          onActiveItemChanged={this.props.onActiveItemChanged}
-          selectionPreservedOnEmptyClick={true}
-        />
-      </>
-    );
-  }
+  return (
+    <>
+      <SearchBox placeholder="Filter" underlined={true} onChange={props.onFilterChange} value={props.query} />
+      <DetailsList
+        className={styles.inspectorEventsList}
+        compact={true}
+        checkboxVisibility={CheckboxVisibility.hidden}
+        columns={columns}
+        selection={selection}
+        selectionMode={SelectionMode.single}
+        items={props.filteredItems}
+        onActiveItemChanged={props.onActiveItemChanged}
+        selectionPreservedOnEmptyClick={true}
+      />
+    </>
+  );
 }

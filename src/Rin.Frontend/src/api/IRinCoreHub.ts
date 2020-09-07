@@ -32,7 +32,9 @@ export interface RequestRecordDetailPayload {
   ResponseStatusCode: number;
   RemoteIpAddress: string;
   RequestHeaders: { [key: string]: string[] };
+  RequestTrailers: { [key: string]: string[] } | null;
   ResponseHeaders: { [key: string]: string[] };
+  ResponseTrailers: { [key: string]: string[] } | null;
   RequestReceivedAt: string;
   ProcessingStartedAt: string;
   ProcessingCompletedAt: string;
@@ -76,7 +78,7 @@ export enum TimelineEventCategory {
   AspNetCoreCommon = 'Rin.Timeline.AspNetCore.Common',
   AspNetCoreMvcView = 'Rin.Timeline.AspNetCore.Mvc.View',
   AspNetCoreMvcResult = 'Rin.Timeline.AspNetCore.Mvc.Result',
-  AspNetCoreMvcAction = 'Rin.Timeline.AspNetCore.Mvc.Action'
+  AspNetCoreMvcAction = 'Rin.Timeline.AspNetCore.Mvc.Action',
 }
 
 // from Microsoft.Extensions.Logging.LogLevel
@@ -87,5 +89,5 @@ export enum LogLevel {
   Warning = 3,
   Error = 4,
   Critical = 5,
-  None = 6
+  None = 6,
 }

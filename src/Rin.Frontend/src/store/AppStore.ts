@@ -1,21 +1,24 @@
-import { createBrowserHistory } from 'history';
 import { action, observable, runInAction } from 'mobx';
 import { createHubClient, IHubClient } from '../api/hubClient';
 import { IRinCoreHub } from '../api/IRinCoreHub';
-import { inspectorStore } from './InspectorStore';
-import { inspectorTimelineStore } from './InspectorTimelineStore';
+import { useContext, createContext } from 'react';
 
 export interface IAppStoreProps {
   appStore: AppStore;
 }
 
 export class AppStore {
-  hubClient: IHubClient & IRinCoreHub;
+  hubClient!: IHubClient & IRinCoreHub;
+
+  @observable
+  isReady = false;
 
   @observable
   viewMode: ViewMode = ViewMode.Inspector;
+
   @observable
-  connected: boolean = false;
+  connected = false;
+
   @observable
   serverInfo = {
     Version: '',
@@ -23,13 +26,10 @@ export class AppStore {
     FeatureFlags: [] as string[],
     Host: '',
     EndPointBase: '/rin',
-    PathBase: '/rin'
+    PathBase: '/rin',
   };
 
-  endpointUrlBase: string;
-
-  inspectorTimelineStore = inspectorTimelineStore;
-  inspectorStore = inspectorStore;
+  endpointUrlBase!: string;
 
   @action.bound
   async updateServerInfoAsync() {
@@ -71,9 +71,6 @@ export class AppStore {
     this.endpointUrlBase = `${location.protocol}//${host}${endPointBasePath}`;
     this.hubClient = createHubClient<IRinCoreHub>(`${protocol}//${host}${channelEndPoint}`);
 
-    inspectorStore.ready(this.hubClient, createBrowserHistory({ basename: pathBase }));
-    inspectorTimelineStore.ready();
-
     this.updateServerInfoAsync();
     this.serverInfo = { ...this.serverInfo, Host: host, PathBase: pathBase, EndPointBase: endPointBasePath };
 
@@ -86,11 +83,14 @@ export class AppStore {
     this.hubClient.on('reconnecting', () => {
       this.updateServerInfoAsync();
     });
+
+    this.isReady = true;
   }
 }
 
 export enum ViewMode {
-  Inspector
+  Inspector,
 }
 
-export const appStore = new AppStore();
+const appStoreContext = createContext(new AppStore());
+export const useAppStore = () => useContext(appStoreContext);

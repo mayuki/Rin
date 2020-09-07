@@ -9,14 +9,16 @@ namespace Rin.IO
 {
     public class DataCaptureStream : Stream
     {
-        private readonly MemoryStream _capturedData = new MemoryStream();
+        private readonly MemoryStream _capturedData;
         private readonly Stream _innerStream;
 
-        public DataCaptureStream(Stream stream)
+        public DataCaptureStream(Stream stream, MemoryStream? capturedDataStream = null)
         {
             _innerStream = stream;
-            _capturedData = new MemoryStream();
+            _capturedData = capturedDataStream ?? new MemoryStream();
         }
+
+        public Stream CaptureStream => _capturedData;
 
         public byte[] GetCapturedData() => _capturedData.ToArray();
 

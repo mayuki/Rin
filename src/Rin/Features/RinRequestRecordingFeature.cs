@@ -11,8 +11,8 @@ namespace Rin.Features
 {
     public class RinRequestRecordingFeature : IRinRequestRecordingFeature
     {
-        public HttpRequestRecord Record { get; private set; }
-        public DataCaptureStream ResponseDataStream { get; set; }
+        public HttpRequestRecord Record { get; }
+        public DataCaptureStream? ResponseDataStream { get; set; }
 
         public RinRequestRecordingFeature(HttpRequestRecord record)
         {

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Rin.Core.Record;
 using Rin.Core.Storage;
 using System;
@@ -15,7 +15,5 @@ namespace Rin.Core
         public bool EnableBodyCapturing { get; set; } = true;
 
         public bool AllowRunningOnProduction { get; set; } = false;
-
-        public Func<IServiceProvider, IRecordStorage> StorageFactory { get; set; } = InMemoryRecordStorage.Factory;
     }
 }

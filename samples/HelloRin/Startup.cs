@@ -1,14 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HelloRin.Models;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace HelloRin
 {
@@ -24,33 +22,33 @@ namespace HelloRin
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
+            services.AddControllersWithViews()
+                .AddRinMvcSupport();
+
+            services.AddGrpc();
+
+            // Register gRPC client for pseudo-client request.
+            services.AddGrpcClient<Greeter.GreeterClient>(options =>
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.Address = new Uri("https://localhost:5001");
             });
-
-
-            services.AddMvc()
-                .AddRinMvcSupport()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddRin(options =>
             {
-                // Optional: Use Redis as storage
-                // options.RequestRecorder.StorageFactory = Rin.Storage.Redis.RedisRecordStorage.DefaultFactoryWithOptions(redisOptions =>
-                // {
-                //     redisOptions.ConnectionConfiguration = "[host]";
-                // });
                 options.RequestRecorder.RetentionMaxRequests = 100;
                 options.RequestRecorder.Excludes.Add(request => request.Path.Value.EndsWith(".js") || request.Path.Value.EndsWith(".css") || request.Path.Value.EndsWith(".svg"));
                 options.Inspector.ResponseBodyDataTransformers.Add(new RinCustomContentTypeTransformer());
             });
+
+            // Optional: Use Redis as storage
+            //services.AddRinRedisStorage(options =>
+            //{
+            //    options.ConnectionConfiguration = "localhost:6379";
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -62,16 +60,24 @@ namespace HelloRin
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
 
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapGrpcService<GreeterService>();
+
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

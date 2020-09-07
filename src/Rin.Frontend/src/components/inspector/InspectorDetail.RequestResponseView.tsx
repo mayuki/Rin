@@ -1,6 +1,7 @@
+import { hexy } from 'hexy';
 import * as monacoEditor from 'monaco-editor';
 import { Pivot, PivotItem } from 'office-ui-fabric-react';
-import * as React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { ObjectInspector } from 'react-inspector';
 import MonacoEditor from 'react-monaco-editor';
 import SplitterLayout from 'react-splitter-layout';
@@ -12,7 +13,7 @@ import {
   isImage,
   isJson,
   isText,
-  isWwwFormUrlencoded
+  isWwwFormUrlencoded,
 } from '../../utilities';
 import { KeyValueDetailList } from '../shared/KeyValueDetailList';
 import * as styles from './InspectorDetail.RequestResponseView.css';
@@ -21,226 +22,252 @@ export interface IInspectorRequestResponseViewProps {
   record: RequestRecordDetailPayload;
   generals: { key: string; value: string }[];
   headers: { [key: string]: string[] };
+  trailers: { [key: string]: string[] } | null;
   body: BodyDataPayload | null;
   paneSize: number | null;
   onPaneSizeChange: (newSize: number) => void;
 }
 
-type PreviewType = 'Tree' | 'Source' | 'List';
+type PreviewType = 'Tree' | 'Source' | 'List' | 'Hex';
 
-export class InspectorDetailRequestResponseView extends React.Component<
-  IInspectorRequestResponseViewProps,
-  { bodyView: PreviewType }
-> {
-  constructor(props: IInspectorRequestResponseViewProps) {
-    super(props);
-    this.state = {
-      bodyView: 'Source'
-    };
-  }
+export function InspectorDetailRequestResponseView(props: IInspectorRequestResponseViewProps) {
+  const [bodyView, setBodyView] = useState<PreviewType>('Source');
+  const [paneToken, setPaneToken] = useState(0);
 
-  componentWillReceiveProps() {
-    const contentType = this.props.record.IsCompleted && getContentType(this.props.headers);
-    if (!(contentType && isJson(contentType) && this.state.bodyView === 'Tree')) {
-      this.setState({ bodyView: 'Source' });
+  const contentType = props.record.IsCompleted
+    ? props.body != null && props.body.PresentationContentType !== ''
+      ? props.body.PresentationContentType
+      : getContentType(props.headers)
+    : null;
+  const isTransformed = props.body != null && props.body.PresentationContentType !== '';
+  const hasBody = props.body != null && props.body.Body != null && props.body.Body.length > 0;
+  const body =
+    props.body != null && props.body.Body != null && props.body.Body.length > 0
+      ? props.body.IsBase64Encoded
+        ? atob(props.body.Body)
+        : props.body.Body
+      : '';
+
+  const canPreview = (contentType: string) => {
+    return isJson(contentType) || isWwwFormUrlencoded(contentType) || isText(contentType) || isImage(contentType);
+  };
+
+  const onBodyPivotItemClicked = (item?: PivotItem) => {
+    if (item != null && item.props.itemKey != null) {
+      setBodyView(item.props.itemKey as PreviewType);
     }
-  }
+  };
 
-  render() {
-    const contentType = this.props.record.IsCompleted
-      ? this.props.body != null && this.props.body.PresentationContentType !== ''
-        ? this.props.body.PresentationContentType
-        : getContentType(this.props.headers)
-      : null;
-    const isTransformed = this.props.body != null && this.props.body.PresentationContentType !== '';
-    const hasBody = this.props.body != null && this.props.body.Body != null && this.props.body.Body.length > 0;
-    const body =
-      this.props.body != null && this.props.body.Body != null && this.props.body.Body.length > 0
-        ? this.props.body.IsBase64Encoded
-          ? atob(this.props.body.Body)
-          : this.props.body.Body
-        : '';
+  useEffect(() => {
+    if (!(contentType && isJson(contentType) && bodyView === 'Tree')) {
+      setBodyView('Source');
+    }
+  }, [contentType]);
 
-    return (
-      <div className={styles.inspectorRequestResponseView}>
-        <SplitterLayout
-          vertical={true}
-          percentage={true}
-          secondaryInitialSize={this.props.paneSize || undefined}
-          onSecondaryPaneSizeChange={this.props.onPaneSizeChange}
-          primaryMinSize={10}
-          secondaryMinSize={10}
-        >
-          <div>
-            <div className={styles.inspectorRequestResponseView_General}>
-              {this.props.generals != null &&
-                this.props.generals.length > 0 && (
-                  <KeyValueDetailList keyName="Name" valueName="Value" items={this.props.generals} />
-                )}
-            </div>
+  const trailers = props.trailers;
+  return (
+    <div className={styles.inspectorRequestResponseView}>
+      <SplitterLayout
+        vertical={true}
+        percentage={true}
+        secondaryInitialSize={props.paneSize || undefined}
+        onSecondaryPaneSizeChange={(newSize) => {
+          props.onPaneSizeChange(newSize);
+          setPaneToken(paneToken + 1);
+        }}
+        primaryMinSize={10}
+        secondaryMinSize={10}
+      >
+        <div>
+          <div className={styles.inspectorRequestResponseView_General}>
+            {props.generals != null && props.generals.length > 0 && (
+              <KeyValueDetailList keyName="Name" valueName="Value" items={props.generals} />
+            )}
+          </div>
+          <div className={styles.inspectorRequestResponseView_Headers}>
+            <KeyValueDetailList
+              keyName="Header"
+              valueName="Value"
+              items={Object.keys(props.headers).map((x) => ({
+                key: x,
+                value: props.headers[x].join('\n'),
+              }))}
+            />
+          </div>
+          {trailers != null && Object.keys(trailers).length > 0 && (
             <div className={styles.inspectorRequestResponseView_Headers}>
               <KeyValueDetailList
-                keyName="Header"
+                keyName="Trailer"
                 valueName="Value"
-                items={Object.keys(this.props.headers).map(x => ({
+                items={Object.keys(trailers).map((x) => ({
                   key: x,
-                  value: this.props.headers[x].join('\n')
+                  value: trailers[x].join('\n'),
                 }))}
               />
             </div>
-          </div>
-          <div className={styles.inspectorRequestResponseView_Body}>
-            {hasBody &&
-              contentType &&
-              this.canPreview(contentType) && (
+          )}
+        </div>
+        <div className={styles.inspectorRequestResponseView_Body}>
+          {hasBody && contentType && canPreview(contentType) && (
+            <>
+              <Pivot selectedKey={bodyView} onLinkClick={onBodyPivotItemClicked}>
+                {isJson(contentType) && <PivotItem itemKey="Tree" headerText="Tree" itemIcon="RowsChild" />}
+                {isWwwFormUrlencoded(contentType) && <PivotItem itemKey="List" headerText="List" itemIcon="ViewList" />}
+                <PivotItem
+                  itemKey="Source"
+                  headerText={isTransformed ? `View as ${contentType}` : 'Source'}
+                  itemIcon="Code"
+                />
+                <PivotItem itemKey="Hex" headerText="Hex" itemIcon="ComplianceAudit" />
+              </Pivot>
+              {bodyView === 'List' && (
+                <div className={styles.inspectorRequestResponseViewKeyValueDetailList}>
+                  <KeyValueDetailList keyName="Key" valueName="Value" items={createKeyValuePairFromUrlEncoded(body)} />
+                </div>
+              )}
+              {bodyView === 'Tree' && (
+                <div className={styles.inspectorRequestResponseViewObjectInspector}>
+                  <ObjectInspector data={JSON.parse(body)} />
+                </div>
+              )}
+              {bodyView === 'Source' && (
                 <>
-                  <Pivot selectedKey={this.state.bodyView} onLinkClick={this.onBodyPivotItemClicked}>
-                    {isJson(contentType) ? <PivotItem itemKey="Tree" headerText="Tree" itemIcon="RowsChild" /> : <></>}
-                    {isWwwFormUrlencoded(contentType) ? (
-                      <PivotItem itemKey="List" headerText="List" itemIcon="ViewList" />
-                    ) : (
-                      <></>
-                    )}
-                    <PivotItem
-                      itemKey="Source"
-                      headerText={isTransformed ? `View as ${contentType}` : 'Source'}
-                      itemIcon="Code"
-                    />
-                  </Pivot>
-                  {this.state.bodyView === 'List' && (
-                    <div className={styles.inspectorRequestResponseViewKeyValueDetailList}>
-                      <KeyValueDetailList
-                        keyName="Key"
-                        valueName="Value"
-                        items={createKeyValuePairFromUrlEncoded(body)}
-                      />
-                    </div>
+                  {isText(contentType) && (
+                    <EditorPreview contentType={contentType} body={body} paneResizeToken={paneToken} />
                   )}
-                  {this.state.bodyView === 'Tree' && (
-                    <div className={styles.inspectorRequestResponseViewObjectInspector}>
-                      <ObjectInspector data={JSON.parse(body)} />
-                    </div>
-                  )}
-                  {this.state.bodyView === 'Source' && (
-                    <>
-                      {isText(contentType) && <EditorPreview contentType={contentType} body={body} />}
-                      {isImage(contentType) && (
-                        <ImagePreview contentType={contentType} bodyAsBase64={this.props.body!.Body} />
-                      )}
-                    </>
+                  {isImage(contentType) && props.body != null && (
+                    <ImagePreview contentType={contentType} bodyAsBase64={props.body.Body} />
                   )}
                 </>
               )}
-          </div>
-        </SplitterLayout>
-      </div>
-    );
-  }
-
-  private canPreview(contentType: string) {
-    return isJson(contentType) || isWwwFormUrlencoded(contentType) || isText(contentType) || isImage(contentType);
-  }
-
-  private onBodyPivotItemClicked = (item: PivotItem) => {
-    this.setState({ bodyView: item.props.itemKey as PreviewType });
-  };
+              {bodyView === 'Hex' && props.body != null && (
+                <HexDumpPreview
+                  body={props.body.Body}
+                  isBase64Encoded={props.body.IsBase64Encoded}
+                  paneResizeToken={paneToken}
+                />
+              )}
+            </>
+          )}
+        </div>
+      </SplitterLayout>
+    </div>
+  );
 }
 
-class EditorPreview extends React.Component<{ contentType: string; body: string }, {}> {
-  private unsubscribe: () => void;
-  private editor: monacoEditor.editor.IStandaloneCodeEditor;
+function HexDumpPreview(props: { body: string; isBase64Encoded: boolean; paneResizeToken: number }) {
+  function convertBase64StringToUint8Array(data: string) {
+    const binary = atob(data);
+    const array = new Array<number>(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      array[i] = binary.charCodeAt(i);
+    }
+    return array;
+  }
 
-  componentDidMount() {
+  const body = props.isBase64Encoded ? convertBase64StringToUint8Array(props.body) : props.body;
+  const hexed = hexy(body, { format: 'twos', caps: 'upper' }).trimEnd();
+
+  return (
+    <EditorPreview
+      contentType="text/x-rin-hex-dump"
+      language="text/x-rin-hex-dump"
+      body={hexed}
+      paneResizeToken={props.paneResizeToken}
+      theme="rin-hex-dump"
+    />
+  );
+}
+
+monacoEditor.editor.defineTheme('rin-hex-dump', {
+  base: 'vs',
+  colors: {},
+  rules: [{ token: 'address-token', foreground: 'aaaaaa' }],
+  inherit: true,
+});
+monacoEditor.languages.register({ id: 'text/x-rin-hex-dump' });
+monacoEditor.languages.setMonarchTokensProvider('text/x-rin-hex-dump', {
+  tokenizer: {
+    root: [[/^[0-9a-fA-F]+:/, 'address-token']],
+  },
+});
+
+function EditorPreview(props: {
+  contentType: string;
+  body: string;
+  paneResizeToken: number;
+  theme?: string;
+  language?: string;
+}) {
+  const [editor, setEditor] = useState<monacoEditor.editor.IStandaloneCodeEditor>();
+
+  useEffect(() => {
     const listener = () => {
-      this.editor.layout({ width: 0, height: 0 });
+      editor?.layout();
     };
 
     window.addEventListener('resize', listener);
-    this.unsubscribe = () => window.removeEventListener('resize', listener);
 
     // force re-layout
-    this.editor.layout({ width: 0, height: 0 });
-  }
+    editor?.layout();
 
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
+    return () => window.removeEventListener('resize', listener);
+  }, [editor, props.paneResizeToken]);
 
-  editorDidMount = (editor: monacoEditor.editor.IStandaloneCodeEditor) => {
-    this.editor = editor;
+  const monacoOptions: monacoEditor.editor.IEditorConstructionOptions = {
+    readOnly: true,
+    automaticLayout: true,
+    wordWrap: 'on',
   };
 
-  render() {
-    return (
+  return (
+    <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
       <MonacoEditor
         width="100%"
         height="100%"
-        options={{ readOnly: true, automaticLayout: true, wordWrap: 'on', theme: 'vs' }}
-        language={getMonacoLanguage(this.props.contentType)}
-        value={this.props.body}
-        editorDidMount={this.editorDidMount}
+        options={monacoOptions}
+        theme={props.theme ?? 'vs'}
+        language={props.language ?? getMonacoLanguage(props.contentType)}
+        value={props.body}
+        editorDidMount={(editor) => setEditor(editor)}
       />
-    );
-  }
+    </div>
+  );
 }
 
-class ImagePreview extends React.Component<
-  { contentType: string; bodyAsBase64: string },
-  { width: number; height: number; loaded: boolean }
-> {
-  private imagePreview = React.createRef<HTMLImageElement>();
+function ImagePreview(props: { contentType: string; bodyAsBase64: string }) {
+  const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+  const [loaded, setLoaded] = useState(false);
+  const imagePreviewRef = useRef<HTMLImageElement>(null);
 
-  constructor(props: { contentType: string; bodyAsBase64: string }) {
-    super(props);
+  useEffect(() => {
+    if (imagePreviewRef.current != null) {
+      const imageE = imagePreviewRef.current;
+      const loaded = () => {
+        setImageSize({ width: imageE.naturalWidth, height: imageE.naturalHeight });
+        setLoaded(true);
+      };
 
-    this.state = {
-      width: 0,
-      height: 0,
-      loaded: false
-    };
-  }
+      imageE.addEventListener('load', loaded);
+      return () => imageE.removeEventListener('load', loaded);
+    }
+  }, []);
 
-  componentDidMount() {
-    this.imagePreview.current!.addEventListener('load', this.onImageLoad);
-  }
-
-  componentWillUnmount() {
-    this.imagePreview.current!.removeEventListener('load', this.onImageLoad);
-  }
-
-  componentWillReceiveProps() {
-    this.setState({ loaded: false });
-  }
-
-  render() {
-    return (
-      <div className={styles.inspectorRequestResponseViewImagePreview}>
-        <figure>
-          <div className={styles.inspectorRequestResponseViewImagePreview_Image}>
-            <img
-              ref={this.imagePreview}
-              src={'data:' + this.props.contentType + ';base64,' + this.props.bodyAsBase64}
-            />
-          </div>
-          <figcaption>
-            {this.state.loaded && (
-              <>
-                {this.state.width} x {this.state.height} |
-              </>
-            )}{' '}
-            {this.props.contentType}
-          </figcaption>
-        </figure>
-      </div>
-    );
-  }
-
-  private onImageLoad = () => {
-    const imageE = this.imagePreview.current!;
-    this.setState({
-      loaded: true,
-      width: imageE.naturalWidth,
-      height: imageE.naturalHeight
-    });
-  };
+  return (
+    <div className={styles.inspectorRequestResponseViewImagePreview}>
+      <figure>
+        <div className={styles.inspectorRequestResponseViewImagePreview_Image}>
+          <img ref={imagePreviewRef} src={'data:' + props.contentType + ';base64,' + props.bodyAsBase64} />
+        </div>
+        <figcaption>
+          {loaded && (
+            <>
+              {imageSize.width} x {imageSize.height} |
+            </>
+          )}{' '}
+          {props.contentType}
+        </figcaption>
+      </figure>
+    </div>
+  );
 }

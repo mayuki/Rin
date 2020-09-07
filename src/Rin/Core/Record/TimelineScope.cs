@@ -7,13 +7,14 @@ using System.Threading;
 
 namespace Rin.Core.Record
 {
-    [DebuggerDisplay("TimelineScope: {Name}")]
+    [DebuggerDisplay("TimelineScope: {Name,nq}")]
     public class TimelineScope : ITimelineScopeCreatable
     {
-        internal static readonly AsyncLocal<TimelineScope> CurrentScope = new AsyncLocal<TimelineScope>();
+        internal static readonly AsyncLocal<TimelineScope?> CurrentScope = new AsyncLocal<TimelineScope?>();
 
-        private Lazy<ConcurrentQueue<ITimelineEvent>> _children { get; } = new Lazy<ConcurrentQueue<ITimelineEvent>>(() => new ConcurrentQueue<ITimelineEvent>(), LazyThreadSafetyMode.PublicationOnly);
-        private TimelineScope _parent { get; }
+        private readonly Lazy<ConcurrentQueue<ITimelineEvent>> _children;
+        private readonly TimelineScope? _parent;
+
         private bool _completed;
         private string _name;
         private string _category;
@@ -25,16 +26,16 @@ namespace Rin.Core.Record
         public string Name
         {
             get => _name;
-            set => SetValue(ref _name, value);
+            set => _name = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         public string Category
         {
             get => _category;
-            set => SetValue(ref _category, value);
+            set => _category = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        public string Data { get; set; }
+        public string? Data { get; set; }
 
         public IReadOnlyCollection<ITimelineEvent> Children => _children.IsValueCreated ? _children.Value : (IReadOnlyCollection<ITimelineEvent>)Array.Empty<ITimelineEvent>();
 
@@ -42,19 +43,23 @@ namespace Rin.Core.Record
         /// Prepare a TimelineScope for current ExecutionContext (async execution flow).
         /// </summary>
         /// <returns></returns>
-        internal static TimelineScope Prepare()
+        public static TimelineScope Prepare()
         {
+            if (CurrentScope.Value != null) throw new InvalidOperationException("TimelineScope is already prepared in current execution.");
             CurrentScope.Value = new TimelineScope("Root", TimelineEventCategory.Root, null);
             return CurrentScope.Value;
         }
 
-        private TimelineScope(string name, string category, string data)
+        private TimelineScope(string name, string category, string? data)
         {
+            _name = name ?? throw new ArgumentNullException(nameof(name));
+            _category = category ?? throw new ArgumentNullException(nameof(category));
+
             Timestamp = DateTimeOffset.Now;
-            Category = category;
-            Name = name;
             Data = data;
+
             _parent = CurrentScope.Value;
+            _children = new Lazy<ConcurrentQueue<ITimelineEvent>>(() => new ConcurrentQueue<ITimelineEvent>(), LazyThreadSafetyMode.PublicationOnly);
 
             if (_parent != null)
             {
@@ -71,22 +76,16 @@ namespace Rin.Core.Record
         /// <param name="category"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static ITimelineScope Create([CallerMemberName]string name = "", string category = TimelineEventCategory.Method, string data = null)
+        public static ITimelineScope Create([CallerMemberName]string name = "", string category = TimelineEventCategory.Method, string? data = null)
         {
             if (CurrentScope.Value == null) return NullTimelineScope.Instance;
 
             return ((ITimelineScopeCreatable)CurrentScope.Value).Create(name, category, data);
         }
 
-        ITimelineScope ITimelineScopeCreatable.Create(string name, string category, string data)
+        ITimelineScope ITimelineScopeCreatable.Create(string name, string category, string? data)
         {
             return new TimelineScope(name, category, data);
-        }
-
-        private void SetValue<T>(ref T field, T value)
-        {
-            if (value == null) throw new ArgumentNullException(nameof(value));
-            field = value;
         }
 
         internal void AddChild(ITimelineEvent timelineEvent)

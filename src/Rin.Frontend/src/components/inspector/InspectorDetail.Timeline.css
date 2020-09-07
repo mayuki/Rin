@@ -7,14 +7,6 @@
 .inspectorDetailTimelineView_Commands {
   margin: 0 16px;
 }
-.inspectorDetailTimelineView_Commands :global(.ms-Toggle) {
-  display: inline-block;
-}
-.inspectorDetailTimelineView_Commands :global(.ms-Toggle) label {
-  display: inline-block;
-  vertical-align: top;
-  margin-right: 8px;
-}
 
 .timeline {
   width: 100%;
@@ -146,6 +138,9 @@
 
 .timelineCalloutContent {
   margin: 0.83em 12px;
+}
+.timelineCalloutContent h2 {
+  font-weight: 600;
 }
 .timelineCalloutContent_data {
   max-width: 70vw;

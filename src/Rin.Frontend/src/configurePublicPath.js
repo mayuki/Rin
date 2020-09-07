@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // Configure public_path on the fly
 // https://webpack.js.org/guides/public-path/#on-the-fly
 

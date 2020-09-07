@@ -21,7 +21,7 @@ namespace Rin.Channel
         private static Func<RinChannel, TClient> CreateFactory()
         {
             var method = ProxyType.GetMethod("Create", BindingFlags.Static | BindingFlags.Public); // 'ProxyOfHub.Create' static method
-            return (Func<RinChannel, TClient>)method.CreateDelegate(typeof(Func<RinChannel, TClient>));
+            return (Func<RinChannel, TClient>)method!.CreateDelegate(typeof(Func<RinChannel, TClient>));
         }
     }
 

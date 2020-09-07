@@ -47,9 +47,8 @@ You can replay a request easily using cURL and LINQPad.
 ![](docs/images/Screenshot-04.png)
 
 # 📝 Requirements
-- .NET Core 2.0+
-- ASP.NET Core 2.1+
-- ASP.NET Core MVC 2.1+
+- .NET Core 3.1+
+- ASP.NET Core 3.1+
 - Modern browser (e.g. Microsoft Edge, Google Chrome, Firefox, Safari...)
     - WebSocket connectivity
 
@@ -94,11 +93,9 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         ...
-        
-        services.AddMvc()
+        services.AddControllersWithViews()
             // Add(option): Enable ASP.NET Core MVC support if the project built with ASP.NET Core MVC
-            .AddRinMvcSupport()
-            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            .AddRinMvcSupport();        
 
         // Add: Register Rin services
         services.AddRin();
