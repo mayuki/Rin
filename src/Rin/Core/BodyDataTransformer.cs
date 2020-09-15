@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Primitives;
 using Rin.Core.Record;
 using System.Linq;
 
@@ -10,9 +10,11 @@ namespace Rin.Core
         BodyDataTransformResult Transform(HttpRequestRecord record, byte[] body, StringValues contentTypeHeaderValues);
     }
 
-    public abstract class BodyDataTransformer : IBodyDataTransformer
+    public interface IRequestBodyDataTransformer : IBodyDataTransformer
     {
-        public abstract bool CanTransform(HttpRequestRecord record, StringValues contentTypeHeaderValues);
-        public abstract BodyDataTransformResult Transform(HttpRequestRecord record, byte[] body, StringValues contentTypeHeaderValues);
+    }
+
+    public interface IResponseBodyDataTransformer : IBodyDataTransformer
+    {
     }
 }

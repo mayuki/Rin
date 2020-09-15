@@ -26,8 +26,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IRinRequestRecordingFeatureAccessor>(new RinRequestRecordingFeatureAccessor());
             services.AddSingleton<BodyDataTransformerSet>(serviceProvider =>
             {
-                var transformers = serviceProvider.GetServices<IBodyDataTransformer>().ToArray();
-                return new BodyDataTransformerSet(new BodyDataTransformerPipeline(transformers), new BodyDataTransformerPipeline(transformers));
+                var requestTransformers = serviceProvider.GetServices<IRequestBodyDataTransformer>();
+                var responseTransformers = serviceProvider.GetServices<IResponseBodyDataTransformer>();
+                var transformers = serviceProvider.GetServices<IBodyDataTransformer>();
+
+                return new BodyDataTransformerSet(new BodyDataTransformerPipeline(requestTransformers.Concat(transformers)), new BodyDataTransformerPipeline(responseTransformers.Concat(transformers)));
             });
             services.TryAddSingleton<IRecordStorage, InMemoryRecordStorage>();
             services.AddSingleton<IMessageEventBus<RequestEventMessage>>(new MessageEventBus<RequestEventMessage>());

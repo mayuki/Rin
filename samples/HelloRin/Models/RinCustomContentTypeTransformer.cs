@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Primitives;
 using Rin.Core;
 using Rin.Core.Record;
 using System;
@@ -10,14 +10,14 @@ using static HelloRin.Controllers.MyApiController;
 
 namespace HelloRin.Models
 {
-    public class RinCustomContentTypeTransformer : BodyDataTransformer
+    public class RinCustomContentTypeTransformer : IBodyDataTransformer
     {
-        public override bool CanTransform(HttpRequestRecord record, StringValues contentTypeHeaderValues)
+        public bool CanTransform(HttpRequestRecord record, StringValues contentTypeHeaderValues)
         {
             return contentTypeHeaderValues.Any(x => x == "application/x-msgpack");
         }
 
-        public override BodyDataTransformResult Transform(HttpRequestRecord record, byte[] body, StringValues contentTypeHeaderValues)
+        public BodyDataTransformResult Transform(HttpRequestRecord record, byte[] body, StringValues contentTypeHeaderValues)
         {
             var data = MessagePack.LZ4MessagePackSerializer.Deserialize<MyClass>(body, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
             var json = MessagePack.MessagePackSerializer.ToJson<MyClass>(data, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
