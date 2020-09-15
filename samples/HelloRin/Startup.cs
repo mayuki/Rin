@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Rin.Core;
 
 namespace HelloRin
 {
@@ -37,8 +38,8 @@ namespace HelloRin
             {
                 options.RequestRecorder.RetentionMaxRequests = 100;
                 options.RequestRecorder.Excludes.Add(request => request.Path.Value.EndsWith(".js") || request.Path.Value.EndsWith(".css") || request.Path.Value.EndsWith(".svg"));
-                options.Inspector.ResponseBodyDataTransformers.Add(new RinCustomContentTypeTransformer());
             });
+            services.AddSingleton<IBodyDataTransformer, RinCustomContentTypeTransformer>();
 
             // Optional: Use Redis as storage
             //services.AddRinRedisStorage(options =>
