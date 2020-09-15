@@ -52,6 +52,24 @@ export function InspectorDetailRequestResponseView(props: IInspectorRequestRespo
     return isJson(contentType) || isWwwFormUrlencoded(contentType) || isText(contentType) || isImage(contentType);
   };
 
+  const canPreviewForContentType = (contentType: string, type: PreviewType): boolean => {
+    if (type == 'Hex') { 
+      return true; // Hex dump always can be available for any content-type.
+    }
+
+    if (isJson(contentType) && (type == 'Tree')) {
+      return true;
+    }
+    if (isWwwFormUrlencoded && (type == 'List')) {
+      return true;
+    }
+    if ((isText(contentType) || isImage(contentType)) && (type == 'Source')) {
+      return true;
+    }
+
+    return false;
+  }
+
   const onBodyPivotItemClicked = (item?: PivotItem) => {
     if (item != null && item.props.itemKey != null) {
       setBodyView(item.props.itemKey as PreviewType);
@@ -59,10 +77,14 @@ export function InspectorDetailRequestResponseView(props: IInspectorRequestRespo
   };
 
   useEffect(() => {
-    if (!(contentType && isJson(contentType) && bodyView === 'Tree')) {
-      setBodyView('Source');
+    // Reset the preview type when content-type has been changed, and the current preview is not supported for it.
+    if (contentType == null) {
+      setBodyView('Hex');
+    } else if (!canPreviewForContentType(contentType, bodyView)) {
+      setBodyView(canPreview(contentType) ? 'Source' : 'Hex');
     }
   }, [contentType]);
+
 
   const trailers = props.trailers;
   return (
@@ -108,38 +130,40 @@ export function InspectorDetailRequestResponseView(props: IInspectorRequestRespo
           )}
         </div>
         <div className={styles.inspectorRequestResponseView_Body}>
-          {hasBody && contentType && canPreview(contentType) && (
+          {hasBody && contentType && (
             <>
               <Pivot selectedKey={bodyView} onLinkClick={onBodyPivotItemClicked}>
                 {isJson(contentType) && <PivotItem itemKey="Tree" headerText="Tree" itemIcon="RowsChild" />}
                 {isWwwFormUrlencoded(contentType) && <PivotItem itemKey="List" headerText="List" itemIcon="ViewList" />}
-                <PivotItem
+                {isText(contentType) && <PivotItem
                   itemKey="Source"
                   headerText={isTransformed ? `View as ${contentType}` : 'Source'}
                   itemIcon="Code"
-                />
+                />}
                 <PivotItem itemKey="Hex" headerText="Hex" itemIcon="ComplianceAudit" />
               </Pivot>
-              {bodyView === 'List' && (
-                <div className={styles.inspectorRequestResponseViewKeyValueDetailList}>
-                  <KeyValueDetailList keyName="Key" valueName="Value" items={createKeyValuePairFromUrlEncoded(body)} />
-                </div>
-              )}
-              {bodyView === 'Tree' && (
-                <div className={styles.inspectorRequestResponseViewObjectInspector}>
-                  <ObjectInspector data={JSON.parse(body)} />
-                </div>
-              )}
-              {bodyView === 'Source' && (
-                <>
-                  {isText(contentType) && (
-                    <EditorPreview contentType={contentType} body={body} paneResizeToken={paneToken} />
-                  )}
-                  {isImage(contentType) && props.body != null && (
-                    <ImagePreview contentType={contentType} bodyAsBase64={props.body.Body} />
-                  )}
-                </>
-              )}
+              {canPreview(contentType) && (<>
+                {bodyView === 'List' && (
+                  <div className={styles.inspectorRequestResponseViewKeyValueDetailList}>
+                    <KeyValueDetailList keyName="Key" valueName="Value" items={createKeyValuePairFromUrlEncoded(body)} />
+                  </div>
+                )}
+                {bodyView === 'Tree' && (
+                  <div className={styles.inspectorRequestResponseViewObjectInspector}>
+                    <ObjectInspector data={JSON.parse(body)} />
+                  </div>
+                )}
+                {bodyView === 'Source' && (
+                  <>
+                    {isText(contentType) && (
+                      <EditorPreview contentType={contentType} body={body} paneResizeToken={paneToken} />
+                    )}
+                    {isImage(contentType) && props.body != null && (
+                      <ImagePreview contentType={contentType} bodyAsBase64={props.body.Body} />
+                    )}
+                  </>
+                )}
+              </>)}
               {bodyView === 'Hex' && props.body != null && (
                 <HexDumpPreview
                   body={props.body.Body}
