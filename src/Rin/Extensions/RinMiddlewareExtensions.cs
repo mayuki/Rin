@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Rin.Core;
 using Rin.Core.Event;
@@ -44,10 +44,10 @@ namespace Microsoft.AspNetCore.Builder
 
             var subscribers = app.ApplicationServices.GetServices<IMessageSubscriber<RequestEventMessage>>();
             var subscribersStoreBody = app.ApplicationServices.GetServices<IMessageSubscriber<StoreBodyEventMessage>>();
-            var recoder = app.ApplicationServices.GetService<IRecordStorage>();
+            var recorder = app.ApplicationServices.GetService<IRecordStorage>();
 
-            eventBus.Subscribe(subscribers.Concat(new[] { recoder }));
-            eventBusStoreBody.Subscribe(subscribersStoreBody.Concat(new[] { recoder }));
+            eventBus.Subscribe(subscribers.Concat(new[] { recorder }));
+            eventBusStoreBody.Subscribe(subscribersStoreBody.Concat(new[] { recorder }));
         }
 
         private static void UseRinInspector(this IApplicationBuilder app)
