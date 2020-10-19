@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using HelloRin.Models;
 using log4net;
+using MessagePack;
+using MessagePack.Resolvers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -96,7 +98,7 @@ namespace HelloRin.Controllers
         // See RinCustomContentTypeTransformer class in this project.
         public IActionResult CustomContentType()
         {
-            var data = MessagePack.LZ4MessagePackSerializer.Serialize(new MyClass
+            var data = MessagePackSerializer.Serialize(new MyClass
             {
                 ValueA = "ValueA12345",
                 ValueB = 123,
@@ -115,7 +117,7 @@ namespace HelloRin.Controllers
                         ValueE = new[] { x.ToString() }
                     }
                 }).ToArray()
-            }, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+            }, ContractlessStandardResolver.Options);
 
             return File(data, "application/x-msgpack");
         }

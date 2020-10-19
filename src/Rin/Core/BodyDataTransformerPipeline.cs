@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Primitives;
+using System;
+using Microsoft.Extensions.Primitives;
 using Rin.Core.Record;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,15 +20,16 @@ namespace Rin.Core
             return true;
         }
 
-        public BodyDataTransformResult Transform(HttpRequestRecord record, byte[] body, StringValues contentTypeHeaderValues)
+        public bool TryTransform(HttpRequestRecord record, ReadOnlySpan<byte> body, StringValues contentTypeHeaderValues, out BodyDataTransformResult result)
         {
             var transformer = _transformers.FirstOrDefault(x => x.CanTransform(record, contentTypeHeaderValues));
             if (transformer != null)
             {
-                return transformer.Transform(record, body, contentTypeHeaderValues);
+                return transformer.TryTransform(record, body, contentTypeHeaderValues, out result);
             }
 
-            return new BodyDataTransformResult(body, contentTypeHeaderValues.ToString(), null);
+            result = default;
+            return false;
         }
     }
 }

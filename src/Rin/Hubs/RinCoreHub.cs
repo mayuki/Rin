@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Primitives;
 using Rin.Channel;
 using Rin.Core;
 using Rin.Core.Event;
@@ -16,14 +16,12 @@ namespace Rin.Hubs
 {
     public class RinCoreHub : IHub
     {
-        private IRecordStorage _storage;
-        private RinChannel _rinChannel;
-        private BodyDataTransformerSet _bodyDataTransformerSet;
+        private readonly IRecordStorage _storage;
+        private readonly BodyDataTransformerSet _bodyDataTransformerSet;
 
-        public RinCoreHub(IRecordStorage storage, RinChannel rinChannel, BodyDataTransformerSet bodyDataTransformerSet)
+        public RinCoreHub(IRecordStorage storage, BodyDataTransformerSet bodyDataTransformerSet)
         {
             _storage = storage;
-            _rinChannel = rinChannel;
             _bodyDataTransformerSet = bodyDataTransformerSet;
         }
 
@@ -73,7 +71,7 @@ namespace Rin.Hubs
 
         public class MessageSubscriber : IMessageSubscriber<RequestEventMessage>
         {
-            private IRinCoreHubClient _client;
+            private readonly IRinCoreHubClient _client;
             public MessageSubscriber(RinChannel channel)
             {
                 _client = channel.GetClient<RinCoreHub, IRinCoreHubClient>();

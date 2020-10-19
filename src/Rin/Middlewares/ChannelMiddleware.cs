@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Rin.Channel;
 using Rin.Core;
 using Rin.Core.Event;
@@ -49,7 +49,7 @@ namespace Rin.Middlewares
                 {
                     case nameof(RinCoreHub):
                     default:
-                        hub = new RinCoreHub(_storage, _rinChannel, _bodyDataTransformerSet);
+                        hub = new RinCoreHub(_storage, _bodyDataTransformerSet);
                         break;
                 }
 

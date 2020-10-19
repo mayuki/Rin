@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Primitives;
 using Rin.Core;
 using Rin.Core.Record;
 using System;
@@ -20,31 +20,36 @@ namespace Rin.Hubs.Payloads
             PresentationContentType = presentationContentType;
         }
 
-        public static BodyDataPayload CreateFromRecord(HttpRequestRecord record, IDictionary<string, StringValues>? headers, byte[]? body, IBodyDataTransformer transformer)
+        public static BodyDataPayload CreateFromRecord(HttpRequestRecord record, IDictionary<string, StringValues>? headers, ReadOnlySpan<byte> body, IBodyDataTransformer transformer)
         {
-            if (body == null)
+            if (body.IsEmpty)
             {
                 return new BodyDataPayload(Convert.ToBase64String(Array.Empty<byte>()), true, "");
             }
 
+            var payloadBody = body;
+            var payloadBodyContentType = string.Empty;
+            var transformedBodyContentType = string.Empty;
             if (headers != null && headers.TryGetValue("Content-Type", out var contentType))
             {
-                var result = transformer.Transform(record, body, contentType);
-
-                if (result.ContentType.StartsWith("text/") ||
-                    result.ContentType.StartsWith("application/json") ||
-                    result.ContentType.StartsWith("text/json") ||
-                    result.ContentType.StartsWith("application/x-www-form-urlencoded"))
+                if (transformer.TryTransform(record, body, contentType, out var result))
                 {
-                    return new BodyDataPayload(new UTF8Encoding(false).GetString(result.Body), false, result.TransformedContentType ?? "");
-                }
-                else
-                {
-                    return new BodyDataPayload(Convert.ToBase64String(result.Body), true, result.TransformedContentType ?? "");
+                    payloadBodyContentType = result.TransformedContentType;
+                    transformedBodyContentType = result.TransformedContentType;
+                    payloadBody = result.Body;
                 }
             }
 
-            return new BodyDataPayload(Convert.ToBase64String(body), true, "");
+            if (payloadBodyContentType.StartsWith("text/") ||
+                payloadBodyContentType.StartsWith("application/json") ||
+                payloadBodyContentType.StartsWith("application/x-www-form-urlencoded"))
+            {
+                return new BodyDataPayload(Encoding.UTF8.GetString(payloadBody), false, transformedBodyContentType);
+            }
+            else
+            {
+                return new BodyDataPayload(Convert.ToBase64String(payloadBody), true, transformedBodyContentType);
+            }
         }
     }
 }
