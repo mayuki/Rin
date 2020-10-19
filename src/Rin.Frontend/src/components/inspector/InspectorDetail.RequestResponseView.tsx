@@ -77,14 +77,19 @@ export function InspectorDetailRequestResponseView(props: IInspectorRequestRespo
   };
 
   useEffect(() => {
-    // Reset the preview type when content-type has been changed, and the current preview is not supported for it.
-    if (contentType == null) {
-      setBodyView('Hex');
-    } else if (!canPreviewForContentType(contentType, bodyView)) {
-      setBodyView(canPreview(contentType) ? 'Source' : 'Hex');
+    if (hasBody) {
+      // Reset the preview type when content-type has been changed, and the current preview is not supported for it.
+      if (contentType == null) {
+        setBodyView('Hex');
+      } else if (!canPreviewForContentType(contentType, bodyView)) {
+        setBodyView(canPreview(contentType) ? 'Source' : 'Hex');
+      }
     }
-  }, [contentType]);
+  }, [hasBody, contentType]);
 
+  if (!hasBody) {
+    return <></>;
+  }
 
   const trailers = props.trailers;
   return (
