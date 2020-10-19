@@ -17,12 +17,13 @@ namespace HelloRin.Models
             return contentTypeHeaderValues.Any(x => x == "application/x-msgpack");
         }
 
-        public BodyDataTransformResult Transform(HttpRequestRecord record, byte[] body, StringValues contentTypeHeaderValues)
+        public bool TryTransform(HttpRequestRecord record, ReadOnlySpan<byte> body, StringValues contentTypeHeaderValues, out BodyDataTransformResult result)
         {
-            var data = MessagePack.LZ4MessagePackSerializer.Deserialize<MyClass>(body, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+            var data = MessagePack.LZ4MessagePackSerializer.Deserialize<MyClass>(body.ToArray(), MessagePack.Resolvers.ContractlessStandardResolver.Instance);
             var json = MessagePack.MessagePackSerializer.ToJson<MyClass>(data, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
 
-            return new BodyDataTransformResult(new UTF8Encoding(false).GetBytes(json), contentTypeHeaderValues.ToString(), "application/json");
+            result = new BodyDataTransformResult(new UTF8Encoding(false).GetBytes(json), contentTypeHeaderValues.ToString(), "application/json");
+            return true;
         }
     }
 }

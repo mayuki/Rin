@@ -1,4 +1,4 @@
-﻿using Rin.Core.Event;
+using Rin.Core.Event;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace Rin.Core.Record
         Task<RecordStorageTryGetResult<byte[]?>> TryGetRequestBodyByIdAsync(string id);
     }
 
-    public struct RecordStorageTryGetResult<T>
+    public readonly struct RecordStorageTryGetResult<T>
     {
         public bool Succeed { get; }
         public T Value { get; }

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Primitives;
 using Rin.Channel;
 using Rin.Core;
 using Rin.Core.Event;
