@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MessagePack;
 using static HelloRin.Controllers.MyApiController;
 
 namespace HelloRin.Models
@@ -19,10 +20,9 @@ namespace HelloRin.Models
 
         public bool TryTransform(HttpRequestRecord record, ReadOnlySpan<byte> body, StringValues contentTypeHeaderValues, out BodyDataTransformResult result)
         {
-            var data = MessagePack.LZ4MessagePackSerializer.Deserialize<MyClass>(body.ToArray(), MessagePack.Resolvers.ContractlessStandardResolver.Instance);
-            var json = MessagePack.MessagePackSerializer.ToJson<MyClass>(data, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+            var json = MessagePackSerializer.ConvertToJson(body.ToArray(), MessagePack.Resolvers.ContractlessStandardResolver.Options);
 
-            result = new BodyDataTransformResult(new UTF8Encoding(false).GetBytes(json), contentTypeHeaderValues.ToString(), "application/json");
+            result = new BodyDataTransformResult(Encoding.UTF8.GetBytes(json), contentTypeHeaderValues.ToString(), "application/json");
             return true;
         }
     }
