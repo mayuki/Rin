@@ -105,6 +105,10 @@ export class InspectorStore {
       return;
     }
 
+    if (this.currentDetailView === DetailViewType.Response && !record.IsCompleted) {
+      this.selectDetailView(DetailViewType.Request);
+    }
+
     if (this.currentDetailView === DetailViewType.Exception && record.Exception === null) {
       this.selectDetailView(DetailViewType.Request);
     }
