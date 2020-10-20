@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using HelloRin.Data;
 using HelloRin.Models;
 using log4net;
 using MessagePack;
@@ -126,6 +127,23 @@ namespace HelloRin.Controllers
         {
             var stream = new MemoryStream(new byte[1024 * 1024 * 1]);
             return File(new SlowStream(stream), "application/octet-stream");
+        }
+
+        public async Task<IActionResult> DatabaseAccess([FromServices]MyDbContext dbContext)
+        {
+            await dbContext.Database.EnsureCreatedAsync();
+
+            var item = new TodoItem()
+            {
+                Comment = "Hello Rin!",
+                Finished = false,
+                CreatedAt = DateTime.Now,
+                ModifiedAt = DateTime.Now
+            };
+            await dbContext.TodoItems.AddAsync(item);
+            await dbContext.SaveChangesAsync();
+
+            return Content(item.Id.ToString(), "text/plain");
         }
 
         public async Task<IActionResult> Timeline()

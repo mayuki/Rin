@@ -2,12 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HelloRin.Data;
 using HelloRin.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Rin.Core;
+using Rin.Extensions.EntityFrameworkCore;
 
 namespace HelloRin
 {
@@ -34,11 +38,24 @@ namespace HelloRin
                 options.Address = new Uri("https://localhost:5001");
             });
 
+
+            // Configure Entity Framework Core.
+            services.AddDbContext<MyDbContext>(options =>
+            {
+                // NOTE: In-memory SQLite database must open a connection before use.
+                var conn = new SqliteConnection("Data Source=MyDatabase;Mode=Memory;Cache=Shared");
+                conn.Open();
+
+                options.UseSqlite(conn);
+            });
+
             services.AddRin(options =>
             {
                 options.RequestRecorder.RetentionMaxRequests = 100;
                 options.RequestRecorder.Excludes.Add(request => request.Path.Value.EndsWith(".js") || request.Path.Value.EndsWith(".css") || request.Path.Value.EndsWith(".svg"));
             })
+                // Optional: Add Entity Framework Core support.
+                .AddEntityFrameworkCoreDiagnostics()
                 // Optional: Add a transformer for special data type.
                 .AddBodyDataTransformer<RinCustomContentTypeTransformer>()
                 // Optional: Use Redis as storage

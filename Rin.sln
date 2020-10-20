@@ -27,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub Actions", "GitHub Ac
 		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rin.Extensions.EntityFrameworkCore", "src\Rin.Extensions.EntityFrameworkCore\Rin.Extensions.EntityFrameworkCore.csproj", "{249517E0-1E18-4100-91F9-D6B200C911C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{306BC2D2-ACB8-4F60-9D03-6EAAAD6CF8F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{306BC2D2-ACB8-4F60-9D03-6EAAAD6CF8F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{306BC2D2-ACB8-4F60-9D03-6EAAAD6CF8F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{249517E0-1E18-4100-91F9-D6B200C911C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{249517E0-1E18-4100-91F9-D6B200C911C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{249517E0-1E18-4100-91F9-D6B200C911C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{249517E0-1E18-4100-91F9-D6B200C911C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
