@@ -9,13 +9,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Rin.Extensions;
 using Rin.Features;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class RinServiceExtensions
     {
-        public static void AddRin(this IServiceCollection services, Action<RinOptions>? configure = null)
+        public static IRinBuilder AddRin(this IServiceCollection services, Action<RinOptions>? configure = null)
         {
             var options = new RinOptions();
             configure?.Invoke(options);
@@ -42,6 +43,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IMessageSubscriber<RequestEventMessage>>(x => new Rin.Hubs.RinCoreHub.MessageSubscriber(x.GetRequiredService<RinChannel>()));
 
             services.AddTransient<IResourceProvider, EmbeddedZipResourceProvider>();
+
+            return new RinBuilder(services);
         }
     }
 }
