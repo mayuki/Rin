@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Rin.Extensions.EntityFrameworkCore\Rin.Extensions.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Rin.Log4NetAppender\Rin.Log4NetAppender.csproj" />
+    <ProjectReference Include="..\..\src\Rin.Extensions.Log4NetAppender\Rin.Extensions.Log4NetAppender.csproj" />
     <ProjectReference Include="..\..\src\Rin.Mvc\Rin.Mvc.csproj" />
     <ProjectReference Include="..\..\src\Rin.Storage.Redis\Rin.Storage.Redis.csproj" />
     <ProjectReference Include="..\..\src\Rin\Rin.csproj" />

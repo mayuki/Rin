@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using log4net.Core;
 using Rin.Core.Record;
 
-namespace Rin.Log4NetAppender
+namespace Rin.Extensions.Log4NetAppender
 {
     public class RinLogAppender : log4net.Appender.AppenderSkeleton
     {
