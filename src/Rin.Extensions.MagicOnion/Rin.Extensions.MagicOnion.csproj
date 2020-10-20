@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <!-- NuGet Package Information -->
+    <Description>This package adds support for MagicOnion to Rin</Description>
+    <PackageTags>Rin MagicOnion</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MagicOnion.Server" Version="4.0.0-preview.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\docs\images\logo.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Rin\Rin.csproj" />
+  </ItemGroup>
+
+</Project>
