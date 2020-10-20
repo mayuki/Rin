@@ -38,14 +38,15 @@ namespace HelloRin
             {
                 options.RequestRecorder.RetentionMaxRequests = 100;
                 options.RequestRecorder.Excludes.Add(request => request.Path.Value.EndsWith(".js") || request.Path.Value.EndsWith(".css") || request.Path.Value.EndsWith(".svg"));
-            });
-            services.AddSingleton<IBodyDataTransformer, RinCustomContentTypeTransformer>();
-
-            // Optional: Use Redis as storage
-            //services.AddRinRedisStorage(options =>
-            //{
-            //    options.ConnectionConfiguration = "localhost:6379";
-            //});
+            })
+                // Optional: Add a transformer for special data type.
+                .AddBodyDataTransformer<RinCustomContentTypeTransformer>()
+                // Optional: Use Redis as storage
+                //.UseRedisStorage(options =>
+                //{
+                //    options.ConnectionConfiguration = "localhost:6379";
+                //})
+            ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
