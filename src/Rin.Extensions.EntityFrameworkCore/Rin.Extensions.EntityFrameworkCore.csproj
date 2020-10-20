@@ -10,6 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\docs\images\logo.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Rin\Rin.csproj" />
   </ItemGroup>
 
