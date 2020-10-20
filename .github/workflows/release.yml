@@ -23,11 +23,11 @@ jobs:
     - name: "Set VersionSuffix for Preview"
       if: "contains(github.ref, 'refs/tags') && contains(github.ref, 'preview')"
       run: |
-        echo "::set-env name=VERSION_SUFFIX::preview.`date '+%Y%m%d-%H%M%S'`+${GITHUB_SHA:0:6}"
+        echo "VERSION_SUFFIX=preview.`date '+%Y%m%d-%H%M%S'`+${GITHUB_SHA:0:6}" >> $GITHUB_ENV
 
     - name: "Get git tag"
       if: "contains(github.ref, 'refs/tags')"
-      run: echo ::set-env name=GIT_TAG::${GITHUB_REF#refs/tags/}
+      run: echo "GIT_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
     - name: "Rin.Frontend: build & pack"
       working-directory: src/Rin.Frontend
