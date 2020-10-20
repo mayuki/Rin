@@ -19,10 +19,11 @@ namespace Rin.Extensions.EntityFrameworkCore
 
         public void OnNext(KeyValuePair<string, object> value)
         {
-            if (value.Key == "Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted" && value.Value is CommandExecutedEventData commandExecutedEventData)
+            if (value.Key == RelationalEventId.CommandExecuted.Name && value.Value is CommandExecutedEventData commandExecutedEventData)
             {
                 var scope = TimelineScope.Create("CommandExecuted", TimelineEventCategory.Data, commandExecutedEventData.Command.CommandText);
                 scope.Complete();
+                scope.Timestamp = commandExecutedEventData.StartTime;
                 scope.Duration = commandExecutedEventData.Duration;
             }
         }
