@@ -5,6 +5,7 @@
     <!-- NuGet Package Information -->
     <Description>This package adds support for MagicOnion to Rin</Description>
     <PackageTags>Rin MagicOnion</PackageTags>
+    <VersionSuffix>preview</VersionSuffix>
   </PropertyGroup>
 
   <ItemGroup>
