@@ -12,11 +12,12 @@ namespace Rin.Core.Event
     public class MessageEventBus<T> : IMessageEventBus<T>
     {
         private readonly ILogger _logger;
-        private IMessageSubscriber<T>[] _subscribers = Array.Empty<IMessageSubscriber<T>>();
-        private System.Threading.Channels.Channel<T> _channel;
+        private readonly System.Threading.Channels.Channel<T> _channel;
+        private readonly CancellationTokenSource _cancellationTokenSource;
+
+        private IMessageSubscriber<T>[] _subscribers;
         private Task _readerTask;
         private bool _disposed;
-        private CancellationTokenSource _cancellationTokenSource;
 
         public MessageEventBus(ILogger<MessageEventBus<T>> logger)
         {
@@ -25,8 +26,10 @@ namespace Rin.Core.Event
             {
                 SingleReader = true,
             });
-            _readerTask = Task.CompletedTask;
             _cancellationTokenSource = new CancellationTokenSource();
+
+            _readerTask = Task.CompletedTask;
+            _subscribers = Array.Empty<IMessageSubscriber<T>>();
         }
 
         public void Subscribe(IEnumerable<IMessageSubscriber<T>> subscribers)
