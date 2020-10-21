@@ -34,8 +34,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 return new BodyDataTransformerSet(new BodyDataTransformerPipeline(requestTransformers.Concat(transformers)), new BodyDataTransformerPipeline(responseTransformers.Concat(transformers)));
             });
             services.TryAddSingleton<IRecordStorage, InMemoryRecordStorage>();
-            services.AddSingleton<IMessageEventBus<RequestEventMessage>>(new MessageEventBus<RequestEventMessage>());
-            services.AddSingleton<IMessageEventBus<StoreBodyEventMessage>>(new MessageEventBus<StoreBodyEventMessage>());
+            services.AddSingleton<IMessageEventBus<RequestEventMessage>, MessageEventBus<RequestEventMessage>>();
+            services.AddSingleton<IMessageEventBus<StoreBodyEventMessage>, MessageEventBus<StoreBodyEventMessage>>();
             services.AddSingleton<RinOptions>(options);
             services.AddSingleton<RinChannel>();
 
