@@ -1,23 +1,26 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Rin.Core.Event
 {
     public class MessageEventBus<T> : IMessageEventBus<T>
     {
+        private readonly ILogger _logger;
         private IMessageSubscriber<T>[] _subscribers = Array.Empty<IMessageSubscriber<T>>();
         private System.Threading.Channels.Channel<T> _channel;
         private Task _readerTask;
         private bool _disposed;
         private CancellationTokenSource _cancellationTokenSource;
 
-        public MessageEventBus()
+        public MessageEventBus(ILogger<MessageEventBus<T>> logger)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _channel = System.Threading.Channels.Channel.CreateUnbounded<T>(new System.Threading.Channels.UnboundedChannelOptions()
             {
                 SingleReader = true,
@@ -64,9 +67,7 @@ namespace Rin.Core.Event
                     }
                     catch (Exception ex)
                     {
-#if DEBUG
-                        Console.WriteLine(ex);
-#endif
+                        _logger.LogError(ex, "Exception has thrown while publishing message: {Message}", ex.Message);
                     }
                 }
             }
