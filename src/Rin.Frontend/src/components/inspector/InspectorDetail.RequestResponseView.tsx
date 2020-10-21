@@ -87,10 +87,6 @@ export function InspectorDetailRequestResponseView(props: IInspectorRequestRespo
     }
   }, [hasBody, contentType]);
 
-  if (!hasBody) {
-    return <></>;
-  }
-
   const trailers = props.trailers;
   return (
     <div className={styles.inspectorRequestResponseView}>
