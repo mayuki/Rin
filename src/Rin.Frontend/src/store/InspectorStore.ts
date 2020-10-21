@@ -58,6 +58,8 @@ export class InspectorStore {
 
   @action.bound
   async selectDetail(itemId: string, view?: DetailViewType, withoutNavigate: boolean = false) {
+    if (this.selectedId == itemId) return;
+
     this.selectedId = itemId;
 
     if (view != null) {
@@ -73,6 +75,8 @@ export class InspectorStore {
 
   @action.bound
   selectDetailView(view: DetailViewType) {
+    if (this.currentDetailView == view) return;
+
     this.currentDetailView = view;
     this.history.push(`/Inspect/${this.selectedId}/${this.currentDetailView}`);
   }
