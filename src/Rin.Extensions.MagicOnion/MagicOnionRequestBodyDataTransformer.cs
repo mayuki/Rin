@@ -2,7 +2,9 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Grpc.Core;
+using MagicOnion;
 using MagicOnion.Server;
 using MessagePack;
 using Microsoft.Extensions.Options;
@@ -45,7 +47,7 @@ namespace Rin.Extensions.MagicOnion
             }
 
             var deserialized = MessagePackSerializer.Deserialize(methodHandler.RequestType, body.Slice(5).ToArray() /* Skip gRPC Compressed Flag + Message length */, _serializerOptions);
-            result = new BodyDataTransformResult(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(deserialized)), "application/grpc", "application/json");
+            result = new BodyDataTransformResult(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(deserialized, RinMagicOnionSupportJsonSerializerOptions.Default)), "application/grpc", "application/json");
             return true;
         }
     }
@@ -83,9 +85,18 @@ namespace Rin.Extensions.MagicOnion
             }
 
             var deserialized = MessagePackSerializer.Deserialize(methodHandler.UnwrappedResponseType, body.Slice(5).ToArray() /* Skip gRPC Compressed Flag + Message length */, _serializerOptions);
-            result = new BodyDataTransformResult(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(deserialized)), "application/grpc", "application/json");
+            result = new BodyDataTransformResult(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(deserialized, RinMagicOnionSupportJsonSerializerOptions.Default)), "application/grpc", "application/json");
             return true;
         }
     }
 
+    internal static class RinMagicOnionSupportJsonSerializerOptions
+    {
+        public static JsonSerializerOptions Default { get; } = new JsonSerializerOptions();
+
+        static RinMagicOnionSupportJsonSerializerOptions()
+        {
+            Default.Converters.Add(new DynamicArgumentTupleJsonConverter());
+        }
+    }
 }
