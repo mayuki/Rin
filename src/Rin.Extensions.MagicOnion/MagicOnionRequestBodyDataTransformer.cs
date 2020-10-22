@@ -46,9 +46,17 @@ namespace Rin.Extensions.MagicOnion
                 return false;
             }
 
-            var deserialized = MessagePackSerializer.Deserialize(methodHandler.RequestType, body.Slice(5).ToArray() /* Skip gRPC Compressed Flag + Message length */, _serializerOptions);
-            result = new BodyDataTransformResult(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(deserialized, RinMagicOnionSupportJsonSerializerOptions.Default)), "application/grpc", "application/json");
-            return true;
+            try
+            {
+                var deserialized = MessagePackSerializer.Deserialize(methodHandler.RequestType, body.Slice(5).ToArray() /* Skip gRPC Compressed Flag + Message length */, _serializerOptions);
+                result = new BodyDataTransformResult(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(deserialized, RinMagicOnionSupportJsonSerializerOptions.Default)), "application/grpc", "application/json");
+                return true;
+            }
+            catch
+            {
+                result = default;
+                return false;
+            }
         }
     }
 
@@ -84,9 +92,17 @@ namespace Rin.Extensions.MagicOnion
                 return false;
             }
 
-            var deserialized = MessagePackSerializer.Deserialize(methodHandler.UnwrappedResponseType, body.Slice(5).ToArray() /* Skip gRPC Compressed Flag + Message length */, _serializerOptions);
-            result = new BodyDataTransformResult(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(deserialized, RinMagicOnionSupportJsonSerializerOptions.Default)), "application/grpc", "application/json");
-            return true;
+            try
+            {
+                var deserialized = MessagePackSerializer.Deserialize(methodHandler.UnwrappedResponseType, body.Slice(5).ToArray() /* Skip gRPC Compressed Flag + Message length */, _serializerOptions);
+                result = new BodyDataTransformResult(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(deserialized, RinMagicOnionSupportJsonSerializerOptions.Default)), "application/grpc", "application/json");
+                return true;
+            }
+            catch
+            {
+                result = default;
+                return false;
+            }
         }
     }
 
