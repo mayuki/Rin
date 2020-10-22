@@ -1,0 +1,62 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+
+namespace Rin.Extensions.MagicOnion
+{
+<# for (var i = 2; i <= 20; i++) {
+    var typeParameters = string.Join(", ", Enumerable.Range(1, i).Select(x => $"T{x}"));
+#>
+
+    internal class DynamicArgumentTupleJsonConverter<<#= typeParameters #>> : JsonConverter<global::MagicOnion.DynamicArgumentTuple<<#= typeParameters #>>>
+    {
+        public override global::MagicOnion.DynamicArgumentTuple<<#= typeParameters #>> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void Write(Utf8JsonWriter writer, global::MagicOnion.DynamicArgumentTuple<<#= typeParameters #>> value, JsonSerializerOptions options)
+        {
+            writer.WriteStartArray();
+            {
+<# for (var j = 1; j <= i; j++) { #>
+                JsonSerializer.Serialize(writer, value.Item<#= j #>, options);
+<# } #>
+            }
+            writer.WriteEndArray();
+        }
+    }
+<# } #>
+
+    internal class DynamicArgumentTupleJsonConverter : JsonConverterFactory
+    {
+        public override bool CanConvert(Type typeToConvert)
+        {
+            return typeToConvert.FullName.StartsWith("MagicOnion.DynamicArgumentTuple");
+        }
+
+        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        {
+            var converterType = typeToConvert.GenericTypeArguments.Length switch
+            {
+<# for (var i = 2; i <= 20; i++) {
+    var typeParameters = string.Join(",", Enumerable.Range(1, i).Select(x => ""));
+#>
+                <#= i #> => typeof(DynamicArgumentTupleJsonConverter<<#= typeParameters #>>),
+<# } #>
+            };
+
+            return (JsonConverter)Activator.CreateInstance(converterType.MakeGenericType(typeToConvert.GenericTypeArguments));
+        }
+    }
+}
