@@ -79,7 +79,7 @@ public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
         .ConfigureLogging(configure =>
         {
             // Add: Enable Rin Logger
-            configure.UseRinLogger();
+            configure.AddRinLogger();
         })
         .UseStartup<Startup>();
 ```
