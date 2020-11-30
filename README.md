@@ -143,16 +143,16 @@ Launch the app, then open `http://[Host:Port]/rin/` in the browser, you can see 
 Rin Inspector (client side) codes is separated from Rin core C# project. If you want to develop Rin (C#) or launch a sample project, you need to build and deploy the artifacts.
 
 ## [Rin.Frontend, Rin.Mvc.Frontend] Setup and start the development server
-- `npm install`
-- `npm run start`
+- `yarn`
+- `yarn start`
 
 ## [Rin.Frontend] Build Rin/Resources.zip
-- `npm run build`
-- `npm run pack`
+- `yarn build`
+- `yarn pack`
 
 ## [Rin.Mvc.Frontend] Build Rin.Mvc/EmbeddedResources
-- `npm run build`
-- `copy .\build\static\main.js* ..\Rin.Mvc\EmbeddedResources\`
+- `yarn build`
+- `copy .\dist\static\main.js* ..\Rin.Mvc\EmbeddedResources\`
 
 # License
 [MIT License](LICENSE)
