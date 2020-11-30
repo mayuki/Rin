@@ -149,17 +149,6 @@ namespace Rin.Middlewares
             record.ResponseStatusCode = response.StatusCode;
             record.ResponseHeaders = response.Headers.ToDictionary(k => k.Key, v => v.Value);
 
-            if (request.SupportsTrailers())
-            {
-                var trailers = context.Features.Get<IHttpRequestTrailersFeature>();
-                record.RequestTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
-            }
-            if (response.SupportsTrailers())
-            {
-                var trailers = context.Features.Get<IHttpResponseTrailersFeature>();
-                record.ResponseTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
-            }
-
             if (options.RequestRecorder.EnableBodyCapturing)
             {
                 var feature = context.Features.Get<IRinRequestRecordingFeature>();
@@ -173,6 +162,17 @@ namespace Rin.Middlewares
                 {
                     await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Response, record.Id, feature.ResponseDataStream.GetCapturedData()));
                 }
+            }
+
+            if (request.CheckTrailersAvailable())
+            {
+                var trailers = context.Features.Get<IHttpRequestTrailersFeature>();
+                record.RequestTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
+            }
+            if (response.SupportsTrailers())
+            {
+                var trailers = context.Features.Get<IHttpResponseTrailersFeature>();
+                record.ResponseTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
             }
 
             var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
