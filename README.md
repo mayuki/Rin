@@ -1,7 +1,8 @@
 # <img src="docs/images/logo.svg" alt="" width="32" /> Rin
 **R**equest/response **In**spector middleware for ASP.NET Core. like Glimpse.
 
-[![Build Status](https://misuzilla.visualstudio.com/Rin/_apis/build/status/Rin-ASP.NET%20Core-CI)](https://misuzilla.visualstudio.com/Rin/_build/latest?definitionId=11)
+[![Build-Release](https://github.com/mayuki/Rin/workflows/Build-Release/badge.svg)](https://github.com/mayuki/Rin/actions?query=workflow%3ABuild-Release)
+[![Build-Development](https://github.com/mayuki/Rin/workflows/Build-Development/badge.svg)](https://github.com/mayuki/Rin/actions?query=workflow%3ABuild-Development)
 [![NuGet version](https://badge.fury.io/nu/Rin.svg)](https://badge.fury.io/nu/Rin)
 
 Rin captures HTTP requests to ASP.NET Core app and provides viewer for captured data. It's useful tool to debug your Web application (e.g. Web sites, API apps).
