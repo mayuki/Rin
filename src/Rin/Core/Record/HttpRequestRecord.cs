@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Concurrent;
@@ -15,11 +15,11 @@ namespace Rin.Core.Record
 
         public bool IsHttps { get; set; }
         public string Host { get; set; } = default!;
-        public string QueryString { get; set; } = default!;
+        public string? QueryString { get; set; }
         public string Path { get; set; } = default!;
         public string Method { get; set; } = default!;
         public int ResponseStatusCode { get; set; }
-        public IPAddress RemoteIpAddress { get; set; } = default!;
+        public IPAddress? RemoteIpAddress { get; set; }
 
         public DateTimeOffset RequestReceivedAt { get; set; }
         public DateTimeOffset TransferringCompletedAt { get; set; }

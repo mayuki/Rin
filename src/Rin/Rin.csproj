@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <nullable>enable</nullable>
 
     <!-- NuGet Package Information -->
@@ -20,8 +20,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DiagnosticAdapter" Version="3.1.5" />
-    <PackageReference Include="System.IO.Pipelines" Version="4.7.2" />
-    <PackageReference Include="System.Threading.Channels" Version="4.7.1" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
