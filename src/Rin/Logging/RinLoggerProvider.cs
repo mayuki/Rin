@@ -19,7 +19,7 @@ namespace Rin.Logging
 
         public ILogger CreateLogger(string categoryName)
         {
-            return new RinLogger(_serviceProvider.GetRequiredService<IRinRequestRecordingFeatureAccessor>());
+            return new RinLogger(_serviceProvider.GetService<IRinRequestRecordingFeatureAccessor>() ?? NullRinRequestRecordingFeatureAccessor.Instance);
         }
 
         public void Dispose()

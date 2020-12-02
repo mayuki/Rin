@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -33,6 +33,20 @@ namespace Rin.Features
         private class Holder
         {
             public IRinRequestRecordingFeature? Value { get; set; }
+        }
+    }
+
+    internal class NullRinRequestRecordingFeatureAccessor : IRinRequestRecordingFeatureAccessor
+    {
+        public static IRinRequestRecordingFeatureAccessor Instance { get; } = new NullRinRequestRecordingFeatureAccessor();
+
+        private NullRinRequestRecordingFeatureAccessor()
+        {}
+
+        public IRinRequestRecordingFeature? Feature { get; } = default;
+
+        public void SetValue(IRinRequestRecordingFeature? feature)
+        {
         }
     }
 }
