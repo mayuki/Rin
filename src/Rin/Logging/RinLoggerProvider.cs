@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace Rin.Logging
 
         public ILogger CreateLogger(string categoryName)
         {
-            return new RinLogger(_serviceProvider.GetService<IRinRequestRecordingFeatureAccessor>());
+            return new RinLogger(_serviceProvider.GetRequiredService<IRinRequestRecordingFeatureAccessor>());
         }
 
         public void Dispose()

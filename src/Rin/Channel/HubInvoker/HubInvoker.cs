@@ -59,7 +59,7 @@ namespace Rin.Channel.HubInvoker
             var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
 
             var operationId = default(string);
-            var arguments = Array.Empty<object>();
+            var arguments = Array.Empty<object?>();
             var method = default(string);
             var methodDef = default(HubMethodDefinition);
 
@@ -79,7 +79,7 @@ namespace Rin.Channel.HubInvoker
                         else if (currentPropName == "method" || currentPropName == "M")
                         {
                             method = reader.GetString();
-                            methodDef = _methodMap[method];
+                            methodDef = _methodMap[method!];
                         }
 
                         currentPropName = null;
@@ -120,7 +120,7 @@ namespace Rin.Channel.HubInvoker
             return true;
         }
 
-        private static object ReadObject(ref Utf8JsonReader reader, Type type)
+        private static object? ReadObject(ref Utf8JsonReader reader, Type type)
         {
             reader.Read();
 

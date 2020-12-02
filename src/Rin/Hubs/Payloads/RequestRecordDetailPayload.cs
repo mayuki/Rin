@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.Headers;
+using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Extensions.Primitives;
 using Rin.Core;
 using Rin.Core.Record;
@@ -19,9 +19,9 @@ namespace Rin.Hubs.Payloads
         public bool IsHttps { get; }
         public string Host { get; }
         public string Path { get; }
-        public string QueryString { get; }
+        public string? QueryString { get; }
         public int ResponseStatusCode { get; }
-        public string RemoteIpAddress { get; }
+        public string? RemoteIpAddress { get; }
 
         public IDictionary<string, StringValues> RequestHeaders { get; }
         public IDictionary<string, StringValues>? RequestTrailers { get; }
@@ -46,7 +46,7 @@ namespace Rin.Hubs.Payloads
             QueryString = record.QueryString;
             ResponseStatusCode = record.ResponseStatusCode;
 
-            RemoteIpAddress = record.RemoteIpAddress.ToString();
+            RemoteIpAddress = record.RemoteIpAddress?.ToString();
             RequestHeaders = record.RequestHeaders;
             RequestTrailers = record.RequestTrailers;
             ResponseHeaders = record.ResponseHeaders;

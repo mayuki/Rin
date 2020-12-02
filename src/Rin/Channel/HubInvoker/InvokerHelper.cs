@@ -31,7 +31,7 @@ namespace Rin.Channel.HubInvoker
             else if (returnType.IsGenericType)
             {
                 var openGenericType = returnType.GetGenericTypeDefinition();
-                var actualReturnType = returnType.GetGenericArguments()[0];
+                var actualReturnType = returnType.GetGenericArguments()[0]!;
                 if (openGenericType == typeof(Task<>) || openGenericType == typeof(ValueTask<>))
                 {
                     Expression<Func<T, HubInvokeMessage, ValueTask<HubInvocationResult>>> expression = (instance, invokeMessage) => default;
@@ -41,7 +41,7 @@ namespace Rin.Channel.HubInvoker
                     expression = expression.Update(
                         Expression.Call(null, methodCore.MakeGenericMethod(actualReturnType), expression.Parameters),
                         expression.Parameters
-                    );
+                    )!;
 
                     return expression.Compile();
                 }

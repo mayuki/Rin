@@ -19,13 +19,13 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static void UseRin(this IApplicationBuilder app)
         {
-            var options = app.ApplicationServices.GetService<RinOptions>();
+            var options = app.ApplicationServices.GetRequiredService<RinOptions>();
             if (options == null)
             {
                 throw new InvalidOperationException("Rin Services are not registered. Please call 'services.AddRin()' in a Startup class");
             }
 
-            var env = app.ApplicationServices.GetService<IHostEnvironment>();
+            var env = app.ApplicationServices.GetRequiredService<IHostEnvironment>();
             if (env.IsProduction() && !options.RequestRecorder.AllowRunningOnProduction)
             {
                 throw new InvalidOperationException("Rin requires non-Production environment to run. If you want to run in Production environment, configure AllowRunningOnProduction option.");
@@ -39,12 +39,12 @@ namespace Microsoft.AspNetCore.Builder
 
         private static void UseRinMessageBus(this IApplicationBuilder app)
         {
-            var eventBus = app.ApplicationServices.GetService<IMessageEventBus<RequestEventMessage>>();
-            var eventBusStoreBody = app.ApplicationServices.GetService<IMessageEventBus<StoreBodyEventMessage>>();
+            var eventBus = app.ApplicationServices.GetRequiredService<IMessageEventBus<RequestEventMessage>>();
+            var eventBusStoreBody = app.ApplicationServices.GetRequiredService<IMessageEventBus<StoreBodyEventMessage>>();
 
-            var subscribers = app.ApplicationServices.GetServices<IMessageSubscriber<RequestEventMessage>>();
-            var subscribersStoreBody = app.ApplicationServices.GetServices<IMessageSubscriber<StoreBodyEventMessage>>();
-            var recorder = app.ApplicationServices.GetService<IRecordStorage>();
+            var subscribers = app.ApplicationServices.GetServices<IMessageSubscriber<RequestEventMessage>>() ?? Enumerable.Empty<IMessageSubscriber<RequestEventMessage>>();
+            var subscribersStoreBody = app.ApplicationServices.GetServices<IMessageSubscriber<StoreBodyEventMessage>>() ?? Enumerable.Empty<IMessageSubscriber<StoreBodyEventMessage>>();
+            var recorder = app.ApplicationServices.GetRequiredService<IRecordStorage>();
 
             eventBus.Subscribe(subscribers.Concat(new[] { recorder }));
             eventBusStoreBody.Subscribe(subscribersStoreBody.Concat(new[] { recorder }));
@@ -52,7 +52,7 @@ namespace Microsoft.AspNetCore.Builder
 
         private static void UseRinInspector(this IApplicationBuilder app)
         {
-            var options = app.ApplicationServices.GetService<RinOptions>();
+            var options = app.ApplicationServices.GetRequiredService<RinOptions>();
 
             app.Map(options.Inspector.MountPath, branch =>
             {

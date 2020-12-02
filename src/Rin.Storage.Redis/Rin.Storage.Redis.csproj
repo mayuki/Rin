@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
 
     <!-- NuGet Package Information -->
     <Description>This package adds support for Redis storage to Rin</Description>
@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\docs\images\logo.png" Pack="true" PackagePath="\"/>
+    <None Include="..\..\docs\images\logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

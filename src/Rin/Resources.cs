@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -15,7 +15,7 @@ namespace Rin
         static Resources()
         {
             var asm = typeof(Resources).Assembly;
-            var resourceZipStream = asm.GetManifestResourceStream(typeof(Resources).Assembly.GetName().Name + ".Resources.zip");
+            var resourceZipStream = asm.GetManifestResourceStream(typeof(Resources).Assembly.GetName().Name + ".Resources.zip")!;
             _zipArchive = new ZipArchive(resourceZipStream, ZipArchiveMode.Read);
             _resourceNameByPath = _zipArchive.Entries.Where(x => x.Name != "").ToDictionary(k => k.FullName, v => (Func<Stream>)(() => v.Open()));
         }
