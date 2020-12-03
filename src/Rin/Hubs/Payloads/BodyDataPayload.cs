@@ -38,6 +38,10 @@ namespace Rin.Hubs.Payloads
                     transformedBodyContentType = result.TransformedContentType;
                     payloadBody = result.Body;
                 }
+                else
+                {
+                    payloadBodyContentType = contentType;
+                }
             }
 
             if (payloadBodyContentType.StartsWith("text/") ||
