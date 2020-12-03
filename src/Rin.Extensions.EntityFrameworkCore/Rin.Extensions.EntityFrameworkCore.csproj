@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <!-- NuGet Package Information -->
     <Description>This package adds support for Entity Framwork Core to Rin</Description>
     <PackageTags>Rin EntityFrameworkCore</PackageTags>
