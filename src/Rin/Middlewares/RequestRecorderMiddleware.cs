@@ -151,14 +151,15 @@ namespace Rin.Middlewares
 
             if (options.RequestRecorder.EnableBodyCapturing)
             {
-                var feature = context.Features.Get<IRinRequestRecordingFeature>();
 
                 var memoryStreamRequestBody = new MemoryStream();
                 request.Body.Position = 0; // rewind the stream to head
                 await request.Body.CopyToAsync(memoryStreamRequestBody);
 
                 await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Request, record.Id, memoryStreamRequestBody.ToArray()));
-                if (feature.ResponseDataStream != null)
+
+                var feature = context.Features.Get<IRinRequestRecordingFeature>();
+                if (feature?.ResponseDataStream != null)
                 {
                     await _eventBusStoreBody.PostAsync(new StoreBodyEventMessage(StoreBodyEvent.Response, record.Id, feature.ResponseDataStream.GetCapturedData()));
                 }
@@ -166,13 +167,17 @@ namespace Rin.Middlewares
 
             if (request.CheckTrailersAvailable())
             {
-                var trailers = context.Features.Get<IHttpRequestTrailersFeature>();
-                record.RequestTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
+                if (request.CheckTrailersAvailable() && context.Features.Get<IHttpRequestTrailersFeature>() is { } trailers)
+                {
+                    record.RequestTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
+                }
             }
             if (response.SupportsTrailers())
             {
-                var trailers = context.Features.Get<IHttpResponseTrailersFeature>();
-                record.ResponseTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
+                if (response.SupportsTrailers() && context.Features.Get<IHttpResponseTrailersFeature>() is { } trailers)
+                {
+                    record.ResponseTrailers = trailers.Trailers.ToDictionary(k => k.Key, v => v.Value);
+                }
             }
 
             var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
