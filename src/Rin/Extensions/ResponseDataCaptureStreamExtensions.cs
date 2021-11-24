@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Rin.Features;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +11,15 @@ namespace Rin.Extensions
         public static void EnableResponseDataCapturing(this HttpContext context)
         {
             var originalResponseBodyFeature = context.Features.Get<IHttpResponseBodyFeature>();
+            if (originalResponseBodyFeature is null) return;
+
+            var rinRecordingFeature = context.Features.Get<IRinRequestRecordingFeature>();
+            if (rinRecordingFeature is null) return;
+
             var captureFeature = new CaptureHttpResponseBodyFeature(originalResponseBodyFeature);
             context.Features.Set<IHttpResponseBodyFeature>(captureFeature);
 
-            context.Features.Get<IRinRequestRecordingFeature>().ResponseDataStream = captureFeature.CaptureStream;
+            rinRecordingFeature.ResponseDataStream = captureFeature.CaptureStream;
         }
     }
 }

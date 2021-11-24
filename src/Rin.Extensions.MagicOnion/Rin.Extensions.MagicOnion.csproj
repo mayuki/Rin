@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
     <!-- NuGet Package Information -->
     <Description>This package adds support for MagicOnion to Rin</Description>
     <PackageTags>Rin MagicOnion</PackageTags>
