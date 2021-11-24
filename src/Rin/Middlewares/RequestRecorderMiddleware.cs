@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Connections;
 
 namespace Rin.Middlewares
 {
@@ -91,7 +92,13 @@ namespace Rin.Middlewares
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Unhandled Exception was thrown until post-processing");
+                    var skipLogging = context.RequestAborted.IsCancellationRequested ||
+                        (ex is IOException && ex.InnerException is ConnectionAbortedException);
+
+                   if (!skipLogging)
+                    {
+                        _logger.LogError(ex, "Unhandled Exception was thrown until post-processing");
+                    }
                 }
             }
         }
