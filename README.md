@@ -34,6 +34,7 @@ Rin captures a request and response. Also, it captures logs while processing a r
 
 - Built-in `Microsoft.Extensions.Logging.ILogger` integration
 - log4net Appender
+- Serilog Sink
 
 ### Save and export request/response
 You can replay a request easily using cURL and LINQPad.
