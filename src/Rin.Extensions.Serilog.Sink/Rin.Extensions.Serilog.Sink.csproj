@@ -9,7 +9,10 @@
 
   <ItemGroup>
     <PackageReference Include="Serilog" Version="3.1.1" />
-    <PackageReference Include="Rin" Version="2.6.0"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Rin\Rin.csproj" />
   </ItemGroup>
 
 </Project>
