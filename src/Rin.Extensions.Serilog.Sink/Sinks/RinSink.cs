@@ -1,4 +1,5 @@
-﻿using Serilog.Core;
+﻿using Rin.Core.Record;
+using Serilog.Core;
 using Serilog.Events;
 
 namespace Rin.Extensions.Serilog.Sink.Sinks;
@@ -7,7 +8,7 @@ public class RinSink : ILogEventSink
 {
     public void Emit(LogEvent logEvent)
     {
-        Core.Record.TimelineStamp.Stamp(ToLogLevelName(logEvent.Level), Core.Record.TimelineEventCategory.Trace, logEvent.RenderMessage());
+        TimelineStamp.Stamp(ToLogLevelName(logEvent.Level), TimelineEventCategory.Trace, logEvent.RenderMessage());
     }
 
     private static string ToLogLevelName(LogEventLevel level)
